@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.dao.InsframeworkMapper">
+
+	<resultMap id="insMap" type="com.spring.model.Insframework">
+		<id property="id" column="fid"></id> 
+            <result property="name" column="fname"></result>  
+            <result property="logogram" column="flogogram"></result>  
+            <result property="code" column="fcode"></result>
+        	<result property="parent" column="fparent"></result>
+        	<result property="parentname" column="fparentname"></result>
+        	<result property="type" column="ftype"></result>
+        	<result property="typename" column="typename"></result>
+	</resultMap>
+	
+	<select id="getInsframeworkAll" resultMap="insMap">
+		SELECT i.fid,i.fname,i.flogogram,i.fcode,i.fparent,i.ftype,ins.fname fparentname,d.fvaluename typename FROM tb_insframework i 
+		INNER JOIN tb_dictionary d on d.fvalue = i.ftype
+		LEFT JOIN tb_insframework ins on ins.fid = i.fparent
+		LEFT JOIN tb_insframework insf on insf.fid = ins.fparent
+		where d.ftypeid=2
+		<if test="parent!=null and parent!=''">
+			 and (i.fid=#{parent} or ins.fid=#{parent} or insf.fid=#{parent} or insf.fparent=#{parent})
+		</if>
+		<if test="str!=null and str!=''">
+			and ${str}
+		</if>
+		ORDER BY i.fid
+	</select>
+	
+	<select id="getInsById"  resultMap="insMap">
+		select fid, fname from tb_insframework where fid=#{id}
+	</select>
+	
+	<select id="getInsAll"  resultMap="insMap">
+		select i.fid, i.fname from tb_insframework i left JOIN tb_insframework ins on ins.fid = i.fparent 
+		left join tb_insframework insf on insf.fid = ins.fparent where 1=1 
+		<if test="type>0">
+			and i.ftype&lt;#{type}
+		</if>
+		<if test="parent!=null and parent!=''">
+			and (i.fid=#{parent} or ins.fid=#{parent} or insf.fid=#{parent} or insf.fparent=#{parent})
+		</if>
+		order by i.ftype
+	</select>
+	
+	<select id="getInsframework" resultMap="insMap">
+		SELECT i.fid,i.fname,i.ftype FROM tb_insframework i INNER JOIN tb_insframework ins on ins.fid = i.fparent WHERE i.ftype=23 
+		<if test="parent!=null and parent!=''">
+			and (i.fid=#{parent} or ins.fid=#{parent} or ins.fparent=#{parent})
+		</if>
+	</select>
+	
+	<select id="getParent" resultMap="insMap">
+		SELECT ins.fid, ins.fname
+		FROM tb_insframework i
+		inner JOIN tb_insframework ins ON i.fparent = ins.fid
+		WHERE i.fid =#{id}
+	</select>
+	
+	<!-- 查看集团 -->
+	<select id="getBloc" resultMap="insMap">
+		SELECT fid,fname FROM tb_insframework WHERE ftype=20
+	</select>
+	
+	<!-- 查看公司级 -->
+	<select id="getConmpany" resultMap="insMap">
+		SELECT fid,fname FROM tb_insframework WHERE ftype=21
+		<if test="value1!=null and value1!=''">
+			and fid=#{value1}
+		</if>
+	</select>
+	
+	<!-- 查看事业部级 -->
+	<select id="getCause" resultMap="insMap">
+		SELECT fid,fname FROM tb_insframework WHERE 1=1 
+		<if test="id!=null and id!=''">
+			and fparent=#{id} 
+		</if>
+		<if test="value2!=null and value2!=''">
+			and fid=#{value2}
+		</if>
+	</select>
+	
+	<!-- 获取用户所属层级 -->
+	<select id="getUserInsfType" resultType="java.lang.Integer">
+		SELECT ftype from tb_users u
+		inner join tb_insframework i	on u.users_insframework=i.fid	where id=#{uid}
+	</select>
+	
+	<!-- 获取用户所属事业部所拥有的项目部 -->
+	<select id="getUserInsfId" resultType="java.math.BigInteger">
+		SELECT fid from tb_users u
+		inner join tb_insframework i	on u.users_insframework=i.fid	where id=#{uid} 
+	</select>
+	
+	<select id="getInsframeworkByName" resultType="java.math.BigInteger">
+		select fid from tb_insframework where fname = #{name}
+	</select>
+	
+	<select id="getInsframeworkById" resultType="java.lang.String">
+		select fname from tb_insframework where fid = #{id}
+	</select>
+	
+	<select id="getInsfAllById" resultMap="insMap">
+		select * from tb_insframework where fid = #{id}
+	</select>
+	
+	<select id="getInsframeworkNameCount" resultType="java.lang.Integer">
+		select count(*) from tb_insframework where fname=#{name}
+	</select>
+	
+	<select id="getTypeById" resultType="java.lang.Integer">
+		SELECT ftype FROM tb_insframework  where fid= #{id}
+	</select>
+	
+	<select id="getParentById" resultType="java.math.BigInteger">
+		SELECT fparent FROM tb_insframework  where fid= #{id}
+	</select>
+	
+	<select id="getInsByType" resultMap="insMap">
+		select i.fid,i.fname from tb_insframework i
+		inner join tb_insframework ins on ins.fid = i.fparent 
+		where i.ftype=#{type}
+		<if test="parent!=null and parent!=''">
+			and (i.fparent = #{parent} or ins.fparent = #{parent})
+		</if>
+	</select>
+	
+	<select id="getInsIdByParent" resultMap="insMap">
+		SELECT i.fid,i.fname FROM tb_insframework i INNER JOIN tb_insframework ins on ins.fid = i.fparent
+		INNER join tb_insframework insf on insf.fid = ins.fparent
+		where (i.fid = #{parent} or ins.fid = #{parent} or insf.fid = #{parent})
+		<if test="type>0">
+			and i.ftype&lt;#{type}
+		</if>
+	</select>
+	
+	<select id="getInsByUserid" resultMap="insMap">
+		SELECT i.fid,ftype FROM tb_insframework i INNER JOIN tb_users u on i.fid = u.users_insframework where u.id=#{uid}
+	</select>
+	
+	<insert id="addInsframework" parameterType="com.spring.model.Insframework" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO tb_insframework(fname, flogogram, fcode, fparent, ftype) VALUES (#{name},#{logogram},#{code},#{parent},#{type})
+ 	</insert>
+	
+	<update id="editInsframework" parameterType="com.spring.model.Insframework">
+		UPDATE tb_insframework SET fname=#{name},flogogram=#{logogram},fcode=#{code},fparent=#{parent},ftype=#{type} WHERE fid=#{id}
+	</update>
+	
+	<delete id="deleteInsframework" parameterType="java.math.BigInteger">
+		DELETE FROM tb_insframework WHERE fid=#{id}
+	</delete>
+	
+</mapper>

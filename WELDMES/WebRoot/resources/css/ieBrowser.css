@@ -1,0 +1,14 @@
+/*IEºÊ»›¥¶¿Ì*/
+
+.fitem {
+	padding-bottom: 10px;
+ 	text-align: right;
+ 	padding-right:60px;
+}
+
+.fitem lable,.textstyle{
+  	width: 120px;
+  	line-height: 30px;
+  	display: inline-block;
+  	text-align: right;
+}

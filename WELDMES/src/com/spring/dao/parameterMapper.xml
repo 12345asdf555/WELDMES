@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.spring.dao.ParameterMapper">
+	<select id="getAllParameter" resultType="Parameter">
+		select fid id,fcompany_name fcn,fvalid_values fvv,fstop_time fst,fstop_float_time fsft,fcontinuous_time fct,fover_limit_times folt,fwire_weight fww,fair_flow_volume fafv,fspeed fspeed,fwelding_coefficient fwc,fstandby_power fsp,fday_shift fds,fafternoon_shift fas,fnight_shift fns from tb_parameter 
+	</select>
+	
+	<update id="UpdateParameter" parameterType="Parameter">
+		update tb_parameter set fcompany_name=#{fcn},fvalid_values=#{fvv},fstop_time=#{fst},fstop_float_time=#{fsft},fcontinuous_time=#{fct},fover_limit_times=#{folt},fwire_weight=#{fww},fair_flow_volume=#{fafv},fspeed=#{fspeed},fwelding_coefficient=#{fwc},fstandby_power=#{fsp},fday_shift=#{fds},fafternoon_shift=#{fas},fnight_shift=#{fns} where fid=#{id};
+	</update>
+</mapper>

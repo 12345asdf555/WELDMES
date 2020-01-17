@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<settings>
+ 		<!-- 打印查询语句 --> 
+		<setting name="logImpl" value="STDOUT_LOGGING" />
+	</settings>
+
+	<!-- 实体类,简称 -设置别名 -->
+	<typeAliases>
+		<typeAlias alias="User" type="com.spring.model.User" />
+		<typeAlias alias="Role" type="com.spring.model.Role" />
+		<typeAlias alias="Data" type="com.spring.model.Data" />
+		<typeAlias alias="Td" type="com.spring.model.Td" />
+		<typeAlias alias="Authority" type="com.spring.model.Authority" />
+		<typeAlias alias="Resources" type="com.spring.model.Resources" />
+		<typeAlias alias="Person" type="com.spring.model.Person" />
+		<typeAlias alias="Parameter" type="com.spring.model.Parameter" />
+		<typeAlias alias="Wps" type="com.spring.model.Wps"/>
+		<typeAlias alias="Report" type="com.spring.model.Report"/>
+		<typeAlias alias="Product" type="com.spring.model.Product"/>
+		<typeAlias alias="Email" type="com.spring.model.Email"/>
+	</typeAliases>
+	
+	<plugins>
+		<plugin interceptor="com.github.pagehelper.PageHelper">
+			<!-- 支持通过Mapper接口参数来传递分页参数 -->
+			<property name="supportMethodsArguments" value="true" />
+		</plugin>
+	</plugins>
+	
+	<!-- 实体接口映射资源 -->
+	<!--
+		说明：如果xxMapper.xml配置文件放在和xxMapper.java统一目录下，mappers也可以省略，因为org.mybatis.spring.mapper.MapperFactoryBean默认会去查找与xxMapper.java相同目录和名称的xxMapper.xml
+	-->
+	<mappers>
+		<mapper resource="com/spring/dao/userMapper.xml" />
+		<mapper resource="com/spring/dao/roleMapper.xml" />
+		<mapper resource="com/spring/dao/dataMapper.xml" />
+		<mapper resource="com/spring/dao/tdMapper.xml" />
+		<mapper resource="com/spring/dao/personMapper.xml" />
+		<mapper resource="com/spring/dao/authorityMapper.xml" />
+		<mapper resource="com/spring/dao/resourceMapper.xml" />
+		<mapper resource="com/spring/dao/weldingmachine.xml" />
+		<mapper resource="com/spring/dao/dictionary.xml" />
+		<mapper resource="com/spring/dao/weldingMaintenance.xml" />
+		<mapper resource="com/spring/dao/welder.xml" />
+		<mapper resource="com/spring/dao/weldedjunction.xml" />
+		<mapper resource="com/spring/dao/insframework.xml" />
+		<mapper resource="com/spring/dao/gather.xml"/>
+		<mapper resource="com/spring/dao/livedata.xml"/>
+		<mapper resource="com/spring/dao/wpsMapper.xml" />
+		<mapper resource="com/spring/dao/parameterMapper.xml"/>
+		<mapper resource="com/spring/dao/reportMapper.xml"/>
+		<mapper resource="com/spring/dao/productMapper.xml"/>
+		<mapper resource="com/spring/dao/datastatisticsMapper.xml"/>
+		<mapper resource="com/spring/dao/email.xml"/>
+	</mappers>
+
+</configuration>  

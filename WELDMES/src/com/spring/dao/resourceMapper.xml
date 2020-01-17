@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.spring.dao.ResourceMapper">
+	
+	<insert id="save" parameterType="Resources">
+		insert into tb_resources(resources_name,resources_type,resources_address,resources_desc,status) values(#{resourceName},#{resourceType},#{resourceAddress},#{resourceDesc},#{status});
+<!-- 		insert into tb_users_roles(users_name,roles_name) values(#{userName},#{roleName}) -->
+	</insert>
+	
+	<update id="update" parameterType="Resources">
+		update tb_resources set resources_name=#{resourceName},resources_type=#{resourceType},resources_address=#{resourceAddress},resources_desc=#{resourceDesc},status=#{status} where id=#{id};
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		delete from tb_resources where id=#{id};
+	</delete>
+	
+	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
+	<select id="findById" parameterType="int" resultType="Resources">
+		select id id, resources_name resourceName,resources_type resourceType,resources_address resourceAddress,resources_desc resourceDesc,status status,d.fvaluename statusname from tb_resources 
+		INNER JOIN tb_dictionary d on d.fvalue = tb_resources.status where d.ftypeid=6 and id=#{id}
+	</select>
+	
+	<select id="findAll" resultType="Resources">
+		select id id,resources_name resourceName,resources_type resourceType,resources_address resourceAddress,resources_desc resourceDesc,status status,d.fvaluename statusname from tb_resources 
+		INNER JOIN tb_dictionary d on d.fvalue = tb_resources.status where d.ftypeid=6
+		<if test="str!=null and str!=''">
+			and ${str}
+		</if>
+		ORDER BY id
+	</select>
+	
+	<select id="getResourcenameCount" parameterType="String" resultType="java.lang.Integer">
+		select count(*) from tb_resources where resources_name=#{resourceName}
+	</select>
+	
+	<select id="getResourcesByAuthName" parameterType="String" resultType="String">
+		select b.resources_address from tb_authorities_resources a ,tb_resources b, tb_authorities c    
+         where a.resources_name = b.resources_name and a.authorities_name = c.authorities_name and c.authorities_name = #{authorityName}  
+	</select>
+	
+	<select id="getAuthByRes" parameterType="String" resultType="String">
+		select tb_authorities.authorities_name from tb_authorities left join tb_authorities_resources on tb_authorities.id = tb_authorities_resources.authorities_id left join tb_resources on tb_authorities_resources.resources_id = tb_resources.id where tb_resources.resources_address =#{resourceAddress} 
+	</select>
+	
+	<select id="getResourceByUserid" resultType="Resources">
+		SELECT resources_name resourceName,r.resources_address resourceAddress FROM tb_resources r INNER JOIN tb_authorities_resources ar on r.id = ar.resources_id INNER JOIN tb_roles_authorities ra on ra.authority_id = ar.authorities_id INNER JOIN tb_users_roles ur on ur.roles_id = ra.roles_id 
+		where ur.users_id=#{id}
+	</select>
+	
+	<select id="getResourceByAdmin" resultType="Resources">
+		SELECT resources_name resourceName,resources_address resourceAddress FROM tb_resources 
+	</select>
+	
+	<select id="getAuthName" resultType="String">
+		SELECT authorities_name FROM tb_authorities a INNER JOIN tb_roles_authorities ra on ra.authority_id = a.id INNER JOIN tb_users_roles ur on ur.roles_id = ra.roles_id where ur.users_id = #{id}
+	</select>
+	
+</mapper>

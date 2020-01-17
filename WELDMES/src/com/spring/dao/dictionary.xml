@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.dao.DictionaryMapper">
+
+	<resultMap id="dMap" type="com.spring.model.Dictionarys">
+        <id property="id" column="fid"></id> 
+        <result property="typeid" column="ftypeid"></result>  
+        <result property="value" column="fvalue"></result>
+        <result property="valueName" column="fvaluename"></result>
+        <result property="back" column="fback"></result>
+	</resultMap>
+	
+	<select id="getDictionaryAll" resultMap="dMap">
+		select * from tb_dictionary where 1=1
+		<if test="str!=null and str!=''">
+		and ${str}
+		</if>
+	</select>
+	<insert id="addDictionary" parameterType="com.spring.model.Dictionarys" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_dictionary (ftypeid,fvalue,fvaluename,fback) values (#{typeid},#{value},#{valueName},#{back})
+	</insert>
+	<select id="getDictionaryMaxValue" resultType="int">
+		select max(fvalue) as value from tb_dictionary where ftypeid=#{ftypeid}
+	</select>
+	<select id="getDictionaryByFid" resultMap="dMap">
+		select * from tb_dictionary where fid=#{id};
+	</select>
+	
+	<select id="getDictionaryType" resultMap="dMap">
+		SELECT ftypeid ,fback FROM tb_dictionary GROUP BY ftypeid
+	</select>
+	
+	<select id="getDictionaryValue" resultMap="dMap">
+		SELECT fvalue, fvaluename FROM tb_dictionary WHERE ftypeid=#{typeid}
+	</select>
+	
+	<select id="getDicValueByValue" resultMap="dMap">
+		SELECT fvalue, fvaluename FROM tb_dictionary WHERE ftypeid=#{typeid} and fvalue>#{value}
+	</select>
+	
+	<select id="getDicValueByType" resultType="java.lang.String">
+		SELECT fvaluename FROM tb_dictionary WHERE ftypeid=#{typeid} and fvalue=#{value}
+	</select>
+	
+	<select id="getvaluebyname" resultType="java.lang.Integer">
+		SELECT fvalue FROM tb_dictionary WHERE ftypeid=#{typeid} and fvaluename=#{valuename}
+	</select>
+	
+	<update id="editDictionary" parameterType="com.spring.model.Dictionarys">
+		update tb_dictionary set fvaluename=#{valueName},ftypeid=#{typeid},fback=#{back},fvalue=#{value} where fid=#{id}
+	</update>
+	<delete id="deleteDictionary" parameterType="int">
+		delete from tb_dictionary where fid=#{id}
+	</delete>
+	<select id="getModelOfManu"  resultMap="dMap" parameterType="java.lang.Integer">
+		SELECT em.ftype_value id,d.fvaluename 
+		FROM tb_equipment_manufacturer em 
+		LEFT JOIN tb_dictionary d ON em.ftype_value=d.fvalue 
+		WHERE 1=1 and em.ftype=#{num}
+	</select>
+</mapper>

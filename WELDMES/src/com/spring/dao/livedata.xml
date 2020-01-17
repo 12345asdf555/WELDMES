@@ -1,0 +1,754 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.dao.LiveDataMapper">
+
+	<resultMap id="liveMap" type="com.spring.model.LiveData">
+		<id property="id" column="fid"></id> 
+        <result property="electricity" column="felectricity"></result>  
+        <result property="voltage" column="fvoltage"></result>  
+        <result property="rateofflow" column="frateofflow"></result>
+       	<result property="status" column="fstatus"></result>
+       	<result property="uploadDateTime" column="fuploaddatetime"></result>
+       	<result property="weldTime" column="weldtime"></result>
+       	<result property="dyne" column="dynes"></result>
+       	<result property="hous" column="hous"></result>
+       	<result property="fid" column="fid"></result>
+       	<result property="fname" column="fname"></result>
+       	<result property="externalDiameter" column="fexternal_diameter"></result>
+       	<result property="wallThickness" column="fwall_thickness"></result>
+       	<result property="material" column="fmaterial"></result>
+       	<result property="nextexternaldiameter" column="fnextExternal_diameter"></result>
+       	<result property="itemid" column="itemid"></result>
+       	<result property="overproof" column="overproof"></result>
+       	<result property="jidgather" column="jidgather"></result>
+       	<association property="machine" column="fmachine_id" javaType="com.spring.model.WeldingMachine">
+       		<id property="id" column="mid"></id> 
+			<result property="equipmentNo" column="fequipment_no" />		
+			<result property="position" column="fposition" />
+			<result property="isnetworking" column="fisnetworking" />
+			<result property="joinTime" column="fjoin_time" />
+			<result property="typeId" column="ftype_id" />
+			<result property="statusId" column="fstatus_id" />
+       	</association>
+       	<association property="welder" column="fwelder_id" javaType="com.spring.model.Person">
+       		<id property="id" column="wid"></id> 
+	        <result property="welderno" column="fwelder_no"></result>  
+	        <result property="name" column="fname"></result>
+       	</association>
+       	<association property="junction" column="fjunction_id" javaType="com.spring.model.WeldedJunction">
+       		<id property="id" column="jid"></id> 
+	        <result property="weldedJunctionno" column="fwelded_junction_no"></result>  
+	        <result property="serialNo" column="fserial_no"></result>
+	        <result property="pipelineNo" column="fpipeline_no"></result>
+	        <result property="roomNo" column="froom_no"></result>
+	        <result property="unit" column="funit"></result>
+	        <result property="area" column="farea"></result>
+	        <result property="systems" column="fsystems"></result>
+	        <result property="children" column="fchildren"></result>
+	        <result property="externalDiameter" column="fexternal_diameter"></result>
+	        <result property="wallThickness" column="fwall_thickness"></result>
+	        <result property="dyne" column="fdyne"></result>
+	        <result property="specification" column="fspecification"></result>
+	        <result property="maxElectricity" column="fmax_electricity"></result>
+	        <result property="minElectricity" column="fmin_electricity"></result>
+	        <result property="maxValtage" column="fmax_valtage"></result>
+	        <result property="minValtage" column="fmin_valtage"></result>
+	        <result property="startTime" column="fstart_time"></result>
+	        <result property="endTime" column="fend_time"></result>
+	        <result property="material" column="fmaterial"></result>
+	        <result property="nextexternaldiameter" column="fnextExternal_diameter"></result>
+	        <association property="itemid" column="fitemId" javaType="com.spring.model.Insframework">  
+	            <id property="id" column="iid"></id> 
+	            <result property="name" column="iname"></result>  
+	            <result property="logogram" column="flogogram"></result>  
+	            <result property="code" column="fcode"></result>
+	        	<result property="parent" column="fparent"></result>
+	        	<result property="type" column="ftype"></result>
+        	</association>
+       	</association>
+	</resultMap>
+	
+	<resultMap id="dtoMap" type="com.spring.dto.ModelDto">
+		<id property="fid" column="fid"></id> 
+        <result property="overproof" column="overproof"></result>
+        <result property="weldTime" column="weldTime"></result>
+        <result property="fname" column="fname"></result>
+        <result property="f_welder_id" column="f_welder_id"></result>
+        <result property="fmachine_id" column="fmachine_id"></result>
+        <result property="fjunction_id" column="fjunction_id"></result>
+        <result property="felectricity" column="felectricity"></result>
+        <result property="fvoltage" column="fvoltage"></result>
+        <result property="iname" column="iname"></result>
+        <result property="wname" column="wname"></result>
+        <result property="livecount" column="livecount"></result>
+        <result property="fmax_electricity" column="fmax_electricity"></result>
+        <result property="fmin_electricity" column="fmin_electricity"></result>
+        <result property="overtime" column="overtime"></result>
+        <result property="time" column="time"></result>
+        <result property="type" column="type"></result>
+        <result property="dyne" column="dyne"></result>
+        <result property="num" column="num"></result>
+        <result property="num1" column="num1"></result>
+        <result property="num2" column="num2"></result>
+        <result property="num3" column="num3"></result>
+        <result property="num4" column="num4"></result>
+        <result property="num5" column="num5"></result>
+        <result property="num6" column="num6"></result>
+        <result property="num7" column="num7"></result>
+        <result property="num8" column="num8"></result>
+        <result property="num9" column="num9"></result>
+        <result property="num10" column="num10"></result>
+        <result property="maxnum" column="maxnum"></result>
+        <result property="minmun" column="minmun"></result>
+        <result property="avgnum" column="avgnum"></result>
+       	<result property="hous" column="hous"></result>
+       	<result property="externalDiameter" column="fexternal_diameter"></result>
+       	<result property="wallThickness" column="fwall_thickness"></result>
+       	<result property="material" column="fmaterial"></result>
+       	<result property="nextexternaldiameter" column="fnextExternal_diameter"></result>
+       	<result property="nextwallThickness" column="fnextwall_thickness"></result>
+       	<result property="nextmaterial" column="fnext_material "></result>
+       	<result property="itemid" column="itemid"></result>
+       	<result property="jidgather" column="jidgather"></result>
+       	<result property="starttime" column="starttime"></result>
+       	<result property="endtime" column="endtime"></result>
+       	<result property="companyid" column="companyid"></result>
+       	<result property="companyname" column="companyname"></result>
+       	<result property="caustid" column="caustid"></result>
+       	<result property="caustname" column="caustname"></result>
+    </resultMap>
+
+	<!-- 焊接工时 -->
+	<select id="getCompanyhour" resultMap="dtoMap">
+		SELECT * FROM ( 
+		SELECT SUM(fworktime)/60/60 AS hous, insf.fid companyid,insf.fname companyname,ins.fname caustname,ins.fid caustid,i.fid,i.fname,group_concat(distinct(j.fid)) jidgather FROM tb_work l 
+		INNER JOIN tb_welded_junction j ON l.fjunction_id = j.fid
+		INNER JOIN tb_insframework i ON i.fid = l.fjunction_itemid
+		LEFT JOIN tb_insframework ins ON ins.fid = i.fparent 
+		LEFT JOIN tb_insframework insf ON insf.fid = ins.fparent 
+		WHERE 1=1
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and fstarttime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and fendtime &lt;= #{dto.dtoTime2}
+			</if>
+			<if test="dto.search!=null and dto.search!=''">
+				and ${dto.search}
+			</if>
+		</if>
+		<if test="parent!=null and parent!=''">
+			AND (i.fid=#{parent} or ins.fid=#{parent} or insf.fid=#{parent} or insf.fparent=#{parent})
+		</if>
+		GROUP BY ${insftype}
+		)temp
+	</select>
+	
+	<!-- 获取焊口分类 -->
+	<select id="getHousClassify" resultMap="dtoMap">
+		select j.fid, fmaterial, fexternal_diameter, fwall_thickness, fnextExternal_diameter,fnext_material nextmaterial , fnextwall_thickness from tb_welded_junction j
+		INNER JOIN tb_insframework i ON i.fid = j.fitemid
+        LEFT JOIN tb_insframework ins ON ins.fid = i.fparent
+        LEFT JOIN tb_insframework insf ON insf.fid = ins.fparent
+        where 1=1
+		<if test="parent!=null and parent!=''">
+			and (i.fid=#{parent} or ins.fid=#{parent} or insf.fid=#{parent} or insf.fparent=#{parent})
+		</if>
+		<if test="str!=null and str!=''">
+			and ${str}
+		</if>
+		group by fmaterial, fexternal_diameter, fwall_thickness, fnextExternal_diameter,fnext_material,fnextwall_thickness
+	</select>
+	
+	<!-- 超标统计 -->
+	<select id="getCompanyOverproof" resultMap="dtoMap">
+		select * from (
+		select sum(fwarntime)/60/60 as overproof,
+		<if test="dto!=null and dto!=''">
+			<if test="dto.year!=null and dto.year!=''">
+				DATE_FORMAT( fstarttime,  '%Y' )
+			</if>
+			<if test="dto.month!=null and dto.month!=''">
+				DATE_FORMAT( fstarttime,  '%Y-%m' )
+			</if>
+			<if test="dto.day!=null and dto.day!=''">
+				DATE_FORMAT( fstarttime,  '%Y-%m-%d' )
+			</if>
+			<if test="dto.week!=null and dto.week!=''">
+				weekofyear(fstarttime)
+			</if>
+		</if> weldtime,insf.fid companyid,insf.fname companyname,ins.fname caustname,ins.fid caustid,i.fid,i.fname from  tb_warn l 
+		inner join tb_welded_junction j on j.fid = l.fjunction_id 
+		inner join tb_insframework i on l.fjunction_itemid = i.fid 
+		left join tb_insframework ins on ins.fid = i.fparent 
+		left join tb_insframework insf on insf.fid = ins.fparent 
+		where fstatus=99
+		<if test="parent!=null and parent!=''">
+			and (i.fid = #{parent} or ins.fid = #{parent} or insf.fid = #{parent} or insf.fparent=#{parent})
+		</if> 
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				AND fstarttime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				AND fendtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if>
+		group by ${insftype},weldtime
+		)temp
+	</select>
+	
+	<!-- 查询所有在范围内的时间 -->
+	<select id="getAllTime" resultMap="dtoMap">
+		select * from (
+		SELECT 
+		<if test="dto!=null and dto!=''">
+			<if test="dto.year!=null and dto.year!=''">
+				DATE_FORMAT(fstarttime, '%Y')
+			</if>
+			<if test="dto.month!=null and dto.month!=''">
+				DATE_FORMAT(fstarttime, '%Y-%m')
+			</if>
+			<if test="dto.day!=null and dto.day!=''">
+				DATE_FORMAT(fstarttime, '%Y-%m-%d')
+			</if>
+			<if test="dto.week!=null and dto.week!=''">
+				weekofyear(fstarttime)
+			</if>
+		</if> weldTime
+		FROM tb_work WHERE 1=1
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and fstarttime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and fendtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if>
+		group by weldTime
+        UNION  
+		SELECT 
+		<if test="dto!=null and dto!=''">
+			<if test="dto.year!=null and dto.year!=''">
+				DATE_FORMAT( fstarttime,  '%Y' )
+			</if>
+			<if test="dto.month!=null and dto.month!=''">
+				DATE_FORMAT( fstarttime,  '%Y-%m' )
+			</if>
+			<if test="dto.day!=null and dto.day!=''">
+				DATE_FORMAT( fstarttime,  '%Y-%m-%d' )
+			</if>
+			<if test="dto.week!=null and dto.week!=''">
+				weekofyear(fstarttime)
+			</if>
+		</if> weldTime
+		FROM tb_standby WHERE 1=1
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and fstarttime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and fendtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if>
+		group by weldTime order by weldTime
+     	)temp
+	</select>
+	
+	<select id="getAllInsf" resultMap="liveMap">
+		SELECT i.fid,i.fname from tb_insframework i
+		left join tb_insframework ins on ins.fid = i.fparent
+		left join tb_insframework insf on insf.fid = ins.fparent
+		where i.ftype=#{type}
+		<if test="parent!=null and parent!=''">
+			and (i.fid = #{parent} or ins.fid = #{parent} or insf.fid = #{parent} or insf.fparent=#{parent})
+		</if>
+	</select>
+	
+	<!-- 超时待机统计 -->
+	<select id="getcompanyOvertime" resultMap="dtoMap">
+		select * from (
+		select sum(num) overtime,companyid,companyname,caustname,caustid,fid,fname,weldTime from (
+		select case when SUM(fstandbytime)/60 &gt;= #{num} then 1 else 0 end as num,insf.fid companyid,insf.fname companyname,ins.fname caustname,ins.fid caustid,i.fid,i.fname,
+		<if test="dto!=null and dto!=''">
+			<if test="dto.year!=null and dto.year!=''">
+				DATE_FORMAT(fstarttime, '%Y')
+			</if>
+			<if test="dto.month!=null and dto.month!=''">
+				DATE_FORMAT(fstarttime, '%Y-%m')
+			</if>
+			<if test="dto.day!=null and dto.day!=''">
+				DATE_FORMAT(fstarttime, '%Y-%m-%d')
+			</if>
+			<if test="dto.week!=null and dto.week!=''">
+				weekofyear(fstarttime)
+			</if>
+		</if>weldTime from tb_standby l 
+		INNER JOIN tb_insframework i on i.fid = l.fmachine_itemid 
+		LEFT JOIN tb_insframework ins ON ins.fid = i.fparent 
+		LEFT JOIN tb_insframework insf ON insf.fid = ins.fparent 
+		WHERE 1=1 
+		<if test="parent!=null and parent!=''">
+			and (i.fid = #{parent} or ins.fid = #{parent} or insf.fid = #{parent} or insf.fparent=#{parent})
+		</if>
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and fstarttime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and fendtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if>
+		group by fmachine_id ,weldTime
+		) A group by ${insftype},weldTime
+		)temp
+	</select>
+	
+	<!-- 获取所有焊口 -->
+	<select id="getJunction" resultMap="liveMap">
+		SELECT j.fid,fwelded_junction_no fname,fitemid itemid FROM tb_welded_junction j
+		inner join tb_insframework i on i.fid = j.fitemId
+		LEFT JOIN tb_insframework ins ON ins.fid = i.fparent 
+		LEFT JOIN tb_insframework insf ON insf.fid = ins.fparent 
+		WHERE 1=1 
+		<if test="parent!=null and parent!=''">
+			and (i.fid = #{parent} or ins.fid = #{parent} or insf.fid = #{parent} or insf.fparent=#{parent})
+		</if>
+	</select>
+	
+	<!-- 负荷率 -->
+	<select id="getCompanyLoads" resultMap="dtoMap">
+		select * from (
+		select 
+		<if test="dto!=null and dto!=''">
+			<if test="dto.year!=null and dto.year!=''">
+				sum(fworktime) / ( 12 *30 *8 *60 *60 ) AS loads, 
+				DATE_FORMAT( fstarttime,  '%Y' )
+			</if>
+			<if test="dto.month!=null and dto.month!=''">
+				sum(fworktime) / ( 30 *8 *60 *60 ) AS loads, 
+				DATE_FORMAT( fstarttime,  '%Y-%m' )
+			</if>
+			<if test="dto.day!=null and dto.day!=''">
+				sum(fworktime) / ( 8 *60 *60 ) AS loads, 
+				DATE_FORMAT( fstarttime,  '%Y-%m-%d' )
+			</if>
+			<if test="dto.week!=null and dto.week!=''">
+				sum(fworktime) / ( 7 *8 *60 *60 ) AS loads, 
+				weekofyear(fstarttime)
+			</if>
+		</if>
+		AS weldTime,insf.fid companyid,insf.fname companyname,ins.fname caustname,ins.fid caustid,i.fid,i.fname from tb_work l 
+		INNER JOIN tb_insframework i ON l.fmachine_itemid = i.fid 
+		LEFT JOIN tb_insframework ins ON ins.fid = i.fparent 
+		LEFT JOIN tb_insframework insf ON insf.fid = ins.fparent 
+		WHERE 1=1 
+		<if test="parent!=null and parent!=''">
+			and (i.fid = #{parent} or ins.fid = #{parent} or insf.fid = #{parent} or insf.fparent=#{parent})
+		</if>
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				AND fstarttime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				AND fendtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if>
+		GROUP BY ${insftype}, weldTime
+		)temp
+	</select>
+	
+	<!-- 获取所有焊机 -->
+	<select id="getMachine" resultMap="liveMap">
+		SELECT m.fid,fequipment_no fname,finsframework_id itemid FROM tb_welding_machine m 
+		inner join tb_insframework i on m.finsframework_id = i.fid
+		LEFT JOIN tb_insframework ins ON ins.fid = i.fparent 
+		LEFT JOIN tb_insframework insf ON insf.fid = ins.fparent 
+		WHERE 1=1 
+		<if test="parent!=null and parent!=''">
+			and (i.fid = #{parent} or ins.fid = #{parent} or insf.fid = #{parent} or insf.fparent=#{parent})
+		</if>
+	</select>
+	
+	<!-- 空载率 -->
+	<select id="getCompanyNoLoads" resultMap="dtoMap">
+		select * from (select SUM(fstandbytime) AS loads, 
+		<if test="dto!=null and dto!=''">
+			<if test="dto.year!=null and dto.year!=''">
+				DATE_FORMAT( fstarttime,  '%Y' )
+			</if>
+			<if test="dto.month!=null and dto.month!=''">
+				DATE_FORMAT( fstarttime,  '%Y-%m' )
+			</if>
+			<if test="dto.day!=null and dto.day!=''">
+				DATE_FORMAT( fstarttime,  '%Y-%m-%d' )
+			</if>
+			<if test="dto.week!=null and dto.week!=''">
+				weekofyear(fstarttime)
+			</if>
+		</if> weldTime,insf.fid companyid,insf.fname companyname,ins.fname caustname,ins.fid caustid,i.fid,i.fname from tb_standby l 
+		INNER JOIN tb_insframework i ON l.fmachine_itemid = i.fid 
+		LEFT JOIN tb_insframework ins ON ins.fid = i.fparent 
+		LEFT JOIN tb_insframework insf ON insf.fid = ins.fparent 
+		WHERE 1=1 
+		<if test="parent!=null and parent!=''">
+			and (i.fid = #{parent} or ins.fid = #{parent} or insf.fid = #{parent} or insf.fparent=#{parent})
+		</if>
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				AND fstarttime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				AND fendtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if> GROUP BY ${insftype}, weldTime
+		)temp
+	</select>
+
+	<!-- 闲置率 -->
+	<select id="getCompanyIdle" resultMap="dtoMap">
+		SELECT * from (
+		select count(mid) num,companyid,companyname,caustid,caustname,fid,fname,weldTime from (
+		select m.fid mid,insf.fid companyid,insf.fname companyname,ins.fname caustname,ins.fid caustid,i.fid,i.fname,
+		<if test="dto!=null and dto!=''">
+			<if test="dto.year!=null and dto.year!=''">
+				DATE_FORMAT( fstarttime,  '%Y' )
+			</if>
+			<if test="dto.month!=null and dto.month!=''">
+				DATE_FORMAT( fstarttime,  '%Y-%m' )
+			</if>
+			<if test="dto.day!=null and dto.day!=''">
+				DATE_FORMAT( fstarttime,  '%Y-%m-%d' )
+			</if>
+			<if test="dto.week!=null and dto.week!=''">
+				weekofyear(fstarttime)
+			</if>
+		</if> weldTime from tb_work l 
+		INNER JOIN tb_welding_machine m ON m.fid = l.fmachine_id 
+		INNER JOIN tb_insframework i ON i.fid = l.fmachine_itemid 
+		LEFT JOIN tb_insframework ins ON ins.fid = i.fparent 
+		LEFT JOIN tb_insframework insf ON insf.fid = ins.fparent 
+		WHERE  1=1 
+		<if test="parent!=null and parent!=''">
+			and (i.fid = #{parent} or ins.fid = #{parent} or insf.fid = #{parent} or insf.fparent=#{parent})
+		</if>
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and fstarttime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and fendtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if>GROUP BY weldTime,fequipment_no)A group by  weldTime,fid
+		)temp
+	</select>
+	
+	<select id="getMachineCount" resultType="java.lang.Integer">
+		SELECT count(w.fid) from tb_welding_machine w
+		INNER JOIN tb_insframework i on i.fid = w.finsframework_id
+		LEFT JOIN tb_insframework ins ON ins.fid = i.fparent 
+		LEFT JOIN tb_insframework insf ON insf.fid = ins.fparent 
+		where 1=1
+		<if test="id!=null and id!=''">
+			and (i.fid = #{id} or ins.fid = #{id} or insf.fid = #{id} or insf.fparent=#{id})
+		</if>
+	</select>
+	
+	<!-- 单台设备运行数据统计 -->
+	<select id="getCompanyUse" resultMap="dtoMap">
+		select * from(
+		select sum(fworktime)/60/60 time,d.fvaluename fname,d.fvalue fid from tb_work l 
+		inner join tb_welding_machine w on w.fid = l.fmachine_id
+        inner join tb_dictionary d on d.fvalue = w.fmanufacturer_id
+		where d.ftypeid=14 and w.finsframework_id in (select fid from tb_insframework where fparent=#{parent})
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and fstarttime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and fendtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if>
+		group by d.fvalue
+		union
+		select 0 time,fvaluename fname ,fvalue fid from tb_dictionary
+		where ftypeid=14 and fvalue not in
+		(
+		select d.fvalue from tb_work l 
+		inner join tb_welding_machine w on w.fid = l.fmachine_id
+        inner join tb_dictionary d on d.fvalue = w.fmanufacturer_id
+		where d.ftypeid=14 and w.finsframework_id in (select fid from tb_insframework where fparent=#{parent})
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and fstarttime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and fendtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if>
+		group by d.fvalue
+		)
+		)temp order by fname ,time desc
+	</select>
+	
+	<!-- 	工效列表 -->
+	<select id="companyEfficiency" resultMap="dtoMap">
+		select * from (
+		select * from (
+		SELECT insf.fid companyid,insf.fname companyname,ins.fid caustid,ins.fname caustname,i.fid,i.fname,w.fname wname,l.fwelder_id fwelder_id,SUM(fworktime)/60/60 weldtime,group_concat(DISTINCT(j.fid)) jidgather
+		FROM tb_work l left join tb_welder w on l.fwelder_id = w.fid
+		inner join tb_welded_junction j on l.fjunction_id = j.fid
+		inner join tb_insframework i on i.fid = l.fwelder_itemid and i.fid = l.fjunction_itemid
+		left join tb_insframework ins on ins.fid = i.fparent
+		left join tb_insframework insf on insf.fid = ins.fparent
+		where 1=1 
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and fstarttime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and fendtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if>
+		<if test="parent!=null and parent!=''">
+			AND (i.fid = #{parent} or ins.fid=#{parent} or insf.fid=#{parent} or insf.fparent=#{parent}) 
+		</if>
+		group by ${insftype},w.fid
+		)A
+		group by fwelder_id
+		)temp
+	</select>
+	
+	<!-- 	根据焊口获取总达因值 -->
+	<select id="getDyneByJunctionno"  resultType="java.math.BigInteger">
+		select SUM(fdyne) FROM tb_welded_junction where 1=1 
+		<if test="str!=null and str!=''">
+			${str}
+		</if>
+	</select>
+	
+	<select id="getBlocChildren" resultMap="liveMap">
+		SELECT fid,fname from tb_insframework where ftype=21
+	</select>
+	
+	<!-- 查询工效最大值，最小值以及平均跨度 -->
+	<select id="getEfficiencyChartNum" resultMap="dtoMap">
+		select * from (select max(num) maxnum,min(num) minnum,round((max(num)-min(num))/10) avgnum,sum(num) num from (select round(sum(fworktime)/60/60) num
+		FROM tb_work l left join tb_welder w on l.fwelder_id = w.fid
+		inner join tb_welded_junction j on l.fjunction_id = j.fid
+		inner join tb_insframework i on i.fid = l.fwelder_itemid and i.fid = l.fjunction_itemid
+		left join tb_insframework ins on ins.fid = i.fparent
+		left join tb_insframework insf on insf.fid = ins.fparent
+		where 1=1
+		<if test="parent!=null and parent!=''">
+			AND (i.fid = #{parent} or ins.fid=#{parent} or insf.fid=#{parent} or insf.fparent=#{parent}) 
+		</if>
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and fstarttime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and fendtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if>
+		group by i.fid,w.fid ORDER by num)A)temp
+	</select>
+	
+	<!-- 工效图表 ps:最后一位+10 是为了避免去整时舍去小数点导致范围小于最大值 -->
+	<select id="getEfficiencyChart" resultMap="dtoMap">
+		select * from (
+		select sum(num1) sum1,sum(num2) sum2,sum(num3) sum3,sum(num4) sum4,sum(num5) sum5,sum(num6) sum6,sum(num7) sum7,sum(num8) sum8,sum(num9) sum9,sum(num10) sum10 from (select 
+		case when round(sum(fworktime)/60/60)&gt;=#{minnum} and round(sum(fworktime)/60/60)&lt;=#{minnum}+#{avgnum} then 1 else 0 end as num1,
+		case when round(sum(fworktime)/60/60)&gt;#{minnum}+#{avgnum} and round(sum(fworktime)/60/60)&lt;=#{minnum}+#{avgnum}*2 then 1 else 0 end as num2,
+		case when round(sum(fworktime)/60/60)&gt;#{minnum}+#{avgnum}*2 and round(sum(fworktime)/60/60)&lt;=#{minnum}+#{avgnum}*3 then 1 else 0 end as num3,
+		case when round(sum(fworktime)/60/60)&gt;#{minnum}+#{avgnum}*3 and round(sum(fworktime)/60/60)&lt;=#{minnum}+#{avgnum}*4 then 1 else 0 end as num4,
+		case when round(sum(fworktime)/60/60)&gt;#{minnum}+#{avgnum}*4 and round(sum(fworktime)/60/60)&lt;=#{minnum}+#{avgnum}*5 then 1 else 0 end as num5,
+		case when round(sum(fworktime)/60/60)&gt;#{minnum}+#{avgnum}*5 and round(sum(fworktime)/60/60)&lt;=#{minnum}+#{avgnum}*6 then 1 else 0 end as num6,
+		case when round(sum(fworktime)/60/60)&gt;#{minnum}+#{avgnum}*6 and round(sum(fworktime)/60/60)&lt;=#{minnum}+#{avgnum}*7 then 1 else 0 end as num7,
+		case when round(sum(fworktime)/60/60)&gt;#{minnum}+#{avgnum}*7 and round(sum(fworktime)/60/60)&lt;=#{minnum}+#{avgnum}*8 then 1 else 0 end as num8,
+		case when round(sum(fworktime)/60/60)&gt;#{minnum}+#{avgnum}*8 and round(sum(fworktime)/60/60)&lt;=#{minnum}+#{avgnum}*9 then 1 else 0 end as num9,
+		case when round(sum(fworktime)/60/60)&gt;#{minnum}+#{avgnum}*9 and round(sum(fworktime)/60/60)&lt;=#{minnum}+10+#{avgnum}*10 then 1 else 0 end as num10
+		FROM tb_work l left join tb_welder w on l.fwelder_id = w.fid
+		inner join tb_welded_junction j on l.fjunction_id = j.fid
+		inner join tb_insframework i on i.fid = l.fwelder_itemid and i.fid = l.fjunction_itemid
+		left join tb_insframework ins on ins.fid = i.fparent
+		left join tb_insframework insf on insf.fid = ins.fparent
+		where 1=1  
+		<if test="parent!=null and parent!=''">
+			AND (i.fid = #{parent} or ins.fid=#{parent} or insf.fid=#{parent} or insf.fparent=#{parent}) 
+		</if>
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and fstarttime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and fendtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if>
+		group by w.fid ORDER by round(sum(fworktime)/60/60))A)temp
+	</select>
+	
+	<!-- 	查询实时数据集团焊机数量 -->
+	<select id="getBlocMachineCount" resultMap="dtoMap">
+		SELECT COUNT(distinct(fmachine_id)) loads,
+		<if test="dto!=null and dto!=''">
+			<if test="dto.year!=null and dto.year!=''">
+				DATE_FORMAT( fstarttime,  '%Y' )
+			</if>
+			<if test="dto.month!=null and dto.month!=''">
+				DATE_FORMAT( fstarttime,  '%Y-%m' )
+			</if>
+			<if test="dto.day!=null and dto.day!=''">
+				DATE_FORMAT( fstarttime,  '%Y-%m-%d' )
+			</if>
+			<if test="dto.week!=null and dto.week!=''">
+				weekofyear(fstarttime)
+			</if>
+		</if> weldTime,ins.fparent fid FROM 
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoStatus>0">
+				tb_work
+			</if>
+			<if test="dto.dtoStatus==0">
+				tb_standby
+			</if>
+		</if> l 
+		INNER JOIN tb_insframework i on i.fid = l.fmachine_itemid  INNER JOIN tb_insframework ins ON ins.fid = i.fparent 
+		WHERE fmachine_id!=0
+		<if test="parent!=null and parent!=''">
+			AND ins.fparent = #{parent}
+		</if>
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and fstarttime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and fendtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if> group by weldTime,ins.fparent
+	</select>
+	
+	<!-- 查询实时数据焊机数量 -->
+	<select id="getLiveMachineCount" resultMap="dtoMap">
+		SELECT COUNT(distinct(fmachine_id)) loads,
+		<if test="dto!=null and dto!=''">
+			<if test="dto.year!=null and dto.year!=''">
+				DATE_FORMAT( fstarttime,  '%Y' )
+			</if>
+			<if test="dto.month!=null and dto.month!=''">
+				DATE_FORMAT( fstarttime,  '%Y-%m' )
+			</if>
+			<if test="dto.day!=null and dto.day!=''">
+				DATE_FORMAT( fstarttime,  '%Y-%m-%d' )
+			</if>
+			<if test="dto.week!=null and dto.week!=''">
+				weekofyear(fstarttime)
+			</if>
+		</if> weldTime,insf.fid companyid,ins.fid caustid,i.fid FROM 
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoStatus>0">
+				tb_work
+			</if>
+			<if test="dto.dtoStatus==0">
+				tb_standby
+			</if>
+		</if> l 
+		INNER JOIN tb_insframework i on i.fid = l.fmachine_itemid
+		LEFT JOIN tb_insframework ins on ins.fid = i.fparent 
+		LEFT JOIN tb_insframework insf on insf.fid = ins.fparent
+		WHERE fmachine_id!=0
+		<if test="parent!=null and parent!=''">
+			AND (i.fid=#{parent} or ins.fid = #{parent} or insf.fid = #{parent} or insf.fparent=#{parent})
+		</if>
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and fstarttime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and fendtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if> group by weldTime,${insftype}
+	</select>
+	
+	<!-- 根据组织机构及时间点获取工作总时长 -->
+	<select id="getCountByTime" resultType="java.math.BigInteger">
+		select sum(time) from (
+		select sum(fworktime) time from tb_work l 
+		INNER JOIN tb_insframework i on i.fid = l.fmachine_itemid 
+		LEFT JOIN tb_insframework ins on ins.fid = i.fparent 
+		LEFT JOIN tb_insframework insf on insf.fid = ins.fparent
+		where fstarttime &gt;= #{time} and fendtime &lt; date_sub(date_sub(#{time},interval -1 day),interval 0 minute)
+		<if test="parent!=null and parent!=''">
+			AND (i.fid=#{dto.parent} or ins.fid = #{dto.parent} or insf.fid = #{dto.parent} or insf.fparent=#{dto.parent})
+		</if>
+		<if test="mid!=null and mid!=''">
+			and fmachine_id = #{mid}
+		</if>
+     	UNION ALL
+     	select sum(fstandbytime) time from tb_standby l 
+		INNER JOIN tb_insframework i on i.fid = l.fmachine_itemid 
+		LEFT JOIN tb_insframework ins on ins.fid = i.fparent 
+		LEFT JOIN tb_insframework insf on insf.fid = ins.fparent
+		where fstarttime &gt;= #{time} and fendtime &lt; date_sub(date_sub(#{time},interval -1 day),interval 0 minute)
+		<if test="parent!=null and parent!=''">
+			AND (i.fid=#{dto.parent} or ins.fid = #{dto.parent} or insf.fid = #{dto.parent} or insf.fparent=#{dto.parent})
+		</if>
+		<if test="mid!=null and mid!=''">
+			and fmachine_id = #{mid}
+		</if>
+		)temp
+	</select>
+	
+	<!-- 获取焊机使用时间排行之最top10 -->
+	<select id="getWeldingmachineList" resultMap="dtoMap">
+		select sum(fworktime)/60/60 loads,fequipment_no fname from tb_work l LEFT JOIN tb_welding_machine m on m.fid = l.fmachine_id 
+		INNER join tb_insframework i on i.fid = l.fmachine_itemid LEFT join tb_insframework ins on ins.fid = i.fparent
+		LEFT join tb_insframework insf on insf.fid = ins.fparent WHERE 1=1
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and fstarttime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and fendtime &lt;= #{dto.dtoTime2}
+			</if>
+			<if test="dto.parent!=null and dto.parent!=''">
+				AND (i.fid=#{dto.parent} or ins.fid = #{dto.parent} or insf.fid = #{dto.parent} or insf.fparent=#{dto.parent})
+			</if>
+		</if>
+		 group by fmachine_id ORDER by loads
+		 <if test="dto!=null and dto!=''">
+			<if test="dto.dtoStatus!=0">
+		 		DESC
+			</if>
+		</if>
+		LIMIT 10
+	</select>
+	
+	
+	<!-- 获取焊工工作时间排行之最top10 -->
+	<select id="getWelderList" resultMap="dtoMap">
+		select sum(fworktime) /60/60 loads,w.fname FROM  tb_work l  left JOIN  tb_welder w on w.fid = l.fwelder_id 
+		INNER join tb_insframework i on i.fid = l.fwelder_itemid LEFT join tb_insframework ins on ins.fid = i.fparent
+		LEFT join tb_insframework insf on insf.fid = ins.fparent WHERE 1=1
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and fstarttime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and fendtime &lt;= #{dto.dtoTime2}
+			</if>
+			<if test="dto.parent!=null and dto.parent!=''">
+				AND (i.fid=#{dto.parent} or ins.fid = #{dto.parent} or insf.fid = #{dto.parent} or insf.fparent=#{dto.parent})
+			</if>
+		</if>
+		group by w.fname ORDER by loads 
+		 <if test="dto!=null and dto!=''">
+			<if test="dto.dtoStatus!=0">
+		 		DESC
+			</if>
+		</if>
+		LIMIT 10
+	</select>
+</mapper>

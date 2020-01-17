@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.spring.dao.RoleMapper">
+	
+	<insert id="save" parameterType="Role">
+    	insert into tb_roles(roles_name,roles_desc,status) values(#{roleName},#{roleDesc},#{roleStatus});
+	<!-- 	insert into tb_roles_authorities(roles_name,authiroties_name) values(#{roleName},#{authorityName}) -->
+	</insert>
+	
+	<insert id="saveAuthority" parameterType="Role">
+    	<!-- insert into tb_roles(roles_name,roles_desc,status) values(#{roleName},#{roleDesc},#{roleStatus}); -->
+		insert into tb_roles_authorities(roles_id,authority_id) values(#{id},#{authorityId})
+	</insert>
+	
+	<insert id="saveUser" parameterType="Role">
+    	<!-- insert into tb_roles(roles_name,roles_desc,status) values(#{roleName},#{roleDesc},#{roleStatus}); -->
+		insert into tb_users_roles(users_id,roles_id) values(#{userId},#{id})
+	</insert>
+	
+	<update id="update" parameterType="Role">
+		update tb_roles set roles_name=#{roleName},roles_desc=#{roleDesc},status=#{roleStatus} where id=#{id};
+		<!-- update tb_roles_authorities set authorities_name=#{authorityName} where id=#{id} -->
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		delete from tb_roles where id=#{id};
+	</delete>
+	
+	<delete id="delete1" parameterType="int">
+		delete from tb_users_roles where roles_id=#{id};
+	</delete>
+	
+	<delete id="delete2" parameterType="int">
+		delete from tb_roles_authorities where roles_id=#{id};
+	</delete>
+	
+	<select id="updateRoleAuthority" parameterType="int" resultType="String">
+		select roles_name roleName from tb_roles where id=#{id}
+	</select>
+	
+	<select id="updateRoleUser" parameterType="int" resultType="String">
+		select roles_name roleName from tb_roles where tb_roles.id=#{id}
+	</select>
+	
+	<delete id="deleteAuthority" parameterType="int">
+		delete from tb_roles_authorities where roles_id=#{id};
+	</delete>
+	
+	<delete id="deleteUser" parameterType="int">
+		delete from tb_users_roles where roles_id=#{id};
+	</delete>
+	
+	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
+	<select id="findById" parameterType="int" resultType="Role">
+		select tb_roles.id id,tb_roles.roles_name roleName,tb_roles.roles_desc roleDesc,tb_roles.status roleStatus,d.fvaluename statusname from tb_roles 
+		INNER JOIN tb_dictionary d on d.fvalue = tb_roles.status where d.ftypeid=6 and tb_roles.id=#{id}
+	</select>
+	
+	<select id="findByAuthorityId" parameterType="int" resultType="String">
+		select authorities_desc authorityDesc from tb_authorities where id=#{id}
+	</select>
+	
+	<select id="findByUserId" parameterType="int" resultType="String">
+		select users_name userName from tb_users where id=#{id}
+	</select>
+	
+	<select id="findAll" resultType="Role">
+		select tb_roles.id id,tb_roles.roles_name roleName,tb_roles.roles_desc roleDesc,tb_roles.status roleStatus,d.fvaluename statusname from tb_roles 
+		INNER JOIN tb_dictionary d on d.fvalue = tb_roles.status where d.ftypeid=6 
+	    <if test="str!=null and str!=''">
+			and ${str}
+		</if>
+		ORDER BY tb_roles.id
+	</select>
+	<select id="findAllAuthority" resultType="Role">
+		select id id,authorities_desc authorityDesc from tb_authorities
+	</select>
+	<select id="findAuthority" resultType="Role">
+		select tb_roles.id id,tb_roles.roles_name roleName,tb_authorities.id authoritiesId,tb_authorities.authorities_desc authorityDesc from tb_roles left join tb_roles_authorities on tb_roles.id=tb_roles_authorities.roles_id left join tb_authorities on tb_roles_authorities.authority_id=tb_authorities.id where tb_roles.id=#{id}
+	</select>
+		<select id="findAllUser" resultType="Role">
+		select id id,users_name userName from tb_users
+	</select>
+	<select id="findUser" resultType="Role">
+		select tb_roles.id id,tb_roles.roles_name roleName,tb_roles.roles_desc roleDesc,tb_roles.status roleStatus,tb_users_roles.users_id userId,tb_users.users_name userName from tb_roles left join tb_users_roles on tb_roles.id=tb_users_roles.roles_id left join tb_users on tb_users.id = tb_users_roles.users_id where tb_roles.id=#{id}
+	</select>
+	
+	<select id="getRolenameCount" parameterType="String" resultType="java.lang.Integer">
+		select count(*) from tb_roles where roles_name=#{roleName}
+	</select>
+	
+		<select id="findbyid" parameterType="String" resultType="int">
+		select id from tb_roles where roles_name=#{roleName}
+	</select>
+</mapper>

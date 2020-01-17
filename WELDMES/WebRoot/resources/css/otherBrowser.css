@@ -1,0 +1,13 @@
+/*其他浏览器兼容处理*/
+
+.fitem {
+	margin-bottom: 8px;
+	margin-left: -100px;
+}
+
+.fitem lable,.textstyle{
+  width: 200px;
+  line-height: 30px;
+  display: inline-block;
+  text-align: right;
+}

@@ -1,0 +1,59 @@
+@charset 'utf-8';
+/* 头部 */
+body{background: #ffffff; }
+.wrap{width: 1024px;margin: auto;}
+.head-wrap{position: relative;width: 100%;height: 98px;
+background: -webkit-linear-gradient(left, #dbefe7 , #a0cad6); 
+background: -o-linear-gradient(right, #dbefe7 , #a0cad6); 
+background: -moz-linear-gradient(right, #dbefe7 , #a0cad6); /* Firefox 3.6 - 15 */
+background: linear-gradient(to right, #dbefe7 , #a0cad6); 
+FILTER:progid:DXImageTransform.Microsoft.Gradient(gradientType=0,startColorStr=#dbefe7,endColorStr=#a0cad6); /*IE 6 7 8*/
+}
+.head-wrap .logo{display: inline-block;position: absolute;float:left;top: 15px;left:50px;width: 430px;height: 80px;background-size:contain;}
+.head-wrap .search-wrap{position: absolute;top: 30px;right: 40px;width: 220px;height: 30px;color: #0254ad;}
+
+/* 导航栏 */
+.nav-wrap{width: 240px;height: 430px;margin: 30px 0 15px 0;background:#FAFAFA;color: #45638A;}
+
+.nav-wrap ul li a{display: block;padding-left: 30px;height: 30px;line-height: 30px;}
+.nav-wrap ul li.ls1{width: 100%;color: #fff;font-size: 16px;border-top-left-radius:5px;border-top-right-radius:5px;background: #48A1E5;}
+.nav-wrap ul li a.ls2{width: 210px;font-size: 14px;margin-top: 10px;color: #fff;background: #48A1E5;}
+.nav-wrap ul li a.ls2 i{font-size: 14px;}
+.nav-wrap ul li a.ls2 .fr{margin-right: 30px;}
+.nav-wrap ul li a.ls3{padding-left: 10px;}
+.nav-wrap ul li a.ls3 i{padding-right: 5px;}
+.nav-wrap ul li a.ls4{padding-left: 45px;}
+
+.tenghan-bottom{
+	height:50px;
+	position:fixed;
+    bottom:0;
+    width:100%;
+	background: -webkit-linear-gradient(left, #dbefe7 , #a0cad6); 
+	background: -o-linear-gradient(right, #dbefe7 , #a0cad6); 
+	background: -moz-linear-gradient(right, #dbefe7 , #a0cad6); /* Firefox 3.6 - 15 */
+	background: linear-gradient(to right, #dbefe7 , #a0cad6); 
+	FILTER:progid:DXImageTransform.Microsoft.Gradient(gradientType=0,startColorStr=#dbefe7,endColorStr=#a0cad6); /*IE 6 7 8*/
+}
+
+.menudiv{
+	float:right;
+	width:10px;
+	padding-right:10px;
+	padding-top:10px;
+}
+
+#fauitContent{
+	float: left;
+	margin-left:30px;
+	margin-top:-8px;
+	height:auto;
+	width:80%;
+    white-space: nowrap;/*不垮行*/
+    overflow: hidden;/*溢出隐藏*/
+}
+
+ #fauitContent div {
+    display: inline-block;
+    font-size: 16px;
+}

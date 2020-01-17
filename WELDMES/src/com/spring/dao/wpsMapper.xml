@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.spring.dao.WpsMapper">
+
+	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
+	<select id="findAll" resultType="Wps">
+		select tb_mainwps.FID fid,tb_mainwps.FWPSNum fwpsnum,tb_mainwps.Fweld_I fweld_i,tb_mainwps.Fweld_V fweld_v,tb_mainwps.Fweld_I_MAX fweld_i_max,tb_mainwps.Fweld_I_MIN fweld_i_min,tb_mainwps.Fweld_V_MAX fweld_v_max,tb_mainwps.Fweld_V_MIN fweld_v_min,tb_mainwps.Fweld_Alter_I fweld_alter_i,tb_mainwps.Fweld_Alter_V fweld_alter_v,tb_mainwps.Fweld_PreChannel fweld_prechannel,tb_mainwps.FCReateDate fcreatedate,tb_mainwps.FUpdateDate fupdatedate,tb_mainwps.Fowner fowner,tb_mainwps.Fback fback,tb_mainwps.Fname fname,tb_mainwps.Fdiameter fdiameter,i.fid insid,i.fname insname from tb_mainwps 
+		LEFT join tb_insframework i on tb_mainwps.Fowner=i.fid
+		LEFT JOIN tb_insframework ins on ins.fid = i.fparent
+		LEFT JOIN tb_insframework insf on insf.fid = ins.fparent where 1=1
+		<if test="parent!=null and parent!=''">,s.fspeed,s.farc_speed,s.farc_tuny_speed,s.fselectstep
+			and i.fid=#{parent} or ins.fid=#{parent} or insf.fid=#{parent} or insf.fparent=#{parent}
+		</if>
+		<if test="str!=null and str!=''">
+			and ${str}
+		</if>
+		 ORDER by tb_mainwps.FID
+	</select>
+	
+	<select id="findAllSpe" resultType="Wps">
+		select s.`fid` fid,s.`fspe_num` welderid,s.finitial finitial,s.fcontroller fcontroller,s.fselect insname,s.farc weldername,s.fcharacter fweld_v_max,s.fmode fmode,s.fmaterial updatename,s.fgas fback,s.fweldingratio weldingratio,s.fdiameter fname,s.ftime,s.fhysteresis,s.fadvance,s.fini_ele ,s.fini_vol,s.fini_vol1,s.fweld_ele,s.fweld_vol,s.fweld_vol1,s.farc_ele,s.farc_vol,s.farc_vol1,s.fweld_tuny_ele,s.fweld_tuny_vol,s.farc_tuny_ele,s.farc_tuny_vol fdiameter,s.ffrequency frequency,s.fgasflow gasflow,s.fwater_cooled_torch ftorch,fwelding_process fprocessid,
+		point_speed,pulse_ratio,thrust_ele,decline_time,rise_time,fweldparameters,pulse,arc_length,manual_weld,fargon,Base_vol1,Base_vol,Base_ele,hand_ele,Rush,handarc_time,handarc_ele,farc_time,firsttime 
+		FROM tb_specification s 
+		where 1=1 AND s.`fmachine_id`=#{machine} AND s.`fspe_num`=#{chanel}
+		ORDER by s.fid
+	</select>
+	
+	<select id="AllSpe" resultType="Wps">
+		select s.`fid` fid,s.`fspe_num` welderid,s.finitial finitial,s.fcontroller fcontroller,s.fselect insname,s.farc weldername,s.fcharacter fweld_v_max,s.fmode fmode,s.fmaterial updatename,s.fgas fback,s.fweldingratio weldingratio,s.fdiameter fname,s.ftime,s.fhysteresis,s.fadvance,s.fini_ele ,s.fini_vol,s.fini_vol1,s.fweld_ele,s.fweld_vol,s.fweld_vol1,s.farc_ele,s.farc_vol,s.farc_vol1,s.fweld_tuny_ele,s.fweld_tuny_vol,s.farc_tuny_ele,s.farc_tuny_vol fdiameter,s.ffrequency frequency,s.fgasflow gasflow,s.fwater_cooled_torch ftorch,fwelding_process fprocessid,
+		point_speed,pulse_ratio,thrust_ele,decline_time,rise_time,fweldparameters,pulse,arc_length,manual_weld,fargon,Base_vol1,Base_vol,Base_ele,hand_ele,Rush,handarc_time,handarc_ele,farc_time,firsttime,guide,slope,specialarc,specialarc_rep,ts_condition,pulse_ele,ac_frequency,clean_width,ac_dc,pulse_width,ac_ratio, 
+		ac_wave,pulse_tuny_ele,special_arcorder,special_arc_initial,special_arctime,click_ele,two_click_ele,repeat_end,s.fspeed,s.farc_speed,s.farc_tuny_speed,s.fselectstep 
+		FROM tb_specification s 
+		where 1=1 AND s.`fmachine_id`=#{machine}
+		<if test="chanel!=null and chanel!=''">
+			AND s.`fspe_num`=#{chanel}
+		</if>
+		ORDER by s.fid
+	</select>
+	
+	<select id="findSpe" resultType="Wps">
+	    select s.`fid` fid,s.`fspe_num` fweld_i_max,s.finitial fweld_i_min,s.fcontroller fweld_alter_i,s.fselect fweld_i,s.farc fweld_v,s.fcharacter fweld_v_max,s.fmode fweld_v_min,s.fmaterial fweld_prechannel,s.fgas fweld_alter_v,s.fdiameter insid,s.ftime,s.fhysteresis,s.fadvance,s.fini_ele ,s.fini_vol,s.fini_vol1,s.fweld_ele,s.fweld_vol,s.fweld_vol1,s.farc_ele,s.farc_vol,s.farc_vol1,s.fweld_tuny_ele,s.fweld_tuny_vol,s.farc_tuny_ele,s.farc_tuny_vol fdiameter,s.ffrequency frequency,s.fgasflow gasflow,s.fwater_cooled_torch ftorch,fwelding_process fprocessid,
+	    point_speed,pulse_ratio,thrust_ele,decline_time,rise_time,fweldparameters,pulse,arc_length,manual_weld,fargon,Base_vol1,Base_vol,Base_ele,hand_ele,Rush,handarc_time,handarc_ele,farc_time,firsttime,s.fselectstep,s.fspeed,s.farc_tuny_speed,s.farc_speed,pulse_ele,ac_frequency,clean_width,ac_dc,pulse_width,ac_ratio,ac_wave,pulse_tuny_ele,special_arcorder,special_arc_initial,special_arctime,click_ele,two_click_ele,repeat_end,guide,slope,specialarc,specialarc_rep,ts_condition 
+	    FROM tb_specification s 
+	    where 1=1 AND s.`fmachine_id`=#{machine}
+	    <if test="chanel!=null and chanel!=''">
+	      AND s.`fspe_num`=#{chanel}
+	    </if>
+	    ORDER by s.fid
+	</select>
+	
+	<select id="findSperl" resultType="Wps">
+		select s.`fid` fid,s.`fspe_num` fweld_i_max,s.finitial fweld_i_min,s.fcontroller fweld_alter_i,s.fselect fweld_i,s.farc fweld_v,s.fcharacter fweld_v_max,s.fmode fweld_v_min,s.fmaterial fweld_prechannel,s.fgas fweld_alter_v,s.fdiameter insid,s.ftime,s.fhysteresis,s.fadvance,s.fini_ele ,s.fini_vol,s.fini_vol1,s.fweld_ele,s.fweld_vol,s.fweld_vol1,s.farc_ele,s.farc_vol,s.farc_vol1,s.fweld_tuny_ele,s.fweld_tuny_vol,s.farc_tuny_ele,s.farc_tuny_vol fdiameter,s.ffrequency,s.fgasflow gasflow,s.fwater_cooled_torch ftorch,fwelding_process fprocessid,
+		point_speed,pulse_ratio,thrust_ele,decline_time,rise_time,fweldparameters,pulse,arc_length,manual_weld,fargon,Base_vol1,Base_vol,Base_ele,hand_ele,Rush,handarc_time,handarc_ele,farc_time,firsttime,s.fselectstep,s.fspeed,s.farc_tuny_speed,s.farc_speed,s.fini_tuny_vol,s.farc_tuny_vol  
+		FROM tb_specification s 
+		where 1=1 AND s.`fmachine_id`=#{machine}
+		<if test="chanel!=null and chanel!=''">
+			AND s.`fspe_num`=#{chanel}
+		</if>
+		ORDER by s.fid
+	</select>
+	
+	<select id="findById" parameterType="BigInteger" resultType="Wps">
+		select tb_mainwps.FID fid,tb_mainwps.FWPSNum fwpsnum,tb_mainwps.Fweld_I fweld_i,tb_mainwps.Fweld_V fweld_v,tb_mainwps.Fweld_I_MAX fweld_i_max,tb_mainwps.Fweld_I_MIN fweld_i_min,tb_mainwps.Fweld_V_MAX fweld_v_max,tb_mainwps.Fweld_V_MIN fweld_v_min,tb_mainwps.Fweld_Alter_I fweld_alter_i,tb_mainwps.Fweld_Alter_V fweld_alter_v,tb_mainwps.Fweld_PreChannel fweld_prechannel,tb_mainwps.FCReateDate fcreatedate,tb_mainwps.FUpdateDate fupdatedate,tb_mainwps.Fowner fowner,tb_mainwps.Fback fback,tb_mainwps.Fname fname,tb_mainwps.Fdiameter fdiameter from tb_mainwps where tb_mainwps.FID=#{fid}
+	</select>
+	
+	<select id="findSpeById" parameterType="BigInteger" resultType="Wps">
+		select s.`fid` fid,s.`fspe_num` fwpsnum,d1.fvaluename finitial,d2.fvaluename fcontroller,d3.fvaluename insname,d4.fvaluename weldername,s.fcharacter fweld_v_max,d5.fvaluename fmode,d7.fvaluename updatename,d8.fvaluename fback,d9.fvaluename fname,s.fini_ele ,s.fini_vol,s.fini_vol1,s.fweld_ele,s.fweld_vol,s.fweld_vol1,s.farc_ele,s.farc_vol,s.farc_vol1,s.fweld_tuny_ele,s.fweld_tuny_vol,s.farc_tuny_ele,s.farc_tuny_ele fdiameter FROM tb_specification s 
+		INNER JOIN tb_dictionary d1 ON d1.fvalue=s.finitial
+		INNER JOIN tb_dictionary d2 ON d2.fvalue=s.fcontroller
+		INNER JOIN tb_dictionary d3 ON d3.fvalue=s.fselect
+		INNER JOIN tb_dictionary d4 ON d4.fvalue=s.farc
+		INNER JOIN tb_dictionary d5 ON d5.fvalue=s.fmode
+		INNER JOIN tb_dictionary d7 ON d7.fvalue=s.fmaterial
+		INNER JOIN tb_dictionary d8 ON d8.fvalue=s.fgas
+		INNER JOIN tb_dictionary d9 ON d9.fvalue=s.fdiameter
+		WHERE s.`fid`=#{fid}
+	</select>
+	
+    <insert id="save" parameterType="Wps">
+		insert into tb_mainwps(FWPSNum,Fweld_I,Fweld_V,Fweld_I_MAX,Fweld_I_MIN,Fweld_V_MAX,Fweld_V_MIN,Fweld_Alter_I,Fweld_Alter_V,Fweld_PreChannel,FCReateDate,FUpdateDate,Fcreater,Fupdater,Fowner,Fback,Fname,Fdiameter) values(#{fwpsnum},#{fweld_i},#{fweld_v},#{fweld_i_max},#{fweld_i_min},#{fweld_v_max},#{fweld_v_min},#{fweld_alter_i},#{fweld_alter_v},#{fweld_prechannel},#{fcreatedate},#{fupdatedate},#{fcreater},#{fupdater},#{fowner},#{fback},#{fname},#{fdiameter});
+	</insert>
+	
+	<update id="update" parameterType="Wps">
+		update tb_mainwps set FWPSNum=#{fwpsnum},Fweld_I=#{fweld_i},Fweld_V=#{fweld_v},Fweld_I_MAX=#{fweld_i_max},Fweld_I_MIN=#{fweld_i_min},Fweld_V_MAX=#{fweld_v_max},Fweld_V_MIN=#{fweld_v_min},Fweld_Alter_I=#{fweld_alter_i},Fweld_Alter_V=#{fweld_alter_v},Fweld_PreChannel=#{fweld_prechannel},FUpdateDate=#{fupdatedate},Fupdater=#{fupdater},Fowner=#{fowner},Fback=#{fback},Fname=#{fname},Fdiameter=#{fdiameter} where FID=#{fid};
+	</update>
+	
+	<insert id="saveSpe" parameterType="Wps">
+   		INSERT INTO `tb_specification`(`fspe_num`, `finitial`, `fcontroller`, `fselect`, `farc`, `fcharacter`, `fmode`, `ftime`, `fmaterial`, `fadvance`, `fhysteresis`, `fgas`, `fdiameter`, `fini_ele`, `fini_vol`, `fini_vol1`, `fweld_ele`, `fweld_vol`, `fweld_vol1`, `farc_ele`, `farc_vol`, `farc_vol1`, `fweld_tuny_ele`, `fweld_tuny_vol`, `farc_tuny_ele`, `farc_tuny_vol`, `fmachine_id`,`ffrequency`,`fgasflow`,`fwelding_process`,`fwater_cooled_torch`, `Fcreater`, `Fupdater`,`fweldingratio`,firsttime,farc_time,Rush,handarc_ele,handarc_time,hand_ele,Base_ele,Base_vol,Base_vol1,fargon,manual_weld,arc_length,pulse,fweldparameters,rise_time,decline_time,thrust_ele,pulse_ratio,point_speed,pulse_ele,ac_frequency,clean_width,ac_dc,pulse_width,ac_ratio,ac_wave,pulse_tuny_ele,special_arcorder,special_arc_initial,special_arctime,click_ele,two_click_ele,repeat_end,guide,slope,specialarc,specialarc_rep,ts_condition) VALUES (#{fweld_i_max},#{fweld_i_min},#{fweld_alter_i},#{fweld_i},#{fweld_v},#{fweld_v_max},#{fweld_v_min},#{ftime},#{fweld_prechannel},#{fadvance},#{fhysteresis},#{fweld_alter_v},#{insid},#{fini_ele},#{fini_vol},#{fini_vol1},#{fweld_ele},#{fweld_vol},#{fweld_vol1},#{farc_ele},#{farc_vol},#{farc_vol1},#{fweld_tuny_ele},#{fweld_tuny_vol},#{farc_tuny_ele},#{fdiameter},#{macid},#{frequency},#{gasflow},#{fprocessid},#{ftorch},#{fcreater},#{fupdater},#{weldingratio},#{firsttime},#{farc_time},#{Rush},#{handarc_ele},#{handarc_time},#{hand_ele},#{Base_ele},#{Base_vol},#{Base_vol1},#{fargon},#{manual_weld},#{arc_length},#{pulse},#{fweldparameters},#{rise_time},#{decline_time},#{thrust_ele},#{pulse_ratio},#{point_speed},#{pulse_ele},#{ac_frequency},#{clean_width},#{ac_dc},#{pulse_width},#{ac_ratio},#{ac_wave},#{pulse_tuny_ele},#{special_arcorder},#{special_arc_initial},#{special_arctime},#{click_ele},#{two_click_ele},#{repeat_end},#{guide},#{slope},#{specialarc},#{specialarc_rep},#{ts_condition}
+   	 	)
+  	</insert>
+	
+	<update id="updateSpe" parameterType="Wps">
+	    UPDATE `tb_specification` SET `finitial`=#{fweld_i_min},`fcontroller`=#{fweld_alter_i},`fselect`=#{fweld_i},`farc`=#{fweld_v},`fcharacter`=#{fweld_v_max},`fmode`=#{fweld_v_min},`ftime`=#{ftime},`fmaterial`=#{fweld_prechannel},`fadvance`=#{fadvance},`fhysteresis`=#{fhysteresis},`fgas`=#{fweld_alter_v},`fdiameter`=#{insid},`fini_ele`=#{fini_ele},`fini_vol`=#{fini_vol},`fini_vol1`=#{fini_vol1},`fweld_ele`=#{fweld_ele},`fweld_vol`=#{fweld_vol},`fweld_vol1`=#{fweld_vol1},`farc_ele`=#{farc_ele},`farc_vol`=#{farc_vol},`farc_vol1`=#{farc_vol1},`fweld_tuny_ele`=#{fweld_tuny_ele},`fweld_tuny_vol`=#{fweld_tuny_vol},`farc_tuny_ele`=#{farc_tuny_ele},`farc_tuny_vol`=#{fdiameter},`ffrequency`=#{frequency},`fgasflow`=#{gasflow},`fweldingratio`=#{weldingratio},`fwelding_process`=#{fprocessid},`fwater_cooled_torch`=#{ftorch},`Fupdater`=#{fupdater},`firsttime`=#{firsttime},`farc_time`=#{farc_time},`Rush`=#{Rush},`handarc_ele`=#{handarc_ele},`handarc_time`=#{handarc_time},`hand_ele`=#{hand_ele},`Base_ele`=#{Base_ele},`Base_vol`=#{Base_vol},`Base_vol1`=#{Base_vol1},`fargon`=#{fargon},`manual_weld`=#{manual_weld},`arc_length`=#{arc_length},`pulse`=#{pulse},`fweldparameters`=#{fweldparameters},`rise_time`=#{rise_time},`decline_time`=#{decline_time},`thrust_ele`=#{thrust_ele},`pulse_ratio`=#{pulse_ratio},`point_speed`=#{point_speed},`pulse_ele`=#{pulse_ele},`ac_frequency`=#{ac_frequency},`clean_width`=#{clean_width},`ac_dc`=#{ac_dc},`pulse_width`=#{pulse_width},`ac_ratio`=#{ac_ratio},`ac_wave`=#{ac_wave},`pulse_tuny_ele`=#{pulse_tuny_ele},`special_arcorder`=#{special_arcorder},`special_arc_initial`=#{special_arc_initial},`special_arctime`=#{special_arctime},`click_ele`=#{click_ele},`two_click_ele`=#{two_click_ele},`repeat_end`=#{repeat_end},`guide`=#{guide},`slope`=#{slope},`specialarc`=#{specialarc},`specialarc_rep`=#{specialarc_rep},`ts_condition`=#{ts_condition} WHERE `fmachine_id`=#{macid} AND `fspe_num`=#{fweld_i_max}
+	</update>
+	
+	<insert id="saveSpc" parameterType="Wps">
+		INSERT INTO `tb_specification`(`fspe_num`, `finitial`, `fcontroller`, `fselect`, `farc`, `fcharacter`, `fmode`, `ftime`, `fmaterial`, `fadvance`, `fhysteresis`, `fgas`, `fdiameter`, `fini_ele`, `fini_vol`, `fini_vol1`, `fweld_ele`, `fweld_vol`, `fweld_vol1`, `farc_ele`, `farc_vol`, `farc_vol1`, `fweld_tuny_ele`, `fweld_tuny_vol`, `farc_tuny_ele`, `farc_tuny_vol`, `fmachine_id`,`ffrequency`,`fgasflow`, `Fcreater`, `Fupdater`,`fweldingratio`,`firsttime`,`farc_time`,`Rush`,`handarc_ele`,`handarc_time`,`hand_ele`,`Base_ele`,`Base_vol`,`Base_vol1`,`fargon`,`manual_weld`,`arc_length`,`pulse`,`fweldparameters`,`rise_time`,`decline_time`,`thrust_ele`,`pulse_ratio`,`point_speed`) VALUES (#{fweld_i_max},#{fweld_i_min},#{fweld_alter_i},#{fweld_i},#{fweld_v},#{fweld_v_max},#{fweld_v_min},#{ftime},#{fweld_prechannel},#{fadvance},#{fhysteresis},#{fweld_alter_v},#{insid},#{fini_ele},#{fini_vol},#{fini_vol1},#{fweld_ele},#{fweld_vol},#{fweld_vol1},#{farc_ele},#{farc_vol},#{farc_vol1},#{fweld_tuny_ele},#{fweld_tuny_vol},#{farc_tuny_ele},#{fdiameter},#{macid},#{frequency},#{gasflow},#{fcreater},#{fupdater},#{weldingratio},#{firsttime},#{farc_time},#{Rush},#{handarc_ele},#{handarc_time},#{hand_ele},#{Base_ele},#{Base_vol},#{Base_vol1},#{fargon},#{manual_weld},#{arc_length},#{pulse},#{fweldparameters},#{rise_time},#{decline_time},#{thrust_ele},#{pulse_ratio},#{point_speed})
+	</insert>
+	
+	<update id="updateSpc" parameterType="Wps">
+		UPDATE `tb_specification` SET `fselect`=#{fweld_i},`fcharacter`=#{fweld_v_max},`fadvance`=#{fadvance},`fhysteresis`=#{fhysteresis},`fdiameter`=#{insid},`fini_ele`=#{fini_ele},`fini_vol`=#{fini_vol},`fini_vol1`=#{fini_vol1},`fweld_ele`=#{fweld_ele},`fweld_vol`=#{fweld_vol},`fweld_vol1`=#{fweld_vol1},`farc_ele`=#{farc_ele},`farc_vol`=#{farc_vol},`farc_vol1`=#{farc_vol1},`Fupdater`=#{fupdater},`firsttime`=#{firsttime},`farc_time`=#{farc_time},`Rush`=#{Rush},`handarc_ele`=#{handarc_ele},`handarc_time`=#{handarc_time},`hand_ele`=#{hand_ele},`Base_ele`=#{Base_ele},`Base_vol`=#{Base_vol},`Base_vol1`=#{Base_vol1},`fargon`=#{fargon},`manual_weld`=#{manual_weld},`arc_length`=#{arc_length},`pulse`=#{pulse},`fweldparameters`=#{fweldparameters},`rise_time`=#{rise_time},`decline_time`=#{decline_time},`thrust_ele`=#{thrust_ele},`pulse_ratio`=#{pulse_ratio},`point_speed`=#{point_speed},`ffrequency`=#{frequency} WHERE `fmachine_id`=#{macid} AND `fspe_num`=#{fweld_i_max}
+	</update>
+	
+	<select id="getUsernameCount" parameterType="String" resultType="java.lang.Integer">
+		select count(*) from tb_mainwps where FWPSNum=#{fwpsnum}
+	</select>
+	
+	<select id="findCount" resultType="java.lang.Integer">
+		select count(*) from `tb_specification` where `fmachine_id`=#{machine}
+		<if test="chanel!=null and chanel!=''">
+			AND `fspe_num`=#{chanel}
+		</if>
+	</select>
+	
+	<select id="findByUid" parameterType="long" resultType="BigInteger">
+		select users_insframework insid from tb_users where id=#{fid}
+	</select>
+	
+	<select id="findIpById" parameterType="BigInteger" resultType="String">
+		select fIP from tb_welding_machine where fid=#{fid}
+	</select>
+	
+	<select id="findHistory" resultType="Wps">
+		select tb_mainwps.FWPSNum fwpsnum,tb_welding_machine.fequipment_no fname,tb_wps_welddevices.Fchannel fweld_prechannel,tb_wps_welddevices.FCReateDate fcreatedate from tb_wps_welddevices left join tb_mainwps on tb_wps_welddevices.FWeldWPSID=tb_mainwps.FID left join tb_welding_machine on tb_wps_welddevices.FWeldDevicesID=tb_welding_machine.fid where 1=1
+		<if test="parent!=null and parent!=''">
+			and tb_insframework.fid = #{parent}
+		</if>
+		ORDER by tb_wps_welddevices.FCReateDate desc
+	</select>
+	
+	<insert id="give" parameterType="Wps">
+		insert into tb_wps_welddevices(FWeldWPSID,FWeldDevicesID,Fchannel,FCReateDate,FUpdateDate,Fcreater,Fupdater,Fowner,Fback) values(#{fid},#{macid},#{fweld_prechannel},#{fcreatedate},#{fupdatedate},#{fcreater},#{fupdater},#{insid},#{fback});
+	</insert>
+	
+	<delete id="delete" parameterType="BigInteger">
+		delete from tb_mainwps where FID=#{fid};
+	</delete>
+	
+	<delete id="deleteHistory" parameterType="BigInteger">
+		delete from tb_wps_welddevices where FWeldWPSID=#{fid};
+	</delete>
+	
+	<select id="getFnsDetail" resultType="Wps">
+		select s.* FROM tb_specification s 
+		where 1=1 AND s.fmachine_id=#{machine}
+		<if test="chanel!=null and chanel!=''">
+			AND s.fspe_num=#{chanel}
+		</if>
+		ORDER by s.fid
+	</select>
+	
+	<select id="getFnsJobList" resultType="Wps">
+		select s.fspe_num fwpsnum,s.f024 FROM tb_specification s 
+		where 1=1 AND s.fmachine_id=#{machine}
+		ORDER by s.fspe_num
+	</select>
+	
+	<insert id="addJob" parameterType="Wps">
+		INSERT INTO `tb_specification`(`fspe_num`, `f001`, `f002`, `f003`, `f004`, `f005`, `f006`, `f007`, `f008`, `f009`, `f010`, `f011`, `f012`, `f013`, `f014`, `f015`, `f016`, `f017`, `f018`, `f019`, `f020`, `f021`, `f022`, `f023`, `f024`, `fadvance`, `fhysteresis`, `fmachine_id`) VALUES (#{fwpsnum},#{f001},#{f002},#{f003},#{f004},#{f005},#{f006},#{f007},#{f008},#{f009},#{f010},#{f011},#{f012},#{f013},#{f014},#{f015},#{f016},#{f017},#{f018},#{f019},#{f020},#{f021},#{f022},#{f023},#{f024},#{fadvance},#{fhysteresis},#{macid})
+	</insert>
+	
+	<update id="updateJob" parameterType="Wps">
+		UPDATE `tb_specification` SET `fspe_num`=#{fwpsnum},`f001`=#{f001},`f002`=#{f002},`f003`=#{f003},`f004`=#{f004},`f005`=#{f005},`f006`=#{f006},`f007`=#{f007},`f008`=#{f008},`f009`=#{f009},`f010`=#{f010},`f011`=#{f011},`f012`=#{f012},`f013`=#{f013},`f014`=#{f014},`f015`=#{f015},`f016`=#{f016},`f017`=#{f017},`f018`=#{f018},`f019`=#{f019},`f020`=#{f020},`f021`=#{f021},`f022`=#{f022},`f023`=#{f023},`f024`=#{f024},`fadvance`=#{fadvance},`fhysteresis`=#{fhysteresis} WHERE `fmachine_id`=#{macid} AND `fspe_num`=#{fwpsnum}
+	</update>
+	
+	<delete id="deleteJob">
+		delete from `tb_specification` where `fmachine_id`=#{machine} AND `fspe_num`=#{chanel}
+	</delete>
+	
+	<insert id="saveOtcspc" parameterType="Wps">
+	INSERT INTO `tb_specification`(`fspe_num`, `ftime`,`fadvance`,`fini_ele`,`pulse_ele`,`rise_time`,`fweld_ele`,`ac_frequency`,`clean_width`,`farc_ele`,`ffrequency`, `decline_time`,`fhysteresis`,`ac_dc`,`pulse_width`,`ac_ratio`,`ac_wave`,`fwelding_process`,`fweld_tuny_ele`,`pulse_tuny_ele`,`special_arcorder`,`farc_tuny_ele`,`special_arc_initial`,`special_arctime`,`click_ele`,`two_click_ele`,`repeat_end`,`finitial`, `farc`,`guide`,`slope`,`specialarc`,`specialarc_rep`,`ts_condition`, `fcharacter`,`pulse`,`fwater_cooled_torch`, `fmachine_id`,`Fcreater`, `Fupdater`) VALUES (#{fweld_i_max},#{ftime},#{fadvance},#{fini_ele},#{pulse_ele},#{rise_time},#{fweld_ele},#{ac_frequency},#{clean_width},#{farc_ele},#{frequency},#{decline_time},#{fhysteresis},#{ac_dc},#{pulse_width},#{ac_ratio},#{ac_wave},#{fprocessid},#{fweld_tuny_ele},#{pulse_tuny_ele},#{special_arcorder},#{farc_tuny_ele},#{special_arc_initial},#{special_arctime},#{click_ele},#{two_click_ele},#{repeat_end},#{fweld_i_min},#{fweld_v},#{guide},#{slope},#{specialarc},#{specialarc_rep},#{ts_condition},#{fweld_v_max},#{pulse},#{ftorch},#{macid},#{fcreater},#{fupdater})
+	</insert>
+	
+	<update id="updateOtcspc" parameterType="Wps">
+	UPDATE tb_specification SET `ftime`= #{ftime},`fadvance`=#{fadvance},`fini_ele`=#{fini_ele},`pulse_ele`=#{pulse_ele},`rise_time`=#{rise_time},`fweld_ele`=#{fweld_ele},`ac_frequency`=#{ac_frequency},`clean_width`=#{clean_width},`farc_ele`=#{farc_ele},`ffrequency`=#{frequency},`decline_time`=#{decline_time},`fhysteresis`=#{fhysteresis},`ac_dc`=#{ac_dc},`pulse_width`=#{pulse_width},`ac_ratio`=#{ac_ratio},`ac_wave`=#{ac_wave},`fwelding_process`=#{fprocessid},`fweld_tuny_ele`=#{fweld_tuny_ele},`pulse_tuny_ele`=#{pulse_tuny_ele},`special_arcorder`=#{special_arcorder},`farc_tuny_ele`=#{farc_tuny_ele},`special_arc_initial`=#{special_arc_initial},`special_arctime`=#{special_arctime},`click_ele`=#{click_ele},`two_click_ele`=#{two_click_ele},`repeat_end`=#{repeat_end},`finitial`=#{fweld_i_min},`farc`=#{fweld_v},`guide`=#{guide},`slope`=#{slope},`specialarc`=#{specialarc},`specialarc_rep`=#{specialarc_rep},`ts_condition`=#{ts_condition},`fcharacter`=#{fweld_v_max},`pulse`=#{pulse},`fwater_cooled_torch`=#{ftorch},`Fcreater`=#{fcreater},`Fupdater`=#{fupdater} WHERE `fmachine_id`=#{macid} AND `fspe_num`=#{fweld_i_max}
+	</update>
+	
+	<select id="findOtcspc" resultType="Wps">
+		select s.`fid` fid,s.`fspe_num` welderid,s.finitial finitial,s.farc weldername,s.fcharacter fweld_v_max,s.ftime,s.fhysteresis,s.fadvance,s.fini_ele ,s.fweld_ele,s.farc_ele,s.fweld_tuny_ele,s.farc_tuny_ele,s.ffrequency frequency,s.fgasflow gasflow,s.fwater_cooled_torch ftorch,fwelding_process fprocessid,
+		point_speed,pulse_ratio,thrust_ele,decline_time,rise_time,fweldparameters,pulse,arc_length,manual_weld,fargon,Base_vol1,Base_vol,Base_ele,hand_ele,Rush,handarc_time,handarc_ele,farc_time,firsttime,guide,slope,specialarc,specialarc_rep,ts_condition,pulse_ele,ac_frequency,clean_width,ac_dc,pulse_width,ac_ratio,
+		ac_wave,pulse_tuny_ele,special_arcorder,special_arc_initial,special_arctime,click_ele,two_click_ele,repeat_end 
+		FROM tb_specification s 
+		where 1=1 AND s.`fmachine_id`=#{machine} AND s.`fspe_num`=#{chanel}
+		ORDER by s.fid
+	</select>
+	
+	<select id="findAllSperl" resultType="Wps">
+		select s.`fid` fid,s.`fspe_num` welderid,s.fselect insname,s.fcharacter fweld_v_max,s.fmaterial updatename,s.fgas fback,s.fdiameter fname,s.fweld_ele,s.fweld_vol,s.fspeed,s.fini_ele,s.fini_vol,s.farc_ele,s.farc_vol,s.fadvance,s.fweld_tuny_ele,s.fweld_tuny_vol,s.farc_speed,s.farc_tuny_speed,s.fselectstep,s.ftime,s.ffrequency,s.fini_tuny_vol,s.farc_tuny_vol
+		FROM tb_specification s 
+		where 1=1 AND s.`fmachine_id`=#{machine} AND s.`fspe_num`=#{chanel}
+		ORDER by s.fid
+	</select>
+
+	<insert id="saveSperl" parameterType="Wps">
+		INSERT INTO `tb_specification`(`fspe_num`, `fselect`, `fcharacter`, `fmaterial`, `fgas`, `fdiameter`, `fweld_ele`, `fweld_vol`, `fspeed`, `farc_speed`, `farc_tuny_speed`, `fini_ele`, `fini_vol`, `farc_ele`, `farc_vol`, `fadvance`, `fweld_tuny_ele`, `fweld_tuny_vol`, `fselectstep`, `ffrequency`, `ftime`, `fmachine_id`, `fini_tuny_vol`, `fvol_tuny_vol`) VALUES (#{fweld_i_max},#{fweld_i},#{fweld_v_max},#{fweld_prechannel},#{fweld_alter_v},#{insid},#{fweld_ele},#{fweld_vol},#{fspeed},#{farc_speed},#{farc_tuny_speed},#{fini_ele},#{fini_vol},#{farc_ele},#{farc_vol},#{fadvance},#{fweld_tuny_ele},#{fweld_tuny_vol},#{fselectstep},#{ffrequency},#{ftime},#{macid},#{fini_tuny_vol},#{farc_tuny_vol})
+	</insert>
+	
+	<update id="updateSperl" parameterType="Wps">
+		UPDATE `tb_specification` SET `fselect`=#{fweld_i},`fcharacter`=#{fweld_v_max},`fmaterial`=#{fweld_prechannel},`fgas`=#{fweld_alter_v},`fdiameter`=#{insid},`fweld_ele`=#{fweld_ele},`fweld_vol`=#{fweld_vol},`fspeed`=#{fspeed},`farc_speed`=#{farc_speed},`farc_tuny_speed`=#{farc_tuny_speed},`fini_ele`=#{fini_ele},`fini_vol`=#{fini_vol},`farc_ele`=#{farc_ele},`farc_vol`=#{farc_vol},`fadvance`=#{fadvance},`fweld_tuny_ele`=#{fweld_tuny_ele},`fweld_tuny_vol`=#{fweld_tuny_vol},`fselectstep`=#{fselectstep},`ftime`=#{ftime},`ffrequency`=#{ffrequency},`fini_tuny_vol`=#{fini_tuny_vol},`farc_tuny_vol`=#{farc_tuny_vol} WHERE `fmachine_id`=#{macid} AND `fspe_num`=#{fweld_i_max}
+	</update>
+</mapper>

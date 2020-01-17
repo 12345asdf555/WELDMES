@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.spring.dao.ProductMapper">
+
+	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
+	<select id="findAll" resultType="Product">
+		SELECT `fid` id,`fproduct_number` pronum,`fproduct_info` proinfo,`fparts_number` partnum,`fparts_info` partinfo,`fback_one` backone,`fback_two` backtwo,`fback_three` backthree,`fback_four` backfour FROM tb_product_management WHERE 1=1
+		<if test="str!=null and str!=''">
+			and ${str}
+		</if>
+		 ORDER by fid
+	</select>
+	
+	<select id="findById" parameterType="BigInteger" resultType="Product">
+		SELECT `fid` id,`fproduct_number` pronum,`fproduct_info` proinfo,`fparts_number` partnum,`fparts_info` partinfo,`fback_one` backone,`fback_two` backtwo,`fback_three` backthree,`fback_four` backfour FROM tb_product_management WHERE fid=#{id}
+	</select>
+	
+    <insert id="save" parameterType="Product">
+		insert into tb_product_management(`fproduct_number`,`fproduct_info`,`fparts_number`,`fparts_info`,`fback_one`,`fback_two`,`fback_three`,`fback_four`,`fcreater`,`fupdater`,`fcreatedate`,`fupdatedate`) values(#{pronum},#{proinfo},#{partnum},#{partinfo},#{backone},#{backtwo},#{backthree},#{backfour},#{fcreater},#{fupdater},#{fcreatedate},#{fupdatedate})
+	</insert>
+	
+	<update id="update" parameterType="Product">
+		update tb_product_management set fproduct_number=#{pronum},fproduct_info=#{proinfo},fparts_number=#{partnum},fparts_info=#{partinfo},fback_one=#{backone},fback_two=#{backtwo},fback_three=#{backthree},fback_four=#{backfour},fupdater=#{fupdater},fupdatedate=#{fupdatedate} where fid=#{id};
+	</update>
+	
+<!-- 	<select id="getUsernameCount" parameterType="String" resultType="java.lang.Integer">
+		select count(*) from tb_mainwps where FWPSNum=#{fwpsnum}
+	</select> -->
+	
+	<delete id="delete" parameterType="BigInteger">
+		delete from tb_product_management where fid=#{id};
+	</delete>
+	
+	<select id="findAllWeldf" resultType="Product">
+		SELECT tb_weld_info.fid id,`fweld_number` pronum,`fweld_info` proinfo,`fback_one` backone,`fback_two` backtwo,`fback_three` backthree,`fback_four` backfour FROM tb_product_weld INNER JOIN tb_weld_info ON tb_product_weld.fweld_id=tb_weld_info.fid WHERE tb_product_weld.fproduct_id=#{id}
+		<if test="str!=null and str!=''">
+			and ${str}
+		</if>
+		 ORDER by tb_weld_info.fid
+	</select>
+	
+	<select id="findWeldfById" parameterType="BigInteger" resultType="Product">
+		SELECT `fid` id,`fweld_number` pronum,`fweld_info` proinfo,`fback_one` backone,`fback_two` backtwo,`fback_three` backthree,`fback_four` backfour FROM tb_weld_info WHERE fid=#{id}
+	</select>
+	
+    <insert id="saveWeldf" parameterType="Product">
+		insert into tb_weld_info(`fweld_number`,`fweld_info`,`fback_one`,`fback_two`,`fback_three`,`fback_four`,`fcreater`,`fupdater`,`fcreatedate`,`fupdatedate`) values(#{pronum},#{proinfo},#{backone},#{backtwo},#{backthree},#{backfour},#{fcreater},#{fupdater},#{fcreatedate},#{fupdatedate})
+	</insert>
+	
+	<update id="updateWeldf" parameterType="Product">
+		update tb_weld_info set fweld_number=#{pronum},fweld_info=#{proinfo},fback_one=#{backone},fback_two=#{backtwo},fback_three=#{backthree},fback_four=#{backfour},fupdater=#{fupdater},fupdatedate=#{fupdatedate} where fid=#{id};
+	</update>
+	
+<!-- 	<select id="getUsernameCount" parameterType="String" resultType="java.lang.Integer">
+		select count(*) from tb_mainwps where FWPSNum=#{fwpsnum}
+	</select> -->
+	
+	<delete id="deleteWeldf" parameterType="BigInteger">
+		delete from tb_weld_info where fid=#{id};
+	</delete>
+	
+	<select id="findAllProcess" resultType="Product">
+		SELECT tb_process.fid id,`fprocess_name` processname,`fweld_position` weldposition, `fmeterial` material,`fformat` format,`fmethod` method,`fdrying` drying,`ftemperature` temperature,`ffactor` factor,`frequire` frequire,`flevel` flevel,`fqualify` qualify,`frange` frange FROM tb_weld_process INNER JOIN `tb_process` ON tb_weld_process.fprocess_id=tb_process.fid WHERE tb_weld_process.fweld_id=#{id}
+		<if test="str!=null and str!=''">
+			and ${str}
+		</if>
+		 ORDER by tb_process.fid
+	</select>
+	
+	<select id="findProcessById" parameterType="BigInteger" resultType="Product">
+		SELECT `fid` id,`fprocess_name` processname,`fweld_position` weldposition, `fmeterial` material,`fformat` format,`fmethod` method,`fdrying` drying,`ftemperature` temperature,`ffactor` factor,`frequire` frequire,`flevel` flevel,`fqualify` qualify,`frange` frange FROM `tb_process` WHERE fid=#{id}
+	</select>
+	
+    <insert id="saveProcess" parameterType="Product">
+		insert into tb_process(`fprocess_name`,`fweld_position`,`fmeterial`,`fformat`,`fmethod`,`fdrying`,`ftemperature`,`ffactor`,`frequire`,`flevel`,`fqualify`,`frange`,`fcreater`,`fupdater`,`fcreatedate`,`fupdatedate`) values(#{processname},#{weldposition},#{material},#{format},#{method},#{drying},#{temperature},#{factor},#{frequire},#{flevel},#{qualify},#{frange},#{fcreater},#{fupdater},#{fcreatedate},#{fupdatedate})
+	</insert>
+	
+	<update id="updateProcess" parameterType="Product">
+		update tb_process set fprocess_name=#{processname},fweld_position=#{weldposition},fmeterial=#{material},fformat=#{format},fmethod=#{method},fdrying=#{drying},ftemperature=#{temperature},ffactor=#{factor},frequire=#{frequire},flevel=#{flevel},fqualify=#{qualify},frange=#{frange},fupdater=#{fupdater},fupdatedate=#{fupdatedate} where fid=#{id};
+	</update>
+	
+<!-- 	<select id="getUsernameCount" parameterType="String" resultType="java.lang.Integer">
+		select count(*) from tb_mainwps where FWPSNum=#{fwpsnum}
+	</select> -->
+	
+	<delete id="deleteProcess" parameterType="BigInteger">
+		delete from tb_process where fid=#{id};
+	</delete>
+	
+		<delete id="deleteByWeld" parameterType="BigInteger">
+		delete from tb_product_weld where fweld_id=#{id};
+	</delete>
+	
+		<delete id="deleteByWp" parameterType="BigInteger">
+		delete from tb_weld_process where fweld_id=#{id};
+	</delete>
+	
+		<delete id="deleteByProduct" parameterType="BigInteger">
+		delete from tb_product_weld where fid=#{id};
+	</delete>
+	
+		<delete id="deleteByProcess" parameterType="BigInteger">
+		delete from tb_weld_process where fprocess_id=#{id};
+	</delete>
+	
+		<select id="findWeldId" resultType="BigInteger">
+		SELECT `fid` FROM `tb_weld_info` ORDER BY `fupdatedate` DESC LIMIT 0,1
+	</select>
+	
+		<select id="findProcessId" resultType="BigInteger">
+		SELECT `fid` FROM `tb_process` ORDER BY `fupdatedate` DESC LIMIT 0,1
+	</select>
+	
+	    <insert id="saveProwe" parameterType="Product">
+		insert into tb_product_weld(`fproduct_id`,`fweld_id`) values(#{id},#{iid})
+	</insert>
+	
+	    <insert id="saveWeldcess" parameterType="Product">
+		insert into tb_weld_process(`fweld_id`,`fprocess_id`) values(#{id},#{iid})
+	</insert>
+</mapper>

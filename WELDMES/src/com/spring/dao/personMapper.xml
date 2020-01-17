@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.spring.dao.PersonMapper">
+	
+	<select id="findAll" resultType="Person">
+		select tb_welder.fid id,tb_welder.fwelder_no welderno,tb_welder.fname name,tb_welder.fcheckintime fcheckintime,tb_welder.fworkship workship,tb_welder.ffirstsuretime firstsuretime,tb_welder.fworkmaintime workmaintime,tb_welder.fworkkmainname workkmainname,tb_welder.fworkfirsttime workfirsttime,tb_welder.fworkfirstname workfirstname,tb_welder.fworksecondtime worksecondtime,tb_welder.fworksecondname worksecondname,tb_welder.flevel level,tb_welder.fscore score,tb_welder.fifpase ifpase,tb_welder.ficworkime icworkime,tb_welder.fhalfyearsure halfyearsure,tb_welder.fyearsure yearsure,tb_welder.fnextyear nextyear,tb_welder.FCellPhone cellphone,tb_welder.FLeveID leveid,tb_welder.FCardNUm cardnum,tb_welder.Fqualification quali,tb_welder.FCReateDate createdate,tb_welder.FUpdateDate updatedate,tb_welder.Fowner owner,tb_welder.Fback back,i.fid insid,i.fname insname,d.fvaluename valuename,di.fvaluename valuenamex from tb_welder INNER JOIN tb_dictionary d on d.fvalue = tb_welder.FLeveID
+		INNER JOIN tb_dictionary di on di.fvalue = tb_welder.Fqualification left join tb_insframework i on tb_welder.Fowner=i.fid
+		LEFT JOIN tb_insframework ins on ins.fid = i.fparent
+		LEFT JOIN tb_insframework insf on insf.fid = ins.fparent where (d.ftypeid=8 and di.ftypeid=7)
+		<if test="parent!=null and parent!=''">
+			and (i.fid=#{parent} or ins.fid=#{parent} or insf.fid=#{parent} or insf.fparent=#{parent})
+		</if>
+		<if test="str!=null and str!=''">
+			and ${str}
+		</if>
+		ORDER by tb_welder.fid
+	</select>
+	
+	<select id="findLeve" resultType="Person">
+		select fvalue val,fvaluename valuename from tb_dictionary where ftypeid =#{type}
+	</select>
+	
+	<insert id="save" parameterType="Person">
+		insert into tb_welder(fwelder_no,fname,FCellPhone,FLeveID,FCardNUm,Fqualification,FCReateDate,FUpdateDate,Fcreater,Fupdater,Fowner,Fback) values(#{welderno},#{name},#{cellphone},#{leveid},#{cardnum},#{quali},now(),now(),#{creater},#{updater},#{owner},#{back});
+	</insert>
+	
+	<insert id="catsave" parameterType="Person">
+		insert into tb_welder(fwelder_no,fname,FCellPhone,FLeveID,FCardNUm,Fqualification,FCReateDate,FUpdateDate,Fcreater,Fupdater,Fowner,Fback,fcheckintime,fworkship,ffirstsuretime,fworkmaintime,fworkkmainname,fworkfirsttime,fworkfirstname,fworksecondtime,fworksecondname,flevel,fscore,fifpase,ficworkime,fhalfyearsure,fyearsure,fnextyear) values(#{welderno},#{name},#{cellphone},#{leveid},#{cardnum},#{quali},now(),now(),#{creater},#{updater},#{owner},#{back},#{fcheckintime},#{workship},#{firstsuretime},#{workmaintime},#{workkmainname},#{workfirsttime},#{workfirstname},#{worksecondtime},#{worksecondname},#{level},#{score},#{ifpase},#{icworkime},#{halfyearsure},#{yearsure},#{nextyear});
+	</insert>
+	
+	<select id="findById" parameterType="BigInteger" resultType="Person">
+<!-- 		select fid id,fwelder_no welderno,fname name,FCellPhone cellphone,FLeveID leveid,FCardNUm cardnum,Fqualification quali,FCReateDate createdate,FUpdateDate updatedate,Fowner owner,Fback back from tb_welder where fid=#{id} -->
+		select * from (select w.fid id,fwelder_no welderno,w.fname name,FCellPhone cellphone,d.fvaluename levename, FLeveID leveid,FCardNUm cardnum,di.fvaluename qualiname,Fqualification quali,FCReateDate createdate,FUpdateDate updatedate,i.fname insname,Fowner owner,w.Fback back from tb_welder w
+        INNER join tb_dictionary d on d.fvalue = w.FLeveID
+        INNER join tb_dictionary di on di.fvalue = w.Fqualification
+        INNER join tb_insframework i on i.fid = w.Fowner
+        where  (d.ftypeid=8 and di.ftypeid=7) and w.fid=#{id} )temp
+	</select>
+	
+	<update id="update" parameterType="Person">
+		update tb_welder set fwelder_no=#{welderno},fname=#{name},FCellPhone=#{cellphone},FLeveID=#{leveid},FCardNUm=#{cardnum},Fqualification=#{quali},FUpdateDate=now(),Fowner=#{owner},Fback=#{back},Fupdater=#{updater} where fid=#{id};
+	</update>
+	
+	<update id="catupdate" parameterType="Person">
+		update tb_welder set fwelder_no=#{welderno},fname=#{name},FCellPhone=#{cellphone},FLeveID=#{leveid},FCardNUm=#{cardnum},Fqualification=#{quali},FUpdateDate=now(),Fowner=#{owner},Fback=#{back},Fupdater=#{updater},fcheckintime=#{fcheckintime},fworkship=#{workship},ffirstsuretime=#{firstsuretime},fworkmaintime=#{workmaintime},fworkkmainname=#{workkmainname},fworkfirsttime=#{workfirsttime},fworkfirstname=#{workfirstname},fworksecondtime=#{worksecondtime},fworksecondname=#{worksecondname},flevel=#{level},fscore=#{score},fifpase=#{ifpase},ficworkime=#{icworkime},fhalfyearsure=#{halfyearsure},fyearsure=#{yearsure},fnextyear=#{nextyear} where fid=#{id};
+	</update>
+	
+	<delete id="delete" parameterType="BigInteger">
+		delete from tb_welder where fid=#{id};
+	</delete>
+	
+	<delete id="catdelete" parameterType="BigInteger">
+		delete from tb_welder where fid=#{id};
+	</delete>
+	
+	
+	<select id="dic" resultType="Person">
+		select fvalue val,fvaluename valuename from tb_dictionary
+	</select>
+	
+	<select id="ins" resultType="Person">
+		select fid owner,fname insname from tb_insframework
+	</select>
+	
+	<select id="getUsernameCount" parameterType="String" resultType="java.lang.Integer">
+		select count(*) from tb_welder where fwelder_no=#{welderno}
+	</select>
+</mapper>
