@@ -54,7 +54,7 @@
   </context-param>
   <context-param>
     <param-name>websocket</param-name>
-    <param-value>&quot;ws://119.3.100.103:5550/SerialPortDemo/ws/张三&quot;</param-value>
+    <param-value>&quot;ws://localhost:5550/SerialPortDemo/ws/张三&quot;</param-value>
   </context-param>
   <context-param>
     <param-name>ipurl</param-name>

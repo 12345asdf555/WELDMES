@@ -1,4 +1,6 @@
 var flag;
+var reIssue = new Array(),allIssueRows = new Array();
+var issueFlag = 0;
 $(function() {
 //	SPCINIT(1);
 	CPVEWRULE();
@@ -1449,6 +1451,7 @@ function saveCpvewCopy(){
 		for(var q=0;q<rows.length;q++){
 			for(var n=0;n<yshu1.length;n++){
 				yshuary.push(CPVEW(yshu1[n], rows[q].gatherId));
+				allIssueRows.push(CPVEW(yshu1[n], rows[q].gatherId));
 			}
 		}
 		socketfc = new WebSocket(websocketUrl);
@@ -1476,27 +1479,52 @@ function saveCpvewCopy(){
 			var fan = msg.data;
 			if (fan.substring(0, 2) == "7E" && fan.substring(10, 12) == "52") {
 				if (parseInt(fan.substring(18, 20), 16) == 1) {
-					x++;
-					if (x == rows1[xx].num.toString().split(",").length) {
-						xx++;
-						x=0;
-						if (xx == rows1.length) {
-							socketfc.close();
-							if (socketfc.readyState != 1) {
-								waitCpvew();
-								alert("复制完成");
-								symbol1++;
-								x = 0;
-								xx = 0;
-								rows1.length = 0;
-								rows.length = 0;
-								str = "";
-								$('#ro').datagrid('clearSelections');
-							}
-
-						} /*else {
+					if(issueFlag == 0){
+						x++;
+						if (x == rows1[xx].num.toString().split(",").length) {
+							xx++;
+							x=0;
+							if (xx == rows1.length) {
+								issueFlag = 1;
+								if(reIssue.length != 0){
+									window.setInterval(function() {
+										if(yshuary.length>0){
+											socketfc.send(yshuary.pop());
+										}
+									}, 250);
+									window.setTimeout(function() {
+										socketfc.close();
+										if (socketfc.readyState != 1) {
+											waitCpvew();
+											alert("复制完成");
+											symbol1++;
+											x = 0;
+											xx = 0;
+											rows1.length = 0;
+											rows.length = 0;
+											str = "";
+											$('#ro').datagrid('clearSelections');
+										}
+									}, reIssue.length * 250 + 3000);
+								}else{
+									socketfc.close();
+									if (socketfc.readyState != 1) {
+										waitCpvew();
+										alert("复制完成");
+										symbol1++;
+										x = 0;
+										xx = 0;
+										rows1.length = 0;
+										rows.length = 0;
+										str = "";
+										$('#ro').datagrid('clearSelections');
+									}
+								}
+								
+							} /*else {
 							ccp(rows[xx].gatherId);
 						}*/
+						}
 					}
 					for(var i=0;i<obj.total;i++){
 						var chanelnum = obj.rows[i].nonum.split(",");
