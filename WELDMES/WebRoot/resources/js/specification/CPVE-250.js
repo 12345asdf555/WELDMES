@@ -1,4 +1,6 @@
 var flag;
+var reIssue = new Array(),allIssueRows = new Array(),failRows = new Array();
+var issueFlag = 0;
 $(function() {
 //	SPCINIT(1);
 	CPVETRULE();
