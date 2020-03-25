@@ -24,7 +24,7 @@
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://119.3.100.103:3306/WELDMES?allowMultiQueries=true&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
+		<property name="url" value="jdbc:mysql://119.3.100.103:3306/IWELDMES?allowMultiQueries=true&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
 		<property name="username" value="root" />
 		<property name="password" value="123456" />
 	</bean>

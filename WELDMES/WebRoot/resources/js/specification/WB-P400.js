@@ -1567,6 +1567,7 @@ function saveWbpCopy(){
 		} else {
 			var url1 = "wps/Spe?machine=" + node11.id + "&chanel=" + chanel1;
 		}
+		var yshuary = new Array();
 		$.ajax({
 			type : "post",
 			async : false,
@@ -1576,12 +1577,27 @@ function saveWbpCopy(){
 			success : function(result) {
 				if (result) {
 					yshu1 = eval(result.rows);
+					var chanelnum = result.chanelNum.substr(0, result.chanelNum.length-1);
+					var failChanelRows = chanelnum.split(",");
 					for(var i=0;i<obj.total;i++){
-						var chanelnum = result.chanelNum.substr(0, result.chanelNum.length-1);
 						obj.rows[i].num = chanelnum;
 						obj.rows[i].nonum = chanelnum;
 					}
 					$("#ro1").datagrid("loadData", obj);
+					for(var q=0;q<rows.length;q++){
+						for(var c=0;c<failChanelRows.length;c++){
+							failRows.push(
+								{
+									gatherNo : rows[q].gatherId,
+									chanel : failChanelRows[c]
+								}		
+							);
+						}
+						for(var n=0;n<yshu1.length;n++){
+							yshuary.push(WBP(yshu1[n], rows[q].gatherId));
+							allIssueRows.push(WBP(yshu1[n], rows[q].gatherId));
+						}
+					}
 				} else {
 					alert("未查询到相关数据，请尝试索取保存。");
 				}
@@ -1590,12 +1606,6 @@ function saveWbpCopy(){
 				alert("数据请求失败，请联系系统管理员!");
 			}
 		});
-		var yshuary = new Array();
-		for(var q=0;q<rows.length;q++){
-			for(var n=0;n<yshu1.length;n++){
-				yshuary.push(WBP(yshu1[n], rows[q].gatherId));
-			}
-		}
 		socketfc = new WebSocket(websocketUrl);
 /*		if (symbol1 == 0) {
 			window.setTimeout(function() {
@@ -1608,40 +1618,121 @@ function saveWbpCopy(){
 				}
 			}, 15000)
 		}*/
+		var reIssueFlagTimer;
 		socketfc.onopen = function() {
 			rows1 = ro1Rows;
-			window.setInterval(function() {
+			reIssueFlagTimer = window.setTimeout(function() {
+					issueFlag = 1;
+					if(failRows.length != 0){
+						for(var i=0;i<allIssueRows.length;i++){
+							for(var j=0;j<failRows.length;j++){
+								if(allIssueRows[i].substring(12, 16) == failRows[j].gatherNo && parseInt(allIssueRows[i].substring(16, 18)) == parseInt(failRows[j].chanel)){
+									reIssue.push(allIssueRows[i]);
+								}
+							}
+						};
+						var wsi = window.setInterval(function() {
+							if(reIssue.length>0){
+								socketfc.send(reIssue.pop());
+								console.log("xx");
+							}else{
+								window.clearInterval(wsi);
+							}
+						}, 250);
+						window.setTimeout(function() {
+							socketfc.close();
+							if (socketfc.readyState != 1) {
+								waitWbp();
+								alert("复制完成");
+//								symbol1++;
+								x = 0;
+								xx = 0;
+								rows1.length = 0;
+								rows.length = 0;
+								failRows.length = 0;
+								allIssueRows.length = 0;
+								reIssue.length = 0;
+								str = "";
+								$('#ro').datagrid('clearSelections');
+							}
+						}, failRows.length * 250 + 3000);
+					}
+			}, yshuary.length * 250 + 3000);
+			var wsi = window.setInterval(function() {
 				if(yshuary.length>0){
 					socketfc.send(yshuary.pop());
+				}else{
+					window.clearInterval(wsi);
 				}
 			}, 250)
-//			waitWbl();
+//			wait();
 		}
 		socketfc.onmessage = function(msg) {
 			var fan = msg.data;
 			if (fan.substring(0, 2) == "7E" && fan.substring(10, 12) == "52") {
 				if (parseInt(fan.substring(18, 20), 16) == 1) {
-					x++;
-					if (x == rows1[xx].num.toString().split(",").length) {
-						xx++;
-						x=0;
-						if (xx == rows1.length) {
-							socketfc.close();
-							if (socketfc.readyState != 1) {
-								waitWbp();
-								alert("复制完成");
-								symbol1++;
-								x = 0;
-								xx = 0;
-								rows1.length = 0;
-								rows.length = 0;
-								str = "";
-								$('#ro').datagrid('clearSelections');
-							}
-
-						} /*else {
+					if(issueFlag == 0){
+						x++;
+						if (x == rows1[xx].num.toString().split(",").length) {
+							xx++;
+							x=0;
+							if (xx == rows1.length) {
+								window.clearTimeout(reIssueFlagTimer);
+								issueFlag = 1;
+								if(failRows.length != 0){
+									for(var i=0;i<allIssueRows.length;i++){
+										for(var j=0;j<failRows.length;j++){
+											if(allIssueRows[i].substring(12, 16) == failRows[j].gatherNo && allIssueRows[i].substring(16, 18) == failRows[j].chanel){
+												reIssue.push(allIssueRows[i]);
+											}
+										}
+									};
+									var wsi = window.setInterval(function() {
+										if(reIssue.length>0){
+											socketfc.send(reIssue.pop());
+										}else{
+											window.clearInterval(wsi);
+										}
+									}, 250);
+									window.setTimeout(function() {
+										socketfc.close();
+										if (socketfc.readyState != 1) {
+											waitWbp();
+											alert("复制完成");
+//											symbol1++;
+											x = 0;
+											xx = 0;
+											rows1.length = 0;
+											rows.length = 0;
+											failRows.length = 0;
+											allIssueRows.length = 0;
+											reIssue.length = 0;
+											str = "";
+											$('#ro').datagrid('clearSelections');
+										}
+									}, failRows.length * 250 + 3000);
+								}else{
+									socketfc.close();
+									if (socketfc.readyState != 1) {
+										waitWbp();
+										alert("复制完成");
+//										symbol1++;
+										x = 0;
+										xx = 0;
+										rows1.length = 0;
+										rows.length = 0;
+										failRows.length = 0;
+										allIssueRows.length = 0;
+										reIssue.length = 0;
+										str = "";
+										$('#ro').datagrid('clearSelections');
+									}
+								}
+								
+							} /*else {
 							ccp(rows[xx].gatherId);
 						}*/
+						}
 					}
 					for(var i=0;i<obj.total;i++){
 						var chanelnum = obj.rows[i].nonum.split(",");
@@ -1649,7 +1740,7 @@ function saveWbpCopy(){
 						if(parseInt(fan.substring(12, 16), 16) == parseInt(gatherno) && chanelnum.indexOf(parseInt(fan.substring(16, 18), 16).toString())>=0){
 							chanelnum.pop(parseInt(fan.substring(16, 18), 16));
 							obj.rows[i].nonum = chanelnum.join(",");
-							obj.rows[i].readynum += parseInt(fan.substring(16, 18), 16).toString()+",";
+							obj.rows[i].failnum += parseInt(fan.substring(16, 18), 16).toString()+",";
 						}
 					}
 				} else {
@@ -1658,18 +1749,56 @@ function saveWbpCopy(){
 						xx++;
 						x=0;
 						if (xx == rows1.length) {
-							socketfc.close();
-							if (socketfc.readyState != 1) {
-								waitWbp();
-								alert("复制成功");
-								symbol1++;
-								x = 0;
-								xx = 0;
-								$('#divro1').dialog('close');
-								rows1.length = 0;
-								rows.length = 0;
-								str = "";
-								$('#ro').datagrid('clearSelections');
+							window.clearTimeout(reIssueFlagTimer);
+							issueFlag = 1;
+							if(failRows.length != 0){
+								for(var i=0;i<allIssueRows.length;i++){
+									for(var j=0;j<failRows.length;j++){
+										if(allIssueRows[i].substring(12, 16) == failRows[j].gatherNo && parseInt(allIssueRows[i].substring(16, 18)) == parseInt(failRows[j].chanel)){
+											reIssue.push(allIssueRows[i]);
+										}
+									}
+								};
+								var wsi = window.setInterval(function() {
+									if(reIssue.length>0){
+										socketfc.send(reIssue.pop());
+									}else{
+										window.clearInterval(wsi);
+									}
+								}, 250);
+								window.setTimeout(function() {
+									socketfc.close();
+									if (socketfc.readyState != 1) {
+										waitWbp();
+										alert("复制完成");
+//										symbol1++;
+										x = 0;
+										xx = 0;
+										rows1.length = 0;
+										rows.length = 0;
+										failRows.length = 0;
+										allIssueRows.length = 0;
+										reIssue.length = 0;
+										str = "";
+										$('#ro').datagrid('clearSelections');
+									}
+								}, failRows.length * 250 + 3000);
+							}else{
+								socketfc.close();
+								if (socketfc.readyState != 1) {
+									waitWbp();
+									alert("复制完成");
+//									symbol1++;
+									x = 0;
+									xx = 0;
+									rows1.length = 0;
+									rows.length = 0;
+									failRows.length = 0;
+									allIssueRows.length = 0;
+									reIssue.length = 0;
+									str = "";
+									$('#ro').datagrid('clearSelections');
+								}
 							}
 
 						} /*else {
@@ -1685,6 +1814,11 @@ function saveWbpCopy(){
 							chanelnum.pop(parseInt(fan.substring(16, 18), 16));
 							obj.rows[i].nonum = chanelnum.join(",");
 							obj.rows[i].readynum += parseInt(fan.substring(16, 18), 16).toString()+",";
+							for(var f=0;f<failRows.length;f++){
+								if(failRows[f].gatherNo==gatherno && parseInt(failRows[f].chanel)==parseInt(fan.substring(16, 18))){
+									failRows.splice(f, 1);
+								}
+							}
 						}
 //						obj.rows[i].failnum = obj.rows[i].failnum.substring(0,obj.rows[i].failnum.length-1);
 					}
