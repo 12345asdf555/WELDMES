@@ -48,6 +48,11 @@ public class WeldingMachineServiceImpl implements WeldingMachineService {
 	}
 	
 	@Override
+	public List<WeldingMachine> getmachineins(BigInteger machin_id) {
+		return wmm.getmachineins(machin_id);
+	}
+	
+	@Override
 	public void addcatmachine(WeldingMachine wm) {
 		wmm.addcatmachine(wm);
 	}

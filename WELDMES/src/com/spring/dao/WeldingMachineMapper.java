@@ -54,6 +54,8 @@ public interface WeldingMachineMapper extends Mapper<WeldingMachine>{
 	
 	void deleteByInsf(@Param("insfId")BigInteger insfId);
 	
+	List<WeldingMachine> getmachineins(@Param("machin_id")BigInteger machin_id);
+	
 	List<WeldingMachine> getWeldingMachineByInsf(@Param("insfId")BigInteger insfId);
 	
 	BigInteger getIdByGatherid(@Param("gatherid")BigInteger gatherid);

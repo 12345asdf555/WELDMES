@@ -249,6 +249,7 @@
 					  <tr height="30px">
 					    <td colspan="2" align="center">					
 							<a href="javascript:controlfun();" class="easyui-linkbutton" iconCls="icon-ok">下发控制命令</a>
+							<a href="javascript:openWbwCopyDialog(3);" class="easyui-linkbutton" iconCls="icon-ok">群发控制命令</a>
 							<a href="javascript:openPassDlg();" class="easyui-linkbutton" iconCls="icon-ok">密码下发</a>			
 						</td>
 					  </tr>
@@ -259,7 +260,7 @@
 	    <div id="divro" class="easyui-dialog" style="width:500px;height:490px" closed="true" buttons="#dlg-ro"algin="center">
 	    	<div style="text-align:center;height:25px">
 	    		<lable id="mu"></lable>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	    		所属班组：<select class="easyui-combobox" name="item" id="item" data-options="editable:false" onChange="changeValue(current,old)"></select>
+	    		所属班组：<input class="easyui-textbox" name="item" id="item" data-options="editable:false" onChange="changeValue(current,old)">
 	    	</div>
 	    	<div id="tab" style="text-align:center;height:385px;width:485px">
 	    		<table id="ro" style="table-layout:fixed;width:100%;" ></table>
