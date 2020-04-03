@@ -1628,7 +1628,7 @@ function saveWbpCopy(){
 					if(failRows.length != 0){
 						for(var i=0;i<allIssueRows.length;i++){
 							for(var j=0;j<failRows.length;j++){
-								if(allIssueRows[i].substring(12, 16) == failRows[j].gatherNo && parseInt(allIssueRows[i].substring(16, 18)) == parseInt(failRows[j].chanel)){
+								if(parseInt(allIssueRows[i].substring(12, 16), 16) == parseInt(failRows[j].gatherNo, 10) && parseInt(allIssueRows[i].substring(16, 18),16) == parseInt(failRows[j].chanel,10)){
 									reIssue.push(allIssueRows[i]);
 								}
 							}
@@ -1684,7 +1684,7 @@ function saveWbpCopy(){
 								if(failRows.length != 0){
 									for(var i=0;i<allIssueRows.length;i++){
 										for(var j=0;j<failRows.length;j++){
-											if(allIssueRows[i].substring(12, 16) == failRows[j].gatherNo && allIssueRows[i].substring(16, 18) == failRows[j].chanel){
+											if(parseInt(allIssueRows[i].substring(12, 16), 16) == parseInt(failRows[j].gatherNo, 10) && parseInt(allIssueRows[i].substring(16, 18), 16) == parseInt(failRows[j].chanel, 10)){
 												reIssue.push(allIssueRows[i]);
 											}
 										}
@@ -1739,7 +1739,7 @@ function saveWbpCopy(){
 					for(var i=0;i<obj.total;i++){
 						var chanelnum = obj.rows[i].nonum.split(",");
 						var gatherno = obj.rows[i].gatherNo;
-						if(parseInt(fan.substring(12, 16), 16) == parseInt(gatherno) && chanelnum.indexOf(parseInt(fan.substring(16, 18), 16).toString())>=0){
+						if(parseInt(fan.substring(12, 16), 16) == parseInt(gatherno,10) && chanelnum.indexOf(parseInt(fan.substring(16, 18), 16).toString())>=0){
 							chanelnum.pop(parseInt(fan.substring(16, 18), 16));
 							obj.rows[i].nonum = chanelnum.join(",");
 							obj.rows[i].failnum += parseInt(fan.substring(16, 18), 16).toString()+",";
@@ -1756,7 +1756,7 @@ function saveWbpCopy(){
 							if(failRows.length != 0){
 								for(var i=0;i<allIssueRows.length;i++){
 									for(var j=0;j<failRows.length;j++){
-										if(allIssueRows[i].substring(12, 16) == failRows[j].gatherNo && parseInt(allIssueRows[i].substring(16, 18)) == parseInt(failRows[j].chanel)){
+										if(parseInt(allIssueRows[i].substring(12, 16), 16) == parseInt(failRows[j].gatherNo, 10) && parseInt(allIssueRows[i].substring(16, 18),16) == parseInt(failRows[j].chanel,10)){
 											reIssue.push(allIssueRows[i]);
 										}
 									}
@@ -1812,7 +1812,7 @@ function saveWbpCopy(){
 					for(var i=0;i<obj.total;i++){
 						var chanelnum = obj.rows[i].nonum.toString().split(",");
 						var gatherno = obj.rows[i].gatherNo;
-						if(parseInt(fan.substring(12, 16), 16) == parseInt(gatherno) && chanelnum.indexOf(parseInt(fan.substring(16, 18), 16).toString())>=0){
+						if(parseInt(fan.substring(12, 16), 16) == parseInt(gatherno,10) && chanelnum.indexOf(parseInt(fan.substring(16, 18), 16).toString())>=0){
 							chanelnum.pop(parseInt(fan.substring(16, 18), 16));
 							obj.rows[i].nonum = chanelnum.join(",");
 							obj.rows[i].readynum += parseInt(fan.substring(16, 18), 16).toString()+",";
