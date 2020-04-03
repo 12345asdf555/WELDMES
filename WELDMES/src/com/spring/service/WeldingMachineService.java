@@ -91,6 +91,12 @@ public interface WeldingMachineService {
 	 */
 	int getGatheridCount(BigInteger itemid,String gather);
 	
+
+	/**
+	 * 获取设备组织机构
+	 */
+	List<WeldingMachine> getmachineins(BigInteger machin_id);
+	
 	/**
 	 * 根据id查找记录
 	 * @param wid

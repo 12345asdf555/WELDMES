@@ -868,6 +868,36 @@ public class WeldingMachineController {
 	}
 	
 	/**
+	 * 获取设备组织机构
+	 * @return
+	 */
+	@RequestMapping("/getInsframework")
+	@ResponseBody
+	public String getInsframework(HttpServletRequest request){
+		JSONObject json = new JSONObject();
+		JSONArray ary = new JSONArray();
+		JSONObject obj = new JSONObject();
+		String parent = request.getParameter("machine_id");
+		BigInteger machin_id = null;
+		if(iutil.isNull(parent)){
+			machin_id = new BigInteger(parent);
+		}
+		try{
+			List<WeldingMachine> wm = wmm.getmachineins(machin_id);
+			for(WeldingMachine w:wm){
+				json.put("id", w.getId());
+				json.put("name", w.getMvaluename());
+				ary.add(json);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		obj.put("ary", ary);
+		return obj.toString();
+	}
+	
+	
+	/**
 	 * 删除cat焊机设备
 	 * @param wid
 	 * @return

@@ -152,6 +152,12 @@
 		SELECT fid,fequipment_no FROM tb_welding_machine where finsframework_id = #{id} order by fequipment_no asc
 	</select>
 	
+	<select id="getmachineins" resultMap="wmMap">
+		SELECT w.finsframework_id,i.fname mname FROM tb_welding_machine w  
+		LEFT JOIN tb_insframework i ON w.finsframework_id = i.fid
+		WHERE  fgather_id = #{machin_id}
+	</select>
+	
 	<select id="getEquipmentnoCount" resultType="java.lang.Integer">
 		SELECT count(*) FROM tb_welding_machine WHERE fequipment_no = #{eno}
 	</select>

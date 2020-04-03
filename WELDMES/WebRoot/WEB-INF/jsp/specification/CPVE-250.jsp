@@ -236,8 +236,9 @@
 			  			</td>
 					  </tr>
 					  <tr height="30px">
-					    <td colspan="2" align="center">					
+					    <td colspan="2" align="center">		
 							<a href="javascript:controlfun();" class="easyui-linkbutton" iconCls="icon-ok">下发控制命令</a>
+							<a href="javascript:openCpvetCopyDialog	(3);" class="easyui-linkbutton" iconCls="icon-ok">群发控制命令</a>
 							<a href="javascript:openPassDlg();" class="easyui-linkbutton" iconCls="icon-ok">密码下发</a>			
 						</td>
 					  </tr>

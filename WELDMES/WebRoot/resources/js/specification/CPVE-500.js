@@ -1,10 +1,14 @@
 var flag;
 var reIssue = new Array(),allIssueRows = new Array(),failRows = new Array();
 var issueFlag = 0;
+var finishdata = new Array();
+var nomachine = new Array();
+var allmachine = new Array();
 $(function() {
 //	SPCINIT(1);
 	CPVEWRULE();
 	cpvewDialogData();
+	InsframeworkCombobox();
 })
 
 //下发规范或者返回拼接好的要下发的字符串
@@ -1197,8 +1201,9 @@ function CPVEWSAVE(value) {
 
 //打开通道复制的dialog
 function openCpvewCopyDialog(value){
+	InsframeworkCombobox();
 	var url="";
-	if (value == 1) {
+	if (value == 1 || value == 3) {
 		url = "wps/findCount?mac=" + node11.id + "&chanel=";
 	}else{
 		url = "wps/findCount?mac=" + node11.id + "&chanel=" + $('#fchanel').combobox('getValue');
@@ -1339,6 +1344,7 @@ function cpvewDialogData(){
 }
 
 function saveCpvewCopy(){
+	if(flag == 1 || flag == 0){
 	var smachine = node11.id;
 	rows = "";
 	var chanel1 = $('#fchanel').combobox('getValue');
@@ -1686,7 +1692,264 @@ function saveCpvewCopy(){
 	} else {
 		$('#divro').dialog('close');
 	}
+	} else {
+		var smachine = node11.id;
+		//rows = "";
+		//var chanel1 = $('#fchanel').combobox('getValue');
+		$("#ro1").datagrid({
+			fitColumns : true,
+			height : $("#divro1").height(),
+			width : $("#divro1").width(),
+			idField : 'id',
+			url : '/',
+			singleSelect : false,
+			rownumbers : true,
+			columns : [ [ {
+				field : 'equipmentNo',
+				title : '焊机编号',
+				width : 80,
+				halign : "center",
+				align : "left"
+			}, {
+				field : 'gatherNo',
+				title : '采集编号',
+				width : 80,
+				halign : "center",
+				align : "left"
+			}, {
+				field : 'failnum',
+				title : '设备下发状态',
+				width : 80,
+				halign : "center",
+				align : "left",
+				formatter: function(value,row,index){
+						var str = "";
+						if(row.failnum==0){
+							str += '<a id="wait" class="easyui-linkbutton"/>';
+						}
+						if(row.failnum==1){
+							str += '<a id="down" class="easyui-linkbutton"/>';
+						}
+						if(row.failnum==2){
+							str += '<a id="finish" class="easyui-linkbutton"/>';
+						}
+						return str;
+					}
+			} ] ],
+			pagination : true,
+			rowStyler: function(index,row){
+	            if ((index % 2)!=0){
+	            	//处理行代背景色后无法选中
+	            	var color=new Object();
+	                return color;
+	            }
+	        },
+			onLoadSuccess: function(data){
+				if($("#wait").length!=0){
+					$("a[id='wait']").linkbutton({text:'未响应',plain:true,iconCls:'icon-help'});
+				}
+				if($("#down").length!=0){
+					$("a[id='down']").linkbutton({text:'下发成功',plain:true,iconCls:'icon-ok'});
+				}
+				if($("#finish").length!=0){
+					$("a[id='finish']").linkbutton({text:'下发失败',plain:true,iconCls:'icon-cancel'});
+				}
+			}
+		});
+		var r = confirm("确认下发吗？");
+		if (r == true) {
+			x = 0;
+			xx = 0;
+			var rows = $("#ro").datagrid("getSelections");
+			var ro1Rows = new Array();
+			var obj = {};
+			for (var i = 0; i < rows.length; i++) {
+				if (!rows[i].gatherId) {
+					ro1Rows.length = 0;
+					alert(rows[i].equipmentNo + "焊机未绑定采集模块！！！")
+					return;
+				}
+				ro1Rows.push({
+					equipmentNo : rows[i].equipmentNo,
+					gatherNo : rows[i].gatherId,
+					failnum : '0'
+				})
+			}
+			obj.total = ro1Rows.length;
+			obj.rows = ro1Rows;
+			$('#divro').dialog('close');
+			$('#divro1').window({
+				title : "控制指令下发进行中，请稍等。。。",
+				modal : true
+			});
+			$('#divro1').window('open');
+			$("#ro1").datagrid("loadData", obj);
+			var pwdflag=0;
+		 	if(typeof(WebSocket) == "undefined") {
+		    	WEB_SOCKET_SWF_LOCATION = "resources/js/WebSocketMain.swf";
+		    	WEB_SOCKET_DEBUG = true;
+			}
+			var websocket = new WebSocket(WebSocket_Url);
+			websocket.onopen = function() {
+				window.setTimeout(function() {
+					if(pwdflag==0){
+						alert("下发失败");
+						//websocket.close();
+					}
+				}, 5000)
+			var str="";
+			for (var i = 0; i < rows.length; i++) {
+				str += rows[i].equipmentNo+",";
+				var machine;
+				machine = parseInt(rows[i].gatherId).toString(16);
+				nomachine.push(parseInt(rows[i].gatherId));
+				if(machine.length<4){
+					var length = 4 - machine.length;
+			        for(var m=0;m<length;m++){
+			        	machine = "0" + machine;
+			        };
+				}
+				var con = $("input[name='free']:checked").val();
+				if(con.length<2){
+					var length = 2 - con.length;
+			        for(var a=0;a<length;a++){
+			        	con = "0" + con;
+			        }
+			    };
+				if(machineModel == 184){
+					var nchanel = parseInt($('#newchanel').combobox('getValue')).toString(16);
+					if (nchanel.length < 2) {
+						var length = 2 - nchanel.length;
+						for (var i = 0; i < length; i++) {
+							nchanel = "0" + nchanel;
+						}
+					}
+					var xiafasend1 = machine+con+nchanel;
+				}else{
+					var xiafasend1 = machine+con;
+				}
+				var xxx = xiafasend1.toUpperCase();
+				var data_length = ((parseInt(xxx.length)+12)/2).toString(16);
+				if(data_length.length<2){
+					var length = 2 - data_length.length;
+			        for(var s=0;s<length;s++){
+			        	data_length = "0" + data_length;
+			        }
+			    };
+			    xxx="7E"+data_length+"01010154"+xiafasend1;
+			    var check = 0;
+				for (var j = 0; j < (xxx.length/2); j++)
+				{
+					var tstr1=xxx.substring(j*2, j*2+2);
+					var k=parseInt(tstr1,16);
+					check += k;
+				}
+				var checksend = parseInt(check).toString(16);
+				var a2 = checksend.length;
+				checksend = checksend.substring(a2-2,a2);
+				checksend = checksend.toUpperCase();
+				var xiafasend2 = (xxx+checksend).substring(2);
+				finishdata.push("7E"+xiafasend2+"7D");
+				allmachine.push("7E"+xiafasend2+"7D");
+//				for(var f=0;f<obj.total;f++){
+//					obj.rows[0].nonum = nomachine;
+//					$("#ro1").datagrid("loadData", obj);
+//				}
+			}
+			var t = window.setInterval(function() {
+					if(finishdata.length> 0){
+						websocket.send(finishdata.pop());
+					}else if(allmachine.length>0){
+						websocket.send(allmachine.pop());
+						console.log("重发触发");
+					}
+					else{
+						websocket.close();
+						window.clearInterval(t);
+						alert("下发完成");
+					}
+			}, 500)
+			websocket.onmessage = function(msg) {
+					var fan = msg.data; 
+					var judge = parseInt(fan.substring(12,16));
+					for(u=0;u<allmachine.length;u++){
+						if(judge == parseInt(allmachine[u].substring(12, 16))){
+							allmachine.splice(u, 1);
+						}
+					}
+					for(e=0;e<nomachine.length;e++){
+						if(judge == nomachine[e]){
+							nomachine.splice(e, 1);
+							for(p=0;p<obj.total;p++){
+								obj.rows[p].failnum = 0;
+							}
+							$("#ro1").datagrid("loadData", obj);
+						}
+					}
+					if(fan.substring(0,2)=="7E"&&fan.substring(10,12)=="54"){
+						pwdflag++;
+						var cxk = parseInt(fan.substring(12,16),16);
+						if(parseInt(fan.substring(16,18),16)==1){
+							for(var d=0;d<obj.total;i++){
+								if(parseInt(obj.rows[d].gatherNo) == cxk){
+									obj.rows[d].failnum = 2;
+								}
+							}
+							$("#ro1").datagrid("loadData", obj);
+							//websocket.close();
+							if(websocket.readyState!=1){
+								alert("下发失败");
+								}
+						}else{
+							for(var d=0;d<obj.total;d++){
+								if(parseInt(obj.rows[d].gatherNo) == cxk){
+									obj.rows[d].failnum = 1;
+								}
+							}
+							$("#ro1").datagrid("loadData", obj);
+							//websocket.close();
+							if(websocket.readyState!=1){
+								alert("下发成功");
+								}
+						}
+					}
+				};	
+			}
+		} else {
+			$('#divro').dialog('close');
+		}
+	}
 }
+
+//所属项目
+function InsframeworkCombobox(){
+	var machin_id = node11.id;
+	$.ajax({  
+  type : "post",  
+  async : false,
+  url : "weldingMachine/getInsframework?machine_id="+machin_id,  
+  data : {},  
+  dataType : "json", //返回数据形式为json  
+  success : function(result) {  
+      if (result) {
+          var optionStr = '';
+          for (var i = 0; i < result.ary.length; i++) {  
+              optionStr += "<option value=\"" + result.ary[i].id + "\" >"  
+                      + result.ary[i].name + "</option>";
+          }
+          $("#item").html(optionStr);
+          $('#item').textbox('setValue',result.ary[0].name);
+      }  
+  },  
+  error : function(errorMsg) {  
+      alert("数据请求失败，请联系系统管理员!");  
+  }  
+	}); 
+	
+	//$("#item").textbox();
+}
+
+
 function waitCpvew() {
 	var smachine = node11.id;
 	rows = "";
