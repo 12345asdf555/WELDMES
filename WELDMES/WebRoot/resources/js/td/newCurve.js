@@ -258,7 +258,7 @@ function iview(){
 			document.getElementById("show").style.display="block";
 		}
 		window.setTimeout(function() {
-			tempary = liveary.concat();
+			tempary = liveary.concat([]);
 			worknum=0, standbynum=0, warnnum=0, offnum=machine.length-tempary.length;
 			//默认显示所有
 			for(var i=0;i<machine.length;i++){
@@ -439,7 +439,8 @@ function iview(){
 									"livevol":livevol+"V",
 									"livestatus":livestatus,
 									"livestatusid":livestatusid,
-									"liveimg":liveimg})
+									"liveimg":liveimg,
+									"nowTime":new Date().getTime()})
 						}else{
 							var tempflag = false;
 							for(var x=0;x<liveary.length;x++){
@@ -450,7 +451,8 @@ function iview(){
 										"livevol":livevol+"V",
 										"livestatus":livestatus,
 										"livestatusid":livestatusid,
-										"liveimg":liveimg})
+										"liveimg":liveimg,
+										"nowTime":new Date().getTime()})
 										break;
 								}
 								if(x == liveary.length-1){
@@ -460,7 +462,8 @@ function iview(){
 											"livevol":livevol+"V",
 											"livestatus":livestatus,
 											"livestatusid":livestatusid,
-											"liveimg":liveimg})
+											"liveimg":liveimg,
+											"nowTime":new Date().getTime()})
 								}
 						}
 					}
@@ -539,7 +542,7 @@ window.setInterval(function(){
 	//清空数组
 //	liveary.length = 0;
 //	window.setTimeout(function() {
-		tempary = liveary.concat();
+		tempary = liveary.concat([]);
 		var statusnum = $("#status").combobox('getValue');
 		worknum=0, standbynum=0, warnnum=0, offnum=machine.length-tempary.length;
 		for(var i=0;i<machine.length;i++){
@@ -616,7 +619,13 @@ window.setInterval(function(){
 		$("#warn").html(warnnum);
 		$("#off").html(offnum);
 		showChart();
-		liveary.length = 0;
+//		liveary.length = 0;
+		var timeflag = new Date().getTime();
+		for(var t=liveary.length-1;t>=0;t--){
+			if(timeflag-liveary[t].nowTime>=30000){
+				liveary.splice(t, 1);
+			}
+		}
 //	}, 6000);
 },30000);
 
