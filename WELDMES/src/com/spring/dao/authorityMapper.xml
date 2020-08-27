@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.spring.dao.AuthorityMapper">
+	
+	<insert id="save" parameterType="Authority">
+		insert into tb_authorities(authorities_name,authorities_desc,status) values(#{authorityName},#{authorityDesc},#{status});
+		<!-- insert into tb_authorities_resources(authorities_name,resources_name) values(#{authorityName},#{resourceName}) -->
+	</insert>
+	
+	<insert id="saveResource" parameterType="Authority">
+	<!-- 	insert into tb_authorities(authorities_name,authorities_desc,status) values(#{authorityName},#{authorityDesc},#{status}); -->
+		insert into tb_authorities_resources(authorities_id,resources_id) values(#{id},#{resourceId})
+	</insert>
+	
+	<update id="update" parameterType="Authority">
+		update tb_authorities set authorities_name=#{authorityName},authorities_desc=#{authorityDesc},status=#{status} where id=#{id};
+		<!-- update tb_authorities_resources set resources_name=#{resourceName} where id=#{id} -->
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		delete from tb_authorities where id=#{id};
+	</delete>
+	
+	<delete id="delete1" parameterType="int">
+		delete from tb_authorities_resources where authorities_id=#{id}; 
+	</delete>
+	
+	<delete id="delete2" parameterType="int">
+		delete from tb_roles_authorities where authority_id=#{id}; 
+	</delete>
+	
+	<delete id="deleteResource" parameterType="int">
+		delete from tb_authorities_resources where authorities_id=#{id};
+	</delete>
+	
+	<select id="updateAuthorityResource" parameterType="int" resultType="String">
+		select authorities_name authorityName from tb_authorities where id=#{id}
+	</select>
+	
+	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
+	<select id="findById" parameterType="int" resultType="Authority">
+		 select tb_authorities.id id,tb_authorities.authorities_name authorityName,tb_authorities.authorities_desc authorityDesc,tb_authorities.status status,d.fvaluename statusname from tb_authorities 
+		 INNER JOIN tb_dictionary d on d.fvalue = tb_authorities.status where d.ftypeid=6 and tb_authorities.id=#{id}
+	</select>
+	
+	<select id="findByResourceId" parameterType="int" resultType="String">
+		select resources_name resourceName from tb_resources where id=#{id}
+	</select>
+	
+	<select id="findAll" resultType="Authority">
+	   select tb_authorities.id id,tb_authorities.authorities_name authorityName,tb_authorities.authorities_desc authorityDesc,tb_authorities.status status,d.fvaluename statusname from tb_authorities 
+	   INNER JOIN tb_dictionary d on d.fvalue = tb_authorities.status where  d.ftypeid=6 
+		<if test="str!=null and str!=''">
+			and ${str}
+		</if>
+		 ORDER by tb_authorities.id
+	</select>
+	
+	<select id="findAllResource" resultType="Authority">
+		select id id,resources_name resourceName from tb_resources
+	</select>
+	
+	<select id="findResource" resultType="Authority">
+		select tb_authorities.id id,tb_authorities.authorities_name authorityName,tb_authorities.authorities_desc authorityDesc,tb_authorities.status status,tb_authorities_resources.resources_id resourceId,tb_resources.resources_name resourceName from tb_authorities left join tb_authorities_resources on tb_authorities.id = tb_authorities_resources.authorities_id left join tb_resources on tb_resources.id=tb_authorities_resources.resources_id where tb_authorities.id=#{id}
+	</select>
+	
+	<select id="getAllAuthoritys" resultType="Authority">
+		select tb_authorities.id id,tb_authorities.authorities_name authorityName,tb_authorities.authorities_desc authorityDesc,tb_authorities.status status from tb_authorities 
+	</select>
+	
+	<select id="getAuthoritynameCount" parameterType="String" resultType="java.lang.Integer">
+		select count(*) from tb_authorities where authorities_name=#{authorityName}
+	</select>
+	
+	<select id="findAuthId" parameterType="String" resultType="int">
+		select id from tb_authorities where authorities_name=#{authorityName}
+	</select>
+	
+</mapper>

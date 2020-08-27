@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.dao.EquipmentAppointmentMapper">
+
+	<resultMap id="eMap" type="com.spring.model.EquipmentAppointment">
+		<id property="id" column="id"></id>
+		<result property="fmachineId" column="fmachine_id"></result>
+		<result property="fwelderId" column="fwelder_id"></result>
+		<result property="fmachineStatus" column="fmachine_status"></result>
+		<result property="appointmentMessage" column="appointment_message"></result>
+		<result property="checkMessage" column="check_message"></result>
+		<result property="remark" column="remark"></result>
+		<result property="checkStatus" column="check_status"></result>
+		<result property="userId" column="user_id"></result>
+		<result property="createTime" column="create_time"></result>
+		<result property="updateTime" column="update_time"></result>
+		<result property="creator" column="creator"></result>
+		<result property="checkDatetime" column="check_datetime"></result>
+		<result property="appointmentDatetime" column="appointment_datetime"></result>
+		<result property="giveBackDatetime" column="give_back_datetime"></result>
+	</resultMap>
+
+	<resultMap id="dMap" type="com.spring.model.EquipmentAppointment">
+        <id column="fid" property="fid" />
+		<result property="ip" column="fIP" />
+		<result property="model" column="model" />
+		<result property="modelname" column="modelname" />
+		<result property="fmanunumbers" column="fmanunumbers" />
+		<result property="fsection" column="fsection" />
+		<result property="fauthentication" column="fauthentication" />
+		<result property="ftest" column="ftest" />
+		<result property="fprevention" column="fprevention" />
+		<result property="equipmentNo" column="fequipment_no" />		
+		<result property="position" column="fposition" />
+		<result property="isnetworking" column="fisnetworking" />
+		<result property="joinTime" column="fjoin_time" />
+		<result property="typeId" column="ftype_id" />
+		<result property="statusId" column="fstatus_id" />
+		<result property="typename" column="typename" />
+		<result property="statusname" column="statusname" />
+		<result property="creater" column="fcreater" />
+		<result property="updater" column="fupdater" />
+        <result property="mvalueid" column="mid"></result>  
+        <result property="mvaluename" column="mname"></result>  
+         <result property="modelid" column="modelid"></result>  
+        <association property="insframeworkId" column="finsframework_id" javaType="com.spring.model.Insframework">  
+            <id property="id" column="iid"></id> 
+            <result property="name" column="iname"></result>  
+            <result property="logogram" column="flogogram"></result>  
+            <result property="code" column="fcode"></result>
+        	<result property="parent" column="fparent"></result>
+        	<result property="type" column="ftype"></result>
+        </association>
+        <association property="gatherId" column="fgather_id" javaType="com.spring.model.Gather">  
+            <id property="id" column="gid"></id> 
+	        <result property="gatherNo" column="fgather_no"></result>  
+	        <result property="status" column="fstatus"></result>  
+	        <result property="protocol" column="fprotocol"></result>
+	       	<result property="ipurl" column="fipurl"></result>
+	       	<result property="macurl" column="fmacurl"></result>
+	       	<result property="leavetime" column="fleavetime"></result>
+        </association>
+	</resultMap>
+
+
+	<sql id="equipment_appointment">
+		id,fmachine_id,fwelder_id,fmachine_status,appointment_message,check_message,remark,check_status,user_id,
+		create_time,update_time,creator,mender,check_datetime,appointment_datetime,give_back_datetime
+	</sql>
+
+	<!--  查询焊机设备并分页 -->
+	<select id="getEquipmentAppointmentAll" resultMap="dMap"  parameterType="java.lang.String">
+		SELECT 
+		w.fid fid,w.fIP fIP,w.fmodel model,fstatus_id,w.fmanunumbers fmanunumbers, w.fsection fsection,w.fauthentication fauthentication,w.ftest ftest,w.fprevention fprevention,i.fid iid,ftype_id,g.fid gid,dic.fvalue mid, fequipment_no,fgather_no ,fjoin_time,i.fname iname
+		,dic.fvaluename mname,fisnetworking,fposition,d.fvaluename statusname,di.fvaluename typename,dict.fvaluename modelname
+		FROM tb_welding_machine w
+		LEFT JOIN tb_insframework i ON w.finsframework_id = i.fid
+		LEFT JOIN tb_insframework ins on ins.fid = i.fparent
+		LEFT JOIN tb_insframework insf on insf.fid = ins.fparent
+        INNER JOIN tb_dictionary d ON d.fvalue = w.fstatus_id
+        INNER JOIN tb_dictionary di ON di.fvalue = w.ftype_id
+        INNER JOIN tb_dictionary dic ON dic.fvalue = w.fmanufacturer_id
+        INNER JOIN tb_dictionary dict ON dict.fvalue = w.fmodel
+		left JOIN tb_gather g ON g.fid = w.fgather_id
+		where (d.fvalue=31 and di.ftypeid=4 and dic.ftypeid=14 and dict.ftypeid=17)
+		<if test="parent!=null and parent!=''">
+			and (i.fid=#{parent} or ins.fid=#{parent} or insf.fid=#{parent} or insf.fparent=#{parent})
+		</if>
+		<if test="str!=null and str!=''">
+			and ${str}
+		</if>
+		ORDER BY w.fequipment_no
+	</select>
+
+	<!-- 新增设备预约记录 -->
+	<insert id="addEquipmentAppointment" parameterType="com.spring.model.EquipmentAppointment" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO tb_equipment_appointment(fmachine_id,fwelder_id,fmachine_status,appointment_message,check_message,
+		remark,check_status,user_id,create_time,creator,check_datetime,appointment_datetime,give_back_datetime)
+		VALUES(#{fmachineId},#{fwelderId},#{fmachineStatus},#{appointmentMessage},#{checkMessage},#{remark},#{checkStatus},#{userId},
+		#{createTime},#{creator},#{checkDatetime},#{appointmentDatetime},#{giveBackDatetime});
+	</insert>
+
+	<select id="getEquipmentForFmachineId" parameterType="java.lang.String" resultMap="eMap">
+		SELECT <include refid="equipment_appointment"></include> FROM tb_equipment_appointment
+		WHERE fmachine_id = #{fmachineId} ORDER BY create_time DESC LIMIT 1
+	</select>
+	
+	<update id="editEquipmentAppointment" parameterType="com.spring.model.EquipmentAppointment">
+		UPDATE tb_equipment_appointment
+		SET fmachine_id = #{fmachineId},fwelder_id = #{fwelderId},fmachine_status=#{fmachineStatus},appointment_message=#{appointmentMessage},
+		check_message=#{checkMessage},remark=#{remark},check_status=#{checkStatus},user_id=#{userId},check_datetime=#{checkDatetime},
+		appointment_datetime=#{appointmentDatetime},give_back_datetime=#{giveBackDatetime}
+		WHERE id = #{id}
+	</update>
+	
+	
+</mapper>

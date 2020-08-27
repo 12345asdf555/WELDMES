@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.dao.WeldedJunctionMapper">
+
+	<resultMap id="wjMap" type="com.spring.model.WeldedJunction">
+        <id property="id" column="fid"></id> 
+        <result property="machid" column="machid"></result>  
+        <result property="counts" column="counts"></result>  
+        <result property="machine_num" column="fequipment_no"></result> 
+        <result property="weldedJunctionno" column="fwelded_junction_no"></result>  
+        <result property="serialNo" column="fserial_no"></result>
+        <result property="pipelineNo" column="fpipeline_no"></result>
+        <result property="roomNo" column="froom_no"></result>
+        <result property="unit" column="funit"></result>
+        <result property="area" column="farea"></result>
+        <result property="systems" column="fsystems"></result>
+        <result property="children" column="fchildren"></result>
+        <result property="externalDiameter" column="fexternal_diameter"></result>
+        <result property="wallThickness" column="fwall_thickness"></result>
+        <result property="dyne" column="fdyne"></result>
+        <result property="specification" column="fspecification"></result>
+        <result property="maxElectricity" column="fmax_electricity"></result>
+        <result property="minElectricity" column="fmin_electricity"></result>
+        <result property="maxValtage" column="fmax_valtage"></result>
+        <result property="minValtage" column="fmin_valtage"></result>
+        <result property="startTime" column="fstart_time"></result>
+        <result property="endTime" column="fend_time"></result>
+        <result property="material" column="fmaterial"></result>
+        <result property="nextexternaldiameter" column="fnextExternal_diameter"></result>
+        <result property="nextwall_thickness" column="fnextwall_thickness"></result>
+        <result property="next_material" column="fnext_material"></result>
+        <result property="creatTime" column="fcreatetime"></result>
+        <result property="updateTime" column="fupdatetime"></result>
+        <result property="updatecount" column="fupdatecount"></result>
+        <result property="valtage_unit" column="fvaltage_unit"></result>
+        <result property="electricity_unit" column="felectricity_unit"></result>
+        <result property="updater" column="fupdater"></result>
+        <result property="creater" column="fcreater"></result>
+        <result property="insfid" column="insfid"></result>
+        <association property="itemid" column="fitemId" javaType="com.spring.model.Insframework">  
+            <id property="id" column="iid"></id> 
+            <result property="name" column="iname"></result>  
+            <result property="logogram" column="flogogram"></result>  
+            <result property="code" column="fcode"></result>
+        	<result property="parent" column="fparent"></result>
+        	<result property="type" column="ftype"></result>
+        </association>
+	</resultMap>
+	
+	<resultMap id="wmMap" type="com.spring.model.WeldedJunction">
+        <id property="id" column="fid"></id> 
+        <result property="machid" column="machid"></result>  
+        <result property="machine_num" column="fequipment_no"></result> 
+        <result property="weldedJunctionno" column="fwelded_junction_no"></result>  
+        <result property="dyne" column="fdyne"></result>
+        <result property="maxElectricity" column="fmax_electricity"></result>
+        <result property="minElectricity" column="fmin_electricity"></result>
+        <result property="maxValtage" column="fmax_valtage"></result>
+        <result property="minValtage" column="fmin_valtage"></result>
+        <result property="startTime" column="fstart_time"></result>
+        <result property="endTime" column="fend_time"></result>
+	</resultMap>
+	
+	<select id="getWeldedJunctionAll" resultMap="wjMap" parameterType="java.lang.String">
+		SELECT j. * , i.fid iid, i.fname iname FROM tb_welded_junction j 
+		LEFT JOIN tb_insframework i ON j.fitemId = i.fid
+		LEFT JOIN tb_insframework ins on ins.fid = i.fparent
+		LEFT JOIN tb_insframework insf on insf.fid = ins.fparent
+		where 1=1
+		<if test="parent!=null and parent!=''">
+			and i.fid=#{parent} or ins.fid=#{parent} or insf.fid=#{parent} or insf.fparent=#{parent}
+		</if>
+		<if test="str!=null and str!=''">
+			and ${str}
+		</if>
+	</select>
+	
+	<select id="getJunctionByWelder" resultMap="wjMap">
+		select fwelded_junction_no,i.fname iname ,fmax_electricity,fmin_electricity,fmax_valtage,fmin_valtage,fwall_thickness,fnextwall_thickness,Fmaterial,Fnext_material,fexternal_diameter,fnextExternal_diameter from tb_live_data l 
+		INNER join tb_welder w on l.fwelder_id = w.fwelder_no 
+		INNER join tb_welded_junction j on l.fjunction_id = j.fwelded_junction_no
+		INNER JOIN tb_insframework i ON j.fitemId = i.fid 
+		where l.fwelder_id=#{welder}
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and fweldtime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and fweldtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if>group by fjunction_id
+	</select>
+	
+	<select id="getFirsttime" resultType="java.lang.String">
+		SELECT `FWeldTime` FROM `tb_live_data` WHERE `fmachine_id`=#{machineid} AND `fjunction_no`=#{junid} 
+		<if test="welderid!=null and welderid!=''">
+			AND `fwelder_no`=#{welderid}
+		</if>
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and fweldtime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and fweldtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if>
+		AND `tb_live_data`.`fstatus`='3' ORDER BY `FWeldTime` ASC LIMIT 0,1
+	</select>
+	
+	<select id="getLasttime" resultType="java.lang.String">
+		SELECT `FWeldTime` FROM `tb_live_data` WHERE `fmachine_id`=#{machineid} AND `fjunction_no`=#{junid} 
+		<if test="welderid!=null and welderid!=''">
+			AND `fwelder_no`=#{welderid}
+		</if>
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and fweldtime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and fweldtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if>
+		AND `tb_live_data`.`fstatus`='3' ORDER BY `FWeldTime` DESC LIMIT 0,1
+	</select>
+	
+	<select id="getJMByWelder" resultMap="wmMap">
+		select COUNT(l.fid) counts,m.fequipment_no,m.fid machid,fwelded_junction_no,fdyne,l.fmax_electricity,l.fmin_electricity,l.fmax_voltage fmax_valtage,l.fmin_voltage fmin_valtage,MIN(FWeldTime) fstart_time,MAX(FWeldTime) fend_time from tb_live_data l 
+		left join tb_welded_junction j on l.fjunction_id = j.fid
+		INNER JOIN tb_welding_machine m on m.fid=l.fmachine_id
+		where 1=1
+		<if test="welderid!=null and welderid!=''">
+				and l.fwelder_no=#{welderid}
+		</if>
+		<if test="machine!=null and machine!=''">
+				and m.fequipment_no=#{machine}
+		</if>
+		<if test="dto!=null and dto!=''">
+			<if test="dto.search!=null and dto.search!=''">
+				and l.fjunction_no = #{dto.search}
+			</if>
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and (fweldtime between #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and #{dto.dtoTime2})
+			</if>
+		</if>and (l.fstatus='3' or l.fstatus='5' or l.fstatus='7' or l.fstatus='99') group by m.fequipment_no,fwelded_junction_no
+	</select>
+	
+	<select id="getWeldedJunctionById" resultMap="wjMap" parameterType="java.lang.String">
+		SELECT j. * , i.fid iid, i.fname iname FROM tb_welded_junction j INNER JOIN tb_insframework i ON j.fitemId = i.fid WHERE j.fid = #{id}
+	</select>
+	
+	<select id="getWeldedjunctionByNo" resultType="java.lang.Integer" parameterType="java.lang.String">
+		SELECT COUNT(fid) FROM `tb_welded_junction` WHERE fwelded_junction_no = #{wjno}
+	</select>
+	
+	<insert id="addJunction" parameterType="com.spring.model.WeldedJunction">
+		insert into tb_welded_junction(fwelded_junction_no,fserial_no,fpipeline_no,froom_no,funit,farea,fsystems,fchildren,fexternal_diameter,fwall_thickness,fdyne,fspecification,fmax_electricity,fmin_electricity,felectricity_unit,fmax_valtage,fmin_valtage,fvaltage_unit,fitemId,Fmaterial,fnextExternal_diameter,fnextwall_thickness,Fnext_material,fstart_time,fend_time, fcreater, fcreatedate,fupdater,fupdatedate,fupdatecount) 
+		values(#{weldedJunctionno},#{serialNo},#{pipelineNo},#{roomNo},#{unit},#{area},#{systems},#{children},#{externalDiameter},#{wallThickness},#{dyne},#{specification},#{maxElectricity},#{minElectricity},#{electricity_unit},#{maxValtage},#{minValtage},#{valtage_unit},#{insfid},#{material},#{nextexternaldiameter},#{nextwall_thickness},#{next_material},#{startTime},#{endTime},#{creater},now(),#{updater},now(),0);
+	</insert>
+	
+	<update id="updateJunction" parameterType="com.spring.model.WeldedJunction">
+		update tb_welded_junction set fwelded_junction_no=#{weldedJunctionno},fserial_no=#{serialNo},fpipeline_no=#{pipelineNo},froom_no=#{roomNo},funit=#{unit},farea=#{area},fsystems=#{systems},fchildren=#{children},fexternal_diameter=#{externalDiameter},fwall_thickness=#{wallThickness},fdyne=#{dyne},
+		fspecification=#{specification},fmax_electricity=#{maxElectricity},fmin_electricity=#{minElectricity},felectricity_unit=#{electricity_unit},fmax_valtage=#{maxValtage},fmin_valtage=#{minValtage},fvaltage_unit=#{valtage_unit},fitemId=#{insfid},Fmaterial=#{material},fnextExternal_diameter=#{nextexternaldiameter},fnextwall_thickness=#{nextwall_thickness},Fnext_material=#{next_material},fstart_time=#{startTime},fend_time=#{endTime},fupdater=#{updater},fupdatedate=now(),fupdatecount=fupdatecount+1 where fid=#{id};
+	</update>
+	
+	<delete id="deleteJunction" parameterType="java.math.BigInteger">
+		delete from tb_welded_junction where fid=#{id}
+	</delete>
+</mapper>

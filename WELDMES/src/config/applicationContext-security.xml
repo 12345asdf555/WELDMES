@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+    xmlns:beans="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/security
+        http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+        
+    <!-- 自动配置模式，拦截所有请求，有ROLE_USER才可以通过 -->
+     <http pattern="/**/*.jpg" security="none"/> 
+     <http  pattern="/**/*.png" security="none"/>  
+     <http pattern="/**/*.gif" security="none"/>  
+     <http pattern="/**/*.css" security="none"/>  
+     <http pattern="/**/*.js" security="none"/>   
+    <http auto-config="true">
+        <intercept-url pattern="/login.jsp*"  access="IS_AUTHENTICATED_ANONYMOUSLY" />
+         <intercept-url pattern="/index.jsp*"  access="IS_AUTHENTICATED_FULLY" />
+        <!-- 增加 ROLE_ADMIN角色-->
+        <!-- <intercept-url pattern="/welder/welder.jsp" access="ROLE_ADMIN"/> -->
+        <!-- <intercept-url pattern="/**" access="ROLE_**"/> -->
+        <form-login login-page="/login.jsp" authentication-failure-url="/login.jsp?login_error=1" default-target-url="/index.jsp"/> 
+        <logout logout-success-url="/login.jsp" invalidate-session="false"     
+            logout-url="/logout" />
+        <session-management>  
+            <concurrency-control max-sessions="1" 
+                error-if-maximum-exceeded="true" />  
+        </session-management>  
+        <access-denied-handler error-page="/user/Error"/>
+        <custom-filter ref="myFilter" before="FILTER_SECURITY_INTERCEPTOR" />  
+    </http>
+    
+    <!-- 认证管理器。用户名密码都集成在配置文件中 --> 
+    <authentication-manager>
+        <authentication-provider>
+            <jdbc-user-service data-source-ref="securityDataSource" />
+        </authentication-provider>
+    </authentication-manager>
+    
+    <!-- 认证管理器。用户名密码从数据库里读取 --> 
+<!--     <authentication-manager>
+        <authentication-provider>
+            <jdbc-user-service data-source-ref="securityDataSource"
+            users-by-username-query="select users_name,users_password,1 as enabled from tb_users WHERE users_name=?"
+            authorities-by-username-query="select u.users_name, r.roles_name as tb_roles from tb_users u,tb_users_roles ur, tb_roles r where u.users_name=ur.users_name and r.roles_name = ur.roles_name and u.users_name=?
+                                          UNION
+                                          select r.roles_name, a.authorities_name as tb_authorities from tb_roles r,tb_roles_authorities ra, tb_authorities a where r.roles_name=ra.roles_name and a.authorities_name = ra.authorities_name"
+
+       />
+        </authentication-provider>
+    </authentication-manager> -->
+    
+    <beans:bean id="myFilter" 
+        class="com.erdangjiade.spring.security.MyFilterSecurityInterceptor">  
+        <beans:property name="authenticationManager" ref="authenticationManager" />  
+        <beans:property name="accessDecisionManager" ref="myAccessDecisionManagerBean" />  
+        <beans:property name="securityMetadataSource" ref="securityMetadataSource" />  
+    </beans:bean>
+    
+    <authentication-manager alias="authenticationManager">  
+        <authentication-provider user-service-ref="myUserDetailService">  
+            <password-encoder hash="md5" />  
+        </authentication-provider>  
+    </authentication-manager>  
+    
+    <!-- 配置数据源信息  -->
+     <beans:bean id="securityDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+         <beans:property name="driverClass" value="${db.driverClass}"/>
+         <beans:property name="jdbcUrl" value="${db.jdbcUrl}"/>
+         <beans:property name="user" value="${db.user}"/>
+         <beans:property name="password" value="${db.password}"/>
+     </beans:bean>  
+     
+     <beans:bean id="myUserDetailService" class="com.erdangjiade.spring.security.MyUserDetailService" />
+     
+     <beans:bean id="myAccessDecisionManagerBean" 
+        class="com.erdangjiade.spring.security.MyAccessDecisionManager">  
+     </beans:bean>  
+     
+     <!-- 读取资源文件 -->
+     <beans:bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+      <beans:property name="locations">
+            <beans:list>
+                <beans:value>classpath:config/datasource.properties</beans:value>
+            </beans:list>
+      </beans:property>
+     </beans:bean>
+    
+     <beans:bean id="securityMetadataSource" 
+     class="com.erdangjiade.spring.security.MyInvocationSecurityMetadataSource" />  
+    
+    <!-- 指定中文资源 。默认命名空间是security,所以要加前缀beans: --> 
+     <beans:bean id="messageSource"
+        class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <beans:property name="basename"  value="classpath:org/springframework/security/messages_zh_CN"/>  
+     </beans:bean>
+</beans:beans>

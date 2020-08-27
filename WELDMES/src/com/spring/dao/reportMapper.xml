@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.spring.dao.ReportMapper">
+
+	<select id="getWpsid" parameterType="BigInteger" resultType="BigInteger">
+		SELECT FWeldWPSID FROM tb_wps_welddevices WHERE FUpdateDate=(select max(`FUpdateDate`) from tb_wps_welddevices WHERE FWeldDevicesID=#{id} group by FWeldDevicesID LIMIT 1) LIMIT 1
+	</select>
+	
+	<select id="getHjTime" resultType="long">
+		SELECT count( DATE_FORMAT( fweldtime,  '%Y-%m-%d' ) ) FROM `tb_live_data` WHERE fstatus!='0' and fmachine_id=#{machid} and fweldtime>=#{time}
+	</select>
+	
+	<select id="getZxTime" resultType="long">
+		SELECT count( DATE_FORMAT( fweldtime,  '%Y-%m-%d' ) ) FROM `tb_live_data` WHERE fmachine_id=#{machid} and fweldtime>=#{time}
+	</select>
+	
+	<select id="getFirstTime" resultType="String">
+		SELECT `FWeldTime` FROM `tb_live_data` WHERE `FWeldTime`>=#{time} and `fmachine_id`=#{machid} ORDER BY `FWeldTime` DESC LIMIT 0,1 
+	</select>
+	
+	<select id="getWps" parameterType="BigInteger" resultType="Report">
+		SELECT `Fweld_I` fstandardele,`Fweld_v` fstandardvol,`Fweld_I_MAX` insid,`Fweld_I_MIN` machid,`Fweld_V_MAX` result1,`Fweld_V_MIN` result2,`Fdiameter` fdiameter FROM tb_mainwps WHERE `FID`=#{id}
+	</select>
+	
+	<select id="getSyspara" resultType="Report">
+		SELECT `fair_flow_volume` fafv,`fspeed` fspeed FROM tb_parameter 
+	</select>
+	
+	<select id="getAndroidData" resultType="Report">
+		SELECT numbers id,endtime time FROM tb_androidtask where 1=1
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and starttime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and endtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if>
+	</select>
+	
+	<select id="findAllWelder" resultType="Report">
+		SELECT * from (	
+		SELECT w.fwelder_no fweldernum,w.fname fname,w.FCellPhone num3,w.Fback fback,m.fequipment_no fmachineid,m.fmodel fmachinemodel,SUM(o.fworktime) result1 FROM tb_welder w 
+		LEFT JOIN tb_work o ON w.fwelder_no=o.fwelder_no 
+		LEFT JOIN tb_welding_machine m ON o.fmachine_id=m.fid 
+		INNER join tb_insframework i on i.fid = w.Fowner 
+		LEFT JOIN tb_insframework ins on ins.fid = i.fparent 
+    	LEFT JOIN tb_insframework insf on insf.fid = ins.fparent 
+		WHERE 1=1 
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and o.fstarttime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and o.fendtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if>
+		<if test="itemid!=null and itemid!=''">
+			and (i.fid=#{itemid} or ins.fid=#{itemid} or insf.fid=#{itemid} or insf.fparent=#{itemid}) 
+		</if>
+		UNION
+		SELECT w.fwelder_no fweldernum,w.fname fname,w.FCellPhone num3,w.Fback fback,null fequipment_no,null fmodel,0 fworktime FROM tb_welder w 
+		INNER join tb_insframework i on i.fid = w.Fowner 
+		LEFT JOIN tb_insframework ins on ins.fid = i.fparent 
+  		LEFT JOIN tb_insframework insf on insf.fid = ins.fparent
+		WHERE 1=1 
+		<if test="itemid!=null and itemid!=''">
+			and (i.fid=#{itemid} or ins.fid=#{itemid} or insf.fid=#{itemid} or insf.fparent=#{itemid}) 
+		</if>
+		and w.fwelder_no NOT IN (
+		SELECT DISTINCT j.fwelder_no FROM tb_work j
+		left join tb_insframework i on i.fid = j.fwelder_itemid 
+		LEFT JOIN tb_insframework ins on ins.fid = i.fparent 
+		LEFT JOIN tb_insframework insf on insf.fid = ins.fparent
+		WHERE 1=1 
+		<if test="itemid!=null and itemid!=''">
+			and (i.fid=#{itemid} or ins.fid=#{itemid} or insf.fid=#{itemid} or insf.fparent=#{itemid}) 
+		</if>
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and fstarttime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and fendtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if>
+		)) t WHERE t.fweldernum is not NULL GROUP BY t.fweldernum
+	</select>
+	
+	<select id="findMachine" resultType="Report">
+		SELECT DISTINCT tb_welding_machine.fid id,`fequipment_no` fname,`fmodel` fmachinemodel FROM tb_live_data LEFT JOIN tb_welding_machine ON tb_live_data.fmachine_id=tb_welding_machine.fid WHERE tb_live_data.fwelder_id=#{weldid} AND `fequipment_no` IS NOT null 
+	</select>
+	
+	<select id="getWeldingTime" resultType="long">
+		SELECT count(
+		<if test="dto!=null and dto!=''">
+			<if test="dto.year!=null and dto.year!=''">
+				DATE_FORMAT( fweldtime,  '%Y' )
+			</if>
+			<if test="dto.month!=null and dto.month!=''">
+				DATE_FORMAT( fweldtime,  '%Y-%m' )
+			</if>
+			<if test="dto.day!=null and dto.day!=''">
+				DATE_FORMAT( fweldtime,  '%Y-%m-%d' )
+			</if>
+			<if test="dto.week!=null and dto.week!=''">
+				weekofyear(fweldtime)
+			</if>
+		</if>
+		) FROM `tb_live_data` WHERE fstatus!='0' and fmachine_id=#{machid} and fwelder_id=#{weldid}
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and fweldtime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and fweldtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if>
+	</select>
+	
+	<select id="getOnTime" resultType="long">
+		SELECT count(
+		<if test="dto!=null and dto!=''">
+			<if test="dto.year!=null and dto.year!=''">
+				DATE_FORMAT( fweldtime,  '%Y' )
+			</if>
+			<if test="dto.month!=null and dto.month!=''">
+				DATE_FORMAT( fweldtime,  '%Y-%m' )
+			</if>
+			<if test="dto.day!=null and dto.day!=''">
+				DATE_FORMAT( fweldtime,  '%Y-%m-%d' )
+			</if>
+			<if test="dto.week!=null and dto.week!=''">
+				weekofyear(fweldtime)
+			</if>
+		</if>
+		) FROM `tb_live_data` WHERE fmachine_id=#{machid}
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and fweldtime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and fweldtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if>
+	</select>
+	
+		<select id="getRealEle" resultType="long">
+		select case when xxx=0 then 0 else SUM(felectricity)/xxx end  from (SELECT count(
+		<if test="dto!=null and dto!=''">
+			<if test="dto.year!=null and dto.year!=''">
+				DATE_FORMAT( fweldtime,  '%Y' )
+			</if>
+			<if test="dto.month!=null and dto.month!=''">
+				DATE_FORMAT( fweldtime,  '%Y-%m' )
+			</if>
+			<if test="dto.day!=null and dto.day!=''">
+				DATE_FORMAT( fweldtime,  '%Y-%m-%d' )
+			</if>
+			<if test="dto.week!=null and dto.week!=''">
+				weekofyear(fweldtime)
+			</if>
+		</if>
+		)  AS xxx,felectricity FROM `tb_live_data` WHERE fmachine_id=#{machid} and fstatus='0'
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and fweldtime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and fweldtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if>
+		)temp
+	</select>
+	
+		<select id="getRealVol" resultType="long">
+		select case when xxx=0 then 0 else SUM(fvoltage)/xxx end  from (SELECT count(
+		<if test="dto!=null and dto!=''">
+			<if test="dto.year!=null and dto.year!=''">
+				DATE_FORMAT( fweldtime,  '%Y' )
+			</if>
+			<if test="dto.month!=null and dto.month!=''">
+				DATE_FORMAT( fweldtime,  '%Y-%m' )
+			</if>
+			<if test="dto.day!=null and dto.day!=''">
+				DATE_FORMAT( fweldtime,  '%Y-%m-%d' )
+			</if>
+			<if test="dto.week!=null and dto.week!=''">
+				weekofyear(fweldtime)
+			</if>
+		</if>
+		)  AS xxx,fvoltage FROM `tb_live_data` WHERE fmachine_id=#{machid} and fstatus='0'
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and fweldtime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and fweldtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if>
+		)temp
+	</select>
+	
+	<select id="getAllPara" resultType="Report">
+		SELECT m.fid id,m.fequipment_no eno,m.fmodel model,mw.Fweld_I fstandardele,mw.Fweld_v fstandardvol,mw.Fdiameter dia FROM tb_welding_machine m 
+		LEFT JOIN tb_wps_welddevices ww ON m.fid=ww.FWeldDevicesID LEFT JOIN tb_mainwps mw ON ww.FWeldWPSID=mw.FID GROUP BY m.fequipment_no
+	</select>
+	
+	<select id="historyData" resultType="Report">
+		SELECT `felectricity` fstandardele,`fvoltage` fstandardvol,`FWeldTime` fweldingtime,`fstatus` fstatus FROM `tb_live_data` WHERE fmachine_id=#{mach} and (fstatus='3' or fstatus='5' or fstatus='7' or fstatus='99')
+		<if test="fid!=null and fid!=''">
+			and fjunction_no=#{fid} 
+		</if>
+		<if test="welderid!=null and welderid!=''">
+			and `fwelder_no`=#{welderid}
+		</if>
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and fweldtime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and fweldtime &lt;= #{dto.dtoTime2} 
+			</if>
+		</if>
+		group by fweldtime
+	</select>
+</mapper>
