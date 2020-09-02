@@ -4,4 +4,8 @@
       <attribute name="provider-id" value="spring-no-op-library-provider"/>
     </node>
   </facet>
+  <facet id="jst.web.jstl"/>
+  <facet id="java"/>
+  <facet id="wst.jsdt.web"/>
+  <facet id="jst.web"/>
 </root>

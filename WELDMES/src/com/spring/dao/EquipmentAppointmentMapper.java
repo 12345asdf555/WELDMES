@@ -14,9 +14,15 @@ public interface EquipmentAppointmentMapper extends Mapper<EquipmentAppointment>
 	
 	List<EquipmentAppointment> getEquipmentAppointmentAll(@Param("parent") BigInteger parent,@Param("str") String str);
 	
-	void addEquipmentAppointment(EquipmentAppointment equipmentAppointment);
+	List<EquipmentAppointment> getEquipmentAuditAll(@Param("parent") BigInteger parent,@Param("str") String str);
 	
-	void editEquipmentAppointment(EquipmentAppointment equipmentAppointment);
+	int addEquipmentAppointment(EquipmentAppointment equipmentAppointment);
+	
+	int editEquipmentAppointment(EquipmentAppointment equipmentAppointment);
 	
 	EquipmentAppointment getEquipmentForFmachineId(@Param("fmachineId") BigInteger fmachineId);
+	
+	EquipmentAppointment getEquipmentForId(BigInteger id);
+	
+	void updateMachineStatusForId(BigInteger id);
 }

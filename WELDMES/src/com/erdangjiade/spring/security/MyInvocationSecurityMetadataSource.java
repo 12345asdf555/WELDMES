@@ -6,6 +6,19 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.RunnableScheduledFuture;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -38,8 +51,20 @@ public class MyInvocationSecurityMetadataSource implements FilterInvocationSecur
     @Resource    
     private AuthorityService authorityService; 
     //tomcat启动时实例化一次  
-    private HashMap<String, Collection<ConfigAttribute>> resourceMap = null;    
+    private HashMap<String, Collection<ConfigAttribute>> resourceMap = null;
     
+    // 创建优先级的阻塞队列 
+    public final static PriorityBlockingQueue<Runnable> pbq = new PriorityBlockingQueue<Runnable>();
+    /**
+     * 项目启动时，创建线程池，作为焊机状态的修改的定时任务
+     */
+    //public final static ScheduledExecutorService executorService = Executors.newScheduledThreadPool(5);
+//    public final static ThreadPoolExecutor executor = new ThreadPoolExecutor(5, 30, 10, TimeUnit.SECONDS, bq);
+    //public final static ScheduledThreadPoolExecutor executor = (ScheduledThreadPoolExecutor) new ThreadPoolExecutor(5, 30, 10, TimeUnit.SECONDS, bq);
+    
+   
+    public final static ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
+   
     /**  
      *  
      * 自定义方法，这个类放入到Spring容器后，   

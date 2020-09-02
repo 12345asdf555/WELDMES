@@ -180,6 +180,21 @@ function insertSearchWeldingMachine(){
 	searchWeldingMachineCombobox();
 	initSearch();
 }
+//设备预约下拉框
+function searchEquipmentAppointmentCombobox(){
+	var optionFields = 
+		"<option value='fequipment_no'>固定资产编号</option>" +
+		"<option value='di.fvaluename'>设备类型</option>" +
+		"<option value='fmachine_status'>焊机状态</option>" +
+		"<option value='dict.fvaluename'>设备型号</option>";
+	$(".fields").html(optionFields);
+	createSearchCombobox();
+}
+//设备预约查询dialog
+function insertSearchEquipmentAppointment(){
+	$("#searchdiv").dialog("open");
+	searchEquipmentAppointmentCombobox();
+}
 
 //焊机设备执行查询
 function searchWeldingmachine(){

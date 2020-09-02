@@ -15,9 +15,14 @@ public interface EquipmentAppointmentService {
 	 */
 	List<EquipmentAppointment> getEquipmentAppointmentAll(Page page,BigInteger parent,String str);
 	
-	void addEquipmentAppointment(EquipmentAppointment equipmentAppointment);
+	/**
+	 * 查询焊机设备审核分页
+	 */
+	List<EquipmentAppointment> getEquipmentAuditAll(Page page,BigInteger parent,String str);
 	
-	void editEquipmentAppointment(EquipmentAppointment equipmentAppointment);
+	int addEquipmentAppointment(EquipmentAppointment equipmentAppointment);
+	
+	int editEquipmentAppointment(EquipmentAppointment equipmentAppointment);
 	
 	/**
 	 * 根据焊机id查询预约列表最新的一条数据
@@ -26,5 +31,9 @@ public interface EquipmentAppointmentService {
 	 */
 	EquipmentAppointment getEquipmentForFmachineId(BigInteger fmachineId);
 	
+	//根据主键id查询一条记录
+	EquipmentAppointment getEquipmentForId(BigInteger id);
 	
+	//根据id修改焊机状态
+	void updateMachineStatusForId(BigInteger id);
 }

@@ -27,20 +27,20 @@ function equipmentAppointmentDatagrid(){
 		}, {
 			field : 'equipmentNo',
 			title : '固定资产编号',
-//			width : 80,
+			width : 80,
 			halign : "center",
 			align : "left",
 			sortable: true
 		}, {
 			field : 'typeName',
 			title : '设备类型',
-//			width : 80,
+			width : 60,
 			halign : "center",
 			align : "left"
 		}, {
 			field : 'modelname',
 			title : '设备型号',
-//			width : 100,
+			width : 80,
 			halign : "center",
 			align : "left"
 		}, {
@@ -52,24 +52,24 @@ function equipmentAppointmentDatagrid(){
 			formatter:function(value,row,index){
 				var str = "";
 				if(value == 0 || value == null || value == ''){
-					str = "未使用";
+					str = '<span style="color: green;">'+"未使用"+'</span>';
 				}else if(value == 1){
-					str = "预约中";
+					str = '<span style="color: blue;">'+"预约中"+'</span>';
 				}else if(value == 2){
-					str = "使用中";
+					str = '<span style="color: red;">'+"使用中"+'</span>';
 				}
 				return str;
 			}
 		}, {
 			field : 'appointmentDatetime',
 			title : '预约时间',
-//			width : 80,
+			width : 140,
 			halign : "center",
 			align : "left"
 		}, {
 			field : 'giveBackDatetime',
 			title : '归还时间',
-//			width : 80,
+			width : 140,
 			halign : "center",
 			align : "left"
 		}, {
@@ -99,21 +99,21 @@ function equipmentAppointmentDatagrid(){
 			align : "left",
 			formatter:function(value,row,index){
 				var str = "";
-				if(value == '' || value == ""){
+				if(value == '' || value == "" || value == 0){
 					str = "";
 				}else if(value == 1){
-					str = "待审核";
+					str = '<span">'+"待审核"+'</span>';
 				}else if(value == 2){
-					str = "审核通过";
+					str = '<span style="color: green;">'+"审核通过"+'</span>';
 				}else if(value == 3){
-					str = "审核不通过";
+					str = '<span style="color: red;">'+"审核不通过"+'</span>';
 				}
 				return str;
 			}
 		}, {
 			field : 'checkDatetime',
 			title : '审核时间',
-//			width : 80,
+			width : 140,
 			halign : "center",
 			align : "left"
 		}, {
@@ -201,7 +201,7 @@ function equipmentAppointmentDatagrid(){
 		}, {
 			field : 'edit',
 			title : '操作',
-			width : 300,
+			width : 230,
 			halign : "center",
 			align : "left",
 			formatter:function(value,row,index){
@@ -213,7 +213,9 @@ function equipmentAppointmentDatagrid(){
 					str += '<a id="give_back" class="easyui-linkbutton" href="javascript:give_back('+row.iId+','+row.fid+','+row.fmachine_status+')"/>';
 				}
 				if (row.fmachine_status == 1){
-					str += '<a id="edit" class="easyui-linkbutton" href="javascript:editAppointment('+row.iId+','+row.fid+','+row.fmachine_status+')"/>';
+					if (row.check_status == 1 || row.check_status == 3){
+						str += '<a id="edit" class="easyui-linkbutton" href="javascript:editAppointment('+row.iId+','+row.fid+','+row.fmachine_status+')"/>';
+					}
 					str += '<a id="cancel" class="easyui-linkbutton" href="javascript:cancel('+row.iId+','+row.fid+','+row.fmachine_status+')"/>';
 				}
 				return str;
@@ -291,21 +293,10 @@ function equipmentAppointment(fid){
 			modal : true
 		});
 		$('#dlg').window('open');
-		$('#valideno').val(row.equipmentNo);
-		$('#validgid').val(row.gatherId);
-		$('#validinsf').val(row.iId);
+		//$('#validgid').val(row.gatherId);
+		//$('#validinsf').val(row.iId);
 		$('#fid').val(fid);
 		$('#fm').form('load', row);
-		//$('#model').combobox("setValue",row.model);
-		oldnextTime = $("#nextTime").textbox('getValue');
-		if (row.gid) {
-			var str = $("#gid").html();
-			str += "<option value=\"" + row.gid + "\" >"
-				+ row.gatherId + "</option>";
-			$("#gid").html(str);
-			$("#gid").combobox();
-			$("#gid").combobox("select", row.gid);
-		}
 	}
 }
 
@@ -321,33 +312,40 @@ function saveEquipmentAppointment(){
 		message = "修改成功！";
 		urls = "equipmentAppointment/editEquipmentAppointment";
 	}
-	$('#fm').form('submit', {
-		url : urls,
-		onSubmit : function() {
-			return $(this).form('enableValidation').form('validate');
-		},
-		success : function(result) {
-			if (result) {
-				var result = eval('(' + result + ')');
-				if (!result.success) {
-					$.messager.show({
-						title : 'Error',
-						msg : result.errorMsg
-					});
-				} else {
-					$.messager.alert("提示", message);
-					$('#dlg').dialog('close');
-					$('#equipmentAppointmentTable').datagrid('reload');
-					$("#valideno").val("");
+	var appointmentDatetime = $('#appointmentDatetime').datetimebox("getValue");
+	var giveBackDatetime = $('#giveBackDatetime').datetimebox("getValue");
+	if (appointmentDatetime >= giveBackDatetime){
+		//预约时间大于归还时间，不能提交
+		return false;
+	}else{
+		$('#fm').form('submit', {
+			url : urls,
+			onSubmit : function() {
+				return $(this).form('enableValidation').form('validate');
+			},
+			success : function(result) {
+				if (result) {
+					var result = eval('(' + result + ')');
+					if (!result.success) {
+						$.messager.show({
+							title : 'Error',
+							msg : result.errorMsg
+						});
+					} else {
+						$.messager.alert("提示", message);
+						$('#dlg').dialog('close');
+						$('#equipmentAppointmentTable').datagrid('reload');
+					}
 				}
+	
+			},
+			error : function(errorMsg) {
+				alert("数据请求失败，请联系系统管理员!");
 			}
-
-		},
-		error : function(errorMsg) {
-			alert("数据请求失败，请联系系统管理员!");
-		}
-	});
-	vlogoflag = "";
+		});
+		vlogoflag = "";
+	}
+	
 }
 
 //设备归还
@@ -441,7 +439,7 @@ function selectCheckUser(){
 	            required : false,  
 	            mode : 'local',  
 	            data: result.ary
-	        });  
+	        }).combobox('clear');  
 		},
 		error : function(errorMsg) {
 			alert("数据请求失败，请联系系统管理员!");
@@ -453,7 +451,6 @@ function selectCheckUser(){
 function editAppointment(id,fid,fmachine_status){
 	if(fmachine_status == 1){
 		vlogoflag = "edit";
-		selectCheckUser();		//审核人列表
 		$('#fm').form('clear');
 		var row = $('#equipmentAppointmentTable').datagrid('getSelected');
 		if (row) {
@@ -461,6 +458,7 @@ function editAppointment(id,fid,fmachine_status){
 				title : "编辑",
 				modal : true
 			});
+			checkUserList(row.userId);	//审核人列表
 			$('#dlg').window('open');
 			$('#equipmentNo').textbox("setValue", row.equipmentNo);
 			$('#fid').val(fid);
@@ -469,26 +467,51 @@ function editAppointment(id,fid,fmachine_status){
 			 */
 			$("#fwelderno").textbox("setValue", row.welderno);
 			$("#fwelderId").val(row.welderId);
-			
-			//var data = $('#userId').combobox('getData');
-			//alert(data[0].value);
-			
-			//$('#userId').combobox('selectIndex', 1);
-			//$("#userId").combobox('select', row.userId);
-			
 			$('#appointment_message').val(row.appointment_message);
 			$('#remarks').val(row.remark);
 			$('#id').val(row.id);
 			$('#checkStatus').val(row.check_status);
 			$('#checkMessage').val(row.check_message);
-			
 			$('#appointmentDatetime').datetimebox("setValue", row.appointmentDatetime);
+			$('#old_appointmentDatetime').val(row.appointmentDatetime);
 			$('#giveBackDatetime').datetimebox("setValue", row.giveBackDatetime);
 			$('#fm').form('load', row);
 		}
 	}else{
 		alert("当前设备不可编辑");
 	}
+}
+
+function checkUserList(userId){
+	$.ajax({
+		type : "post",
+		async : true,
+		url : "user/getUserListAll",
+		data : {},
+		dataType : "json", //返回数据形式为json  
+		success : function(result) {
+			$("#userId").combobox({
+	            valueField : 'id',  
+	            textField : 'userName',  
+	            editable : false,  
+	            required : false,  
+	            mode : 'local',  
+	            data: result.ary,
+	            onLoadSuccess:function(){
+	            	var val = result.ary;
+	            	 for (var item in val) {
+	                     if ((val[item].id) == userId) {
+	                         $("#userId").combobox("select", val[item].id);
+	                     }  
+	                 }  
+	            }
+	        });
+			
+		},
+		error : function(errorMsg) {
+			alert("数据请求失败，请联系系统管理员!");
+		}
+	});
 }
 
 //初始化

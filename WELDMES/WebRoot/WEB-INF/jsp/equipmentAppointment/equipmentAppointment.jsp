@@ -40,7 +40,7 @@ href="resources/themes/default/easyui.css" />
 	<div id="body">
 		<div class="functiondiv">
 			<div>
-				 <a href="javascript:insertSearchWeldingMachine();" class="easyui-linkbutton" iconCls="icon-select">查找</a>
+				 <a href="javascript:insertSearchEquipmentAppointment();" class="easyui-linkbutton" iconCls="icon-select">查找</a>
 			</div>
 		</div>
 		<div id="importdiv" class="easyui-dialog"
@@ -84,7 +84,6 @@ href="resources/themes/default/easyui.css" />
 			<form id="fm" class="easyui-form" method="post"data-options="novalidate:true">
 				<div class="fitem">
 					<lable><span class="required">*</span>固定资产编号</lable>
-					<input type="hidden" id="valideno">
 					<input type="hidden" id="fid" name="fid">
 					<input type="hidden" id="id" name="id">
 					<input type="hidden" id="checkStatus" name="checkStatus">
@@ -105,12 +104,13 @@ href="resources/themes/default/easyui.css" />
 					<select class="easyui-combobox" name="userId" id="userId"></select>
 				</div>
 				<div class="fitem">
-					<lable>预约时间</lable>
-					<input class="easyui-datetimebox" name="appointmentDatetime" id="appointmentDatetime"/>
+					<lable><span class="required">*</span>预约时间</lable>
+					<input type="hidden" id="old_appointmentDatetime" name="old_appointmentDatetime">
+					<input class="easyui-datetimebox" name="appointmentDatetime" id="appointmentDatetime" data-options="required:true"/>
 				</div>
 				<div class="fitem">
-					<lable>归还时间</lable>
-					<input class="easyui-datetimebox" name="giveBackDatetime" id="giveBackDatetime"/>
+					<lable><span class="required">*</span>归还时间</lable>
+					<input class="easyui-datetimebox" name="giveBackDatetime" id="giveBackDatetime" data-options="required:true"/>
 				</div>
 				<div class="fitem">
 					<lable><span class="required">*</span>预约信息</lable>

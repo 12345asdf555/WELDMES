@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class EquipmentAppointment {
 	
-	private long id;		//设备预约id
+	private BigInteger id;		//设备预约id
 	private long fmachineId;		//焊机设备id
 	private BigInteger fwelderId;
 	private int fmachineStatus;
@@ -57,13 +57,13 @@ public class EquipmentAppointment {
 	private Insframework insframeworkId;
 	
 	//导入时用来暂存值
-	private String typename;
+	private String typename;	//设备类型
 	private String statusname;
 	
-	public long getId() {
+	public BigInteger getId() {
 		return id;
 	}
-	public void setId(long id) {
+	public void setId(BigInteger id) {
 		this.id = id;
 	}
 	public long getFmachineId() {

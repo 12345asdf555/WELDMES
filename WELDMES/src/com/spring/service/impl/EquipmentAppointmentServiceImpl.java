@@ -28,8 +28,8 @@ public class EquipmentAppointmentServiceImpl implements EquipmentAppointmentServ
 
 	
 	@Override
-	public void addEquipmentAppointment(EquipmentAppointment equipmentAppointment) {
-		eam.addEquipmentAppointment(equipmentAppointment);
+	public int addEquipmentAppointment(EquipmentAppointment equipmentAppointment) {
+		return eam.addEquipmentAppointment(equipmentAppointment);
 	}
 
 
@@ -40,8 +40,26 @@ public class EquipmentAppointmentServiceImpl implements EquipmentAppointmentServ
 
 
 	@Override
-	public void editEquipmentAppointment(EquipmentAppointment equipmentAppointment) {
-		eam.editEquipmentAppointment(equipmentAppointment);
+	public int editEquipmentAppointment(EquipmentAppointment equipmentAppointment) {
+		return eam.editEquipmentAppointment(equipmentAppointment);
+	}
+
+
+	@Override
+	public List<EquipmentAppointment> getEquipmentAuditAll(Page page, BigInteger parent, String str) {
+		return eam.getEquipmentAuditAll(parent, str);
+	}
+
+
+	@Override
+	public EquipmentAppointment getEquipmentForId(BigInteger id) {
+		return eam.getEquipmentForId(id);
+	}
+
+
+	@Override
+	public void updateMachineStatusForId(BigInteger id) {
+		eam.updateMachineStatusForId(id);		
 	}
 
 }
