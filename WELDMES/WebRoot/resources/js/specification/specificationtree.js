@@ -75,7 +75,7 @@ function insframeworkTree() {
 				if($('#body').length > 0) {
 					$('#body').remove();
 				}
-
+				//根据不同的焊机设备型号加载不同的js
 				if(machineModel==184){
 					$('#bodys').load('wps/jumpJsp?urlStr=SPC',function() {
 						$("script[src='resources/js/specification/SPC.js']").remove();
@@ -118,10 +118,10 @@ function insframeworkTree() {
 							EPSINIT(1);
 						});
 					});
-				}else if(machineModel==178){
-					$('#bodys').load('wps/jumpJsp?urlStr=WB-500L',function() {
+				}else if(machineModel==178){	//设备型号为：WB-P500L
+					$('#bodys').load('wps/jumpJsp?urlStr=WB-500L',function() {	//指定要去的页面
 						$("script[src='resources/js/specification/WB-500L.js']").remove();
-						$.getScript("resources/js/specification/WB-500L.js", function() {
+						$.getScript("resources/js/specification/WB-500L.js", function() {	//指定要加载的js
 							WBLINIT(1);
 						});
 					});
@@ -173,6 +173,13 @@ function insframeworkTree() {
 						$("script[src='resources/js/specification/CPVE400(K7592).js']").remove();
 						$.getScript("resources/js/specification/CPVE400(K7592).js", function() {
 							CPVESINIT(1);
+						});
+					});
+				}else if(machineModel==196){	//焊机设备型号：WB-P500
+					$('#bodys').load('wps/jumpJsp?urlStr=WB-P500',function() {
+						$("script[src='resources/js/specification/WB-P500.js']").remove();
+						$.getScript("resources/js/specification/WB-P500.js", function() {
+							WBLINIT(1);
 						});
 					});
 				}else{
