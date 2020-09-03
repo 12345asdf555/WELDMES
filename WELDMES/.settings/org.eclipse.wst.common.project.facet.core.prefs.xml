@@ -5,7 +5,7 @@
     </node>
   </facet>
   <facet id="jst.web.jstl"/>
-  <facet id="java"/>
   <facet id="wst.jsdt.web"/>
   <facet id="jst.web"/>
+  <facet id="java"/>
 </root>

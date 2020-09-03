@@ -5,7 +5,6 @@
 	<link rel="stylesheet" type="text/css" href="resources/css/datagrid.css" />
 	<link rel="stylesheet" type="text/css" href="resources/themes/default/easyui.css" />
 	<link rel="stylesheet" type="text/css" href="resources/css/base.css" />
-	
 	<script type="text/javascript" src="resources/js/jquery.min.js"></script>
 	<script type="text/javascript" src="resources/js/jquery.easyui.min.js"></script>
 	<script type="text/javascript" src="resources/js/easyui-lang-zh_CN.js"></script>

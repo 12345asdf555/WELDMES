@@ -52,18 +52,6 @@ public class MyInvocationSecurityMetadataSource implements FilterInvocationSecur
     private AuthorityService authorityService; 
     //tomcat启动时实例化一次  
     private HashMap<String, Collection<ConfigAttribute>> resourceMap = null;
-    
-    // 创建优先级的阻塞队列 
-    public final static PriorityBlockingQueue<Runnable> pbq = new PriorityBlockingQueue<Runnable>();
-    /**
-     * 项目启动时，创建线程池，作为焊机状态的修改的定时任务
-     */
-    //public final static ScheduledExecutorService executorService = Executors.newScheduledThreadPool(5);
-//    public final static ThreadPoolExecutor executor = new ThreadPoolExecutor(5, 30, 10, TimeUnit.SECONDS, bq);
-    //public final static ScheduledThreadPoolExecutor executor = (ScheduledThreadPoolExecutor) new ThreadPoolExecutor(5, 30, 10, TimeUnit.SECONDS, bq);
-    
-   
-    public final static ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
    
     /**  
      *  

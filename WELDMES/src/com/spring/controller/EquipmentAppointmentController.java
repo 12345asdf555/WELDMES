@@ -1,32 +1,17 @@
 package com.spring.controller;
 
+
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.RunnableFuture;
-import java.util.concurrent.RunnableScheduledFuture;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.erdangjiade.spring.security.MyInvocationSecurityMetadataSource;
-import com.erdangjiade.spring.security.tool.Beeper;
 import com.github.pagehelper.PageInfo;
 import com.spring.model.EquipmentAppointment;
 import com.spring.model.MyUser;
@@ -46,13 +31,12 @@ import net.sf.json.JSONObject;
  * 设备预约管理
  * 
  * @author zhushanlong
- *
  */
 @Controller
 @RequestMapping(value = "/equipmentAppointment", produces = { "text/json;charset=UTF-8" })
 public class EquipmentAppointmentController{
 
-	private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	/**
 	 * 分页
@@ -83,62 +67,6 @@ public class EquipmentAppointmentController{
 		return "equipmentAppointment/equipmentAppointment";
 	}
 
-	private boolean isNotEmpty(Object object) {
-		if (null != object && !"".equals(object)) {
-			return true;
-		}
-		return false;
-	}
-
-	private Map<BigInteger,ScheduledFuture<?>> map = new HashMap<BigInteger, ScheduledFuture<?>>();
-	
-	/**
-	 * 判断当前时间与预约时间关系，修改设备预约表的焊机状态 当设备预约提交成功后，创建该线程方法
-	 * @throws InterruptedException 
-	 */
-	public void updateMachineForTime(final BigInteger id, String appointmentDatetime) throws InterruptedException {
-		long startTime = 0;
-		try {
-			long starttimes = new Date(System.currentTimeMillis()).getTime(); // 当前时间
-			long end = sdf.parse(appointmentDatetime).getTime();
-
-			if (starttimes < end) {
-				startTime = (end - starttimes) / 1000;
-			}
-			System.out.println("预约时间：=============="+appointmentDatetime);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		System.out.println("主键id：" + id + "-------------------焊机状态修改任务将于" + startTime + "秒后开始");
-		/**
-		 * 将任务加入到阻塞队列
-		 */
-		if (MyInvocationSecurityMetadataSource.pbq.add(new Beeper(id, startTime))){
-			//添加成功
-			System.out.println("任务加入到阻塞队列成功");
-		}else{
-			System.out.println("阻塞队列已满，任务加入到阻塞队列失败！");
-		}
-		/**
-		 * 线程池获取阻塞队列任务
-		 */
-		final ScheduledFuture<?> scheduledFuture = MyInvocationSecurityMetadataSource.executor.schedule(MyInvocationSecurityMetadataSource.pbq.take(), startTime, TimeUnit.SECONDS);
-		
-		map.put(id, scheduledFuture);
-		
-//		 /** 
-//         * 创建并执行在给定延迟后启用的一次性操作。 
-//         * 这里用于在N时间后取消任务 （1分钟）
-//         */  
-//		MyInvocationSecurityMetadataSource.executor.schedule(new Runnable() {
-//            public void run() {
-//                System.out.println("取消任务:==========="+sdf.format(new Date(System.currentTimeMillis())));
-//                executor.cancel(true);
-//            }
-//        }, startTime+10, TimeUnit.SECONDS);
-	}
-
 	/**
 	 * 显示焊机预约列表
 	 * 
@@ -163,7 +91,6 @@ public class EquipmentAppointmentController{
 
 		// 查询焊机设备状态为‘启用’的设备数据
 		List<EquipmentAppointment> list = eas.getEquipmentAppointmentAll(page, parent, searchStr);
-
 		long total = 0;
 		if (list != null) {
 			PageInfo<EquipmentAppointment> pageinfo = new PageInfo<EquipmentAppointment>(list);
@@ -192,17 +119,6 @@ public class EquipmentAppointmentController{
 					json.put("appointmentDatetime", equipment.getAppointmentDatetime()); // 预约时间
 					json.put("giveBackDatetime", equipment.getGiveBackDatetime()); // 归还时间
 					json.put("fmachine_status", equipment.getFmachineStatus()); // 焊机状态
-
-					if (isNotEmpty(equipment.getAppointmentDatetime()) && isNotEmpty(equipment.getGiveBackDatetime())) {
-						// 当前时间在预约时间之后并且当前时间在归还时间之前
-						if ((new Date(System.currentTimeMillis())
-								.compareTo(sdf.parse(equipment.getAppointmentDatetime())) >= 0)
-								&& (new Date(System.currentTimeMillis())
-										.compareTo(sdf.parse(equipment.getGiveBackDatetime())) <= 0)) {
-							// 修改焊机状态为：使用中
-						}
-					}
-
 					json.put("checkDatetime", equipment.getCheckDatetime());
 					json.put("appointment_message", equipment.getAppointmentMessage());
 					json.put("check_message", equipment.getCheckMessage());
@@ -232,7 +148,6 @@ public class EquipmentAppointmentController{
 					json.put("check_status", "");
 					json.put("userId", "");
 					json.put("id", "");
-
 					json.put("userInfo", "");
 					json.put("create_time", "");
 				}
@@ -314,12 +229,8 @@ public class EquipmentAppointmentController{
 			appointment.setUserId(Long.valueOf(userId)); // 审核人id
 			appointment.setGiveBackDatetime(giveBackDatetime);
 			appointment.setAppointmentDatetime(appointmentDatetime);
-			appointment.setCreateTime(sdf.format(new Date(System.currentTimeMillis())));
-			int id = eas.addEquipmentAppointment(appointment);
-			// 新增成功创建定时任务，修改焊机状态
-			if (id != 0) {
-				//updateMachineForTime(BigInteger.valueOf(Long.valueOf(id)), appointmentDatetime);
-			}
+			appointment.setCreateTime(sdf.format(System.currentTimeMillis()));
+			eas.addEquipmentAppointment(appointment);
 			obj.put("success", true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -367,12 +278,7 @@ public class EquipmentAppointmentController{
 			appointment.setGiveBackDatetime(giveBackDatetime);
 			appointment.setAppointmentDatetime(appointmentDatetime);
 			appointment.setId(BigInteger.valueOf(Long.valueOf(id)));
-			int update_eas = eas.editEquipmentAppointment(appointment);
-			if (update_eas != 0){	//修改成功
-				if (null != appointmentDatetime && !appointmentDatetime.equals(old_appointmentDatetime)){
-					System.out.println("预约时间修改成功！");
-				}
-			}
+			eas.editEquipmentAppointment(appointment);
 			obj.put("success", true);
 		} catch (Exception e) {
 			obj.put("success", false);
@@ -430,7 +336,7 @@ public class EquipmentAppointmentController{
 			appointment.setAppointmentMessage(appointmentMessage);
 			appointment.setCheckStatus(Integer.valueOf(checkStatus));
 			appointment.setUserId(Long.valueOf(userId));
-			appointment.setCreateTime(sdf.format(new Date()));
+			appointment.setCreateTime(sdf.format(System.currentTimeMillis()));
 			appointment.setCreator(Long.valueOf(user.getId()));
 			appointment.setAppointmentDatetime(appointmentDatetime);
 			appointment.setGiveBackDatetime(giveBackDatetime);
@@ -469,9 +375,9 @@ public class EquipmentAppointmentController{
 			appointment.setFwelderId(BigInteger.valueOf(Long.valueOf(fwelderId)));
 			appointment.setFmachineStatus(Integer.valueOf(fmachine_status));
 			appointment.setAppointmentMessage(appointmentMessage);
-			appointment.setCheckStatus(Integer.valueOf(checkStatus)); // 审核状态：待审核
+			appointment.setCheckStatus(Integer.valueOf(checkStatus));
 			appointment.setUserId(Long.valueOf(userId));
-			appointment.setCreateTime(sdf.format(new Date()));
+			appointment.setCreateTime(sdf.format(System.currentTimeMillis()));
 			appointment.setCreator(Long.valueOf(user.getId()));
 			appointment.setAppointmentDatetime(appointmentDatetime);
 			appointment.setGiveBackDatetime(giveBackDatetime);
@@ -483,6 +389,5 @@ public class EquipmentAppointmentController{
 		}
 		return obj.toString();
 	}
-
 
 }

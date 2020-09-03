@@ -293,8 +293,8 @@ function equipmentAppointment(fid){
 			modal : true
 		});
 		$('#dlg').window('open');
-		//$('#validgid').val(row.gatherId);
-		//$('#validinsf').val(row.iId);
+		$("#icon-ok").hide();
+		$("#icon-cancel").hide();
 		$('#fid').val(fid);
 		$('#fm').form('load', row);
 	}
@@ -410,7 +410,7 @@ function equipmentGiveBack(){
 			},
 			dataType : "json", //返回数据形式为json  
 			success : function(result) {
-				if (result.flag){
+				if (result.success){
 					alert("归还成功！");
 				}else{
 					alert("归还失败，请稍后再试！");
@@ -420,6 +420,7 @@ function equipmentGiveBack(){
 				alert("数据请求失败，请联系系统管理员!");
 			}
 		});
+		$('#equipmentAppointmentTable').datagrid('reload');
     }
 }
 
@@ -460,6 +461,8 @@ function editAppointment(id,fid,fmachine_status){
 			});
 			checkUserList(row.userId);	//审核人列表
 			$('#dlg').window('open');
+			$("#icon-ok").hide();
+			$("#icon-cancel").hide();
 			$('#equipmentNo').textbox("setValue", row.equipmentNo);
 			$('#fid').val(fid);
 			/**
@@ -578,12 +581,17 @@ function cancel(iId,fid,fmachine_status){
 				},
 				dataType: "json",
 				success: function(result){
-					alert("成功");
+					if (result.success){
+						alert("取消成功");
+					}else{
+						alert("取消失败，请稍后再试");
+					}
 				},
 				error: function(e){
 					alert("数据请求失败，请联系系统管理员!");
 				}
 			});
+			$('#equipmentAppointmentTable').datagrid('reload');
 		}
 	}else{
 		alert("请选择已预约的设备取消！");

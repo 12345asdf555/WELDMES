@@ -208,8 +208,8 @@ public class EquipmentAuditController {
 			appointment.setUserId(user.getId());		//审核人id
 			appointment.setGiveBackDatetime(giveBackDatetime);
 			appointment.setAppointmentDatetime(appointmentDatetime);
-			appointment.setCreateTime(sdf.format(new Date()));
-			appointment.setCheckDatetime(sdf.format(new Date()));
+			appointment.setCreateTime(sdf.format(new Date(System.currentTimeMillis())));
+			appointment.setCheckDatetime(sdf.format(new Date(System.currentTimeMillis())));
 			eas.addEquipmentAppointment(appointment);
 			obj.put("success", true);
 		}catch (Exception e) {
@@ -241,7 +241,6 @@ public class EquipmentAuditController {
 			String checkStatus = request.getParameter("checkStatus");
 			String appointmentMessage = request.getParameter("appointmentMessage");
 			String remarks = request.getParameter("remarks");
-			//String userId = request.getParameter("userId");
 			String check_status = request.getParameter("check_status");		//审核状态
 			String checkMessage = request.getParameter("checkMessage");		//审核内容
 			String fmachineStatus = request.getParameter("fmachineStatus");		//焊机状态
