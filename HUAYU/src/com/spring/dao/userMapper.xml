@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.spring.dao.UserMapper">
+
+	<insert id="save" parameterType="User">
+		insert into tb_users(users_name,users_password,users_login_name,users_phone,users_email,users_position,users_insframework,status) values(#{userName},#{userPassword},#{userLoginName},#{userPhone},#{userEmail},#{userPosition},#{userInsframework},#{status});
+<!-- 		insert into tb_users_roles(users_name,roles_name) values(#{userName},#{roleName}) -->
+	</insert>
+	
+	<insert id="saveRole" parameterType="User">
+<!-- 		insert into tb_users(users_name,users_password,users_login_name,users_phone,users_email,users_insframework,users_position,status) values(#{userName},#{userPassword},#{userLoginName},#{userPhone},#{userEmail},#{userInsframework},#{userPosition},#{status}); -->
+		insert into tb_users_roles(users_id,roles_id) values(#{id},#{roleId})
+	</insert>
+	
+	<update id="update" parameterType="User">
+		update tb_users set users_name=#{userName},users_password=#{userPassword},users_login_name=#{userLoginName},users_phone=#{userPhone},users_email=#{userEmail},users_position=#{userPosition},users_insframework=#{userInsframework},status=#{status} where id=#{id};
+<!-- 		update tb_users_roles set roles_name=#{roleName} where id=#{id} -->
+	</update>
+	
+	<select id="updateUserRole" parameterType="int" resultType="String">
+		select users_name userName from tb_users where id=#{id}
+	</select>
+	
+	<delete id="deleteRole" parameterType="int">
+		delete from tb_users_roles where users_id=#{id};
+	</delete>
+	
+	<delete id="delete" parameterType="int">
+		delete tb_users,tb_users_roles from tb_users left join tb_users_roles on tb_users.id=tb_users_roles.users_id where tb_users.id=#{id};
+	</delete>
+	
+	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
+	<select id="findById" parameterType="int" resultType="User">
+		select tb_users.id id,tb_users.users_name userName,tb_users.users_password userPassword,tb_users.users_login_name userLoginName,tb_users.users_phone userPhone,tb_users.users_email userEmail,tb_users.users_insframework userInsframework,tb_users.users_position userPosition,tb_users.status status,tb_insframework.fid insid,tb_insframework.fname insname ,d.fvaluename statusname from tb_users left join tb_insframework on tb_users.users_insframework=tb_insframework.fid
+		INNER JOIN tb_dictionary d on d.fvalue = tb_users.status where d.ftypeid=6 and tb_users.id=#{id}
+	</select>
+	
+	<select id="findByName" parameterType="String" resultType="int">
+		select tb_users.id id from tb_users where tb_users.users_login_name=#{userLoginName}
+	</select>
+	
+	<select id="findByRoleId" parameterType="int" resultType="String">
+		select roles_name roleName from tb_roles where id=#{id}
+	</select>
+	
+	<select id="findAll" resultType="User">
+		select tb_users.id id,tb_users.users_name userName,users_password userPassword,tb_users.users_login_name userLoginName,tb_users.users_phone userPhone,tb_users.users_email userEmail,tb_users.users_insframework userInsframework,tb_users.users_position userPosition,tb_users.status status,tb_insframework.fid insid,tb_insframework.fname insname,d.fvaluename statusname from tb_users 
+		INNER JOIN tb_dictionary d on d.fvalue = tb_users.status
+		left join tb_insframework on tb_users.users_insframework=tb_insframework.fid
+		LEFT JOIN tb_insframework ins on ins.fid = tb_insframework.fparent
+		LEFT JOIN tb_insframework insf on insf.fid = ins.fparent where d.ftypeid=6
+		<if test="parent!=null and parent!=''">
+			and (tb_insframework.fid=#{parent} or ins.fid=#{parent} or insf.fid=#{parent} or insf.fparent=#{parent})
+		</if>
+		<if test="str!=null and str!=''">
+			and ${str}
+		</if>
+		 ORDER by tb_users.id
+	</select>
+	
+	<select id="LoadUser" parameterType="String" resultType="User">
+		select id id,users_password userPassword from tb_users where users_login_name=#{userName};
+	</select>
+	
+	<select id="findRole" resultType="User">
+		select tb_users.id id,tb_users.users_name userName,tb_users.users_login_name userLoginName,tb_users.users_phone userPhone,tb_users.users_email userEmail,tb_users.users_insframework userInsframework,tb_users.users_position userPosition,tb_users.status status,tb_users_roles.roles_id roleId,tb_roles.roles_name roleName from tb_users left join tb_users_roles on tb_users.id = tb_users_roles.users_id left join tb_roles on tb_roles.id=tb_users_roles.roles_id where tb_users.id=#{id}
+	</select>
+	
+	<select id="getIns" resultType="User">
+		select i.fid insid,i.fname insname from tb_insframework i 
+		INNER JOIN tb_insframework ins on ins.fid = i.fparent
+		INNER JOIN tb_insframework insf on insf.fid = ins.fparent
+		where (i.fid=#{parent} or ins.fid=#{parent} or insf.fid=#{parent})
+	</select>
+	
+	<select id="findAllRole" resultType="User">
+		select id id,roles_name roleName from tb_roles
+	</select>
+	
+	<select id="getUsernameCount" parameterType="String" resultType="java.lang.Integer">
+		select count(*) from tb_users where users_login_name=#{userName}
+	</select>
+	
+	<select id="getAuthoritiesByUsername" parameterType="String" resultType="String">
+		select a.authorities_name     
+         from    
+         tb_roles r,    
+         tb_authorities a,    
+         tb_roles_authorities c     
+         where c.roles_id = r.id and c.authority_id = a.id and r.id in     
+         (select d.roles_id from    
+         tb_users_roles d,    
+         tb_users u  
+         where d.users_id = u.id and u.users_login_name = #{userName}    
+         )  
+	</select>
+	
+	<select id="getUserInsframework" resultType="User">
+		SELECT id,users_name userName,fname insname FROM tb_users u inner join tb_insframework i on u.users_insframework=i.fid
+		where id = #{id}
+	</select>
+	
+	<select id="getInsUser" parameterType="int" resultType="User">
+		select tb_users.id id,tb_users.users_name userName,tb_users.users_password userPassword,tb_users.users_login_name userLoginName,tb_users.users_phone userPhone,tb_users.users_email userEmail,tb_users.users_insframework userInsframework,tb_users.users_position userPosition,tb_users.status status from tb_users where tb_users.users_insframework=#{id}
+	</select>
+	
+	<!-- 获取隐藏菜单 -->
+	<select id="getHiddenMenu" resultType="User">
+		SELECT fname menuName FROM tb_hidden_menu
+	</select>
+</mapper>

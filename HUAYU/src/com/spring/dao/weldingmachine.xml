@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.dao.WeldingMachineMapper">
+
+	<resultMap id="wmMap" type="com.spring.model.WeldingMachine">
+		<id column="fid" property="id" />
+		<result property="ip" column="fIP" />
+		<result property="model" column="model" />
+		<result property="modelname" column="modelname" />
+		<result property="fmanunumbers" column="fmanunumbers" />
+		<result property="fsection" column="fsection" />
+		<result property="fauthentication" column="fauthentication" />
+		<result property="ftest" column="ftest" />
+		<result property="fprevention" column="fprevention" />
+		<result property="equipmentNo" column="fequipment_no" />		
+		<result property="position" column="fposition" />
+		<result property="isnetworking" column="fisnetworking" />
+		<result property="joinTime" column="fjoin_time" />
+		<result property="typeId" column="ftype_id" />
+		<result property="statusId" column="fstatus_id" />
+		<result property="typename" column="typename" />
+		<result property="statusname" column="statusname" />
+		<result property="creater" column="fcreater" />
+		<result property="updater" column="fupdater" />
+        <result property="mvalueid" column="mid"></result>  
+        <result property="mvaluename" column="mname"></result>  
+         <result property="modelid" column="modelid"></result>  
+        <association property="insframeworkId" column="finsframework_id" javaType="com.spring.model.Insframework">  
+            <id property="id" column="iid"></id> 
+            <result property="name" column="iname"></result>  
+            <result property="logogram" column="flogogram"></result>  
+            <result property="code" column="fcode"></result>
+        	<result property="parent" column="fparent"></result>
+        	<result property="type" column="ftype"></result>
+        </association>
+        <association property="gatherId" column="fgather_id" javaType="com.spring.model.Gather">  
+            <id property="id" column="gid"></id> 
+	        <result property="gatherNo" column="fgather_no"></result>  
+	        <result property="status" column="fstatus"></result>  
+	        <result property="protocol" column="fprotocol"></result>
+	       	<result property="ipurl" column="fipurl"></result>
+	       	<result property="macurl" column="fmacurl"></result>
+	       	<result property="leavetime" column="fleavetime"></result>
+        </association>
+	</resultMap>
+
+	<select id="getWeldingMachineAll" resultMap="wmMap"  parameterType="java.lang.String">
+		SELECT 
+		w.fid fid,w.fIP fIP,w.fmodel model,fstatus_id,w.fmanunumbers fmanunumbers, w.fsection fsection,w.fauthentication fauthentication,w.ftest ftest,w.fprevention fprevention,i.fid iid,ftype_id,g.fid gid,dic.fvalue mid, fequipment_no,fgather_no ,fjoin_time,i.fname iname
+		,dic.fvaluename mname,fisnetworking,fposition,d.fvaluename statusname,di.fvaluename typename,dict.fvaluename modelname
+		FROM tb_welding_machine w
+		LEFT JOIN tb_insframework i ON w.finsframework_id = i.fid
+		LEFT JOIN tb_insframework ins on ins.fid = i.fparent
+		LEFT JOIN tb_insframework insf on insf.fid = ins.fparent
+        INNER JOIN tb_dictionary d ON d.fvalue = w.fstatus_id
+        INNER JOIN tb_dictionary di ON di.fvalue = w.ftype_id
+        INNER JOIN tb_dictionary dic ON dic.fvalue = w.fmanufacturer_id
+        INNER JOIN tb_dictionary dict ON dict.fvalue = w.fmodel
+		left JOIN tb_gather g ON g.fid = w.fgather_id
+		where (d.ftypeid=3 and di.ftypeid=4 and dic.ftypeid=14 and dict.ftypeid=17)
+		<if test="parent!=null and parent!=''">
+			and (i.fid=#{parent} or ins.fid=#{parent} or insf.fid=#{parent} or insf.fparent=#{parent})
+		</if>
+		<if test="str!=null and str!=''">
+			and ${str}
+		</if>
+		ORDER BY w.fequipment_no
+	</select>
+	
+	<select id="getcatWeldingMachineAll" resultMap="wmMap"  parameterType="java.lang.String">
+		SELECT 
+		w.fid fid,w.fIP fIP,w.fmodel modelid,dict.fvaluename model,fstatus_id, i.fid iid,ftype_id,g.fid gid,dic.fvalue mid, fequipment_no,fgather_no ,fjoin_time,i.fname iname
+		,dic.fvaluename mname,fisnetworking,fposition,d.fvaluename statusname,di.fvaluename typename,w.fprevention fprevention_no,w.ftest ftest_no
+		,w.fmanunumbers fmanunumbers_no,w.fsection fsection_no,w.fauthentication fauthentication_no
+		FROM tb_welding_machine w
+		LEFT JOIN tb_insframework i ON w.finsframework_id = i.fid
+		INNER JOIN tb_insframework ins ON ins.fid = i.fparent
+		INNER JOIN tb_insframework insf ON insf.fid = ins.fparent
+        INNER JOIN tb_dictionary d ON d.fvalue = w.fstatus_id
+        INNER JOIN tb_dictionary di ON di.fvalue = w.ftype_id
+        INNER JOIN tb_dictionary dic ON dic.fvalue = w.fmanufacturer_id
+        INNER JOIN tb_dictionary dict ON dict.fvalue = w.fmodel
+		left JOIN tb_gather g ON g.fid = w.fgather_id
+		where (d.ftypeid=3 and di.ftypeid=4 and dic.ftypeid=14 and dict.ftypeid=17)
+		<if test="parent!=null and parent!=''">
+			and (i.fid=#{parent} or ins.fid=#{parent} or insf.fid=#{parent} or insf.fparent=#{parent})
+		</if>
+		<if test="str!=null and str!=''">
+			and ${str}
+		</if>
+		ORDER BY w.fid
+	</select>
+	
+	<select id="getMachineGather"  resultMap="wmMap">
+		SELECT 
+		w.fid fid,g.fid gid,fgather_no
+		FROM tb_welding_machine w
+		left JOIN tb_gather g ON g.fid = w.fgather_id
+		where 1=1
+	</select>
+	
+	<select id="getAllMachine" resultMap="wmMap">
+		SELECT 
+		w.fid fid,w.fIP fIP,w.fmodel model,fstatus_id, i.fid iid,ftype_id,g.fid gid,dic.fvalue mid, fequipment_no,fgather_no ,fjoin_time,i.fname iname
+		,dic.fvaluename mname,fisnetworking,fposition,d.fvaluename statusname,di.fvaluename typename
+		FROM tb_welding_machine w
+		LEFT JOIN tb_insframework i ON w.finsframework_id = i.fid
+		LEFT JOIN tb_insframework ins ON ins.fid = i.fparent
+		LEFT JOIN tb_insframework insf ON insf.fid = ins.fparent
+        INNER JOIN tb_dictionary dic ON dic.fvalue = w.fmanufacturer_id
+        INNER JOIN tb_dictionary d ON d.fvalue = w.fstatus_id
+        INNER JOIN tb_dictionary di ON di.fvalue = w.ftype_id
+		left JOIN tb_gather g ON g.fid = w.fgather_id
+		where (d.ftypeid=3 and di.ftypeid=4 and dic.ftypeid=14) 
+		ORDER BY w.fid
+	</select>
+	
+	<select id="getWeldingMachineById"  resultMap="wmMap"  parameterType="java.math.BigInteger">
+        SELECT 
+		w.fid fid,w.fIP fIP,fmodel model,fstatus_id, i.fid iid,g.fid gid,ftype_id,dic.fvalue mid, fequipment_no,fgather_no ,fjoin_time,i.fname iname
+		,dic.fvaluename mname,fisnetworking,fposition,d.fvaluename statusname,di.fvaluename typename
+		FROM tb_welding_machine w
+		INNER JOIN tb_insframework i ON w.finsframework_id = i.fid
+        INNER JOIN tb_dictionary dic ON dic.fvalue = w.fmanufacturer_id
+        INNER JOIN tb_dictionary d ON d.fvalue = w.fstatus_id
+        INNER JOIN tb_dictionary di ON di.fvalue = w.ftype_id
+		left JOIN tb_gather g ON g.fid = w.fgather_id
+		where (d.ftypeid=3 and di.ftypeid=4 and dic.ftypeid=14) and w.fid = #{wid}
+	</select>
+	
+	<select id="getEquipmentno" resultMap="wmMap">
+		SELECT w.fid, fequipment_no FROM tb_welding_machine w
+		LEFT JOIN tb_insframework i ON w.finsframework_id = i.fid
+		LEFT JOIN tb_insframework ins on ins.fid = i.fparent
+		LEFT JOIN tb_insframework insf on insf.fid = ins.fparent
+		where 1=1
+		<if test="parent!=null and parent!=''">
+			and i.fid=#{parent} or ins.fid=#{parent} or insf.fid=#{parent} or insf.fparent=#{parent}
+		</if>
+	</select>
+	
+	<select id="getWeldingMachineByEno"  resultType="java.math.BigInteger">
+		SELECT fid FROM tb_welding_machine where fequipment_no = #{eno}
+	</select>
+	
+	<select id="getWeldingMachineByInsf"  resultMap="wmMap">
+		SELECT fid FROM tb_welding_machine where finsframework_id = #{insfId}
+	</select>
+	
+	<select id="getMachineByIns"  resultMap="wmMap">
+		SELECT fid,fequipment_no FROM tb_welding_machine where finsframework_id = #{id}
+	</select>
+	
+	<select id="getEquipmentnoCount" resultType="java.lang.Integer">
+		SELECT count(*) FROM tb_welding_machine WHERE fequipment_no = #{eno}
+	</select>
+	
+	<select id="getGatheridCount" resultType="java.lang.Integer">
+		SELECT count(*) FROM tb_welding_machine m 
+		inner join tb_gather g on m.fgather_id = g.fid where m.finsframework_id=#{itemid} and g.fgather_no=#{gather}
+	</select>
+	
+	<select id="getMachineCountByManu" resultType="java.math.BigInteger">
+		 SELECT count(m.fid) FROM tb_welding_machine m inner join tb_insframework i  on i.fid = m.finsframework_id
+		 inner join tb_insframework ins  on ins.fid = i.fparent
+		 WHERE fmanufacturer_id = #{mid}
+		<if test="id!=null and id!=''">
+			 	and (ins.fparent = #{id} or ins.fid = #{id} or i.fid = #{id})
+		</if>
+	</select>
+	
+	<select id="findAllweldmachine" resultMap="wmMap">
+		select fid,fvalue mname,fvaluename typename from tb_dictionary WHERE ftypeid=17
+	</select>
+	
+	<select id="findlweldmachinetype" resultMap="wmMap">
+		select fid,ftype_value typename from tb_equipment_manufacturer WHERE ftype= #{statusId}
+		
+	</select>
+	
+	<update id="addfactoryType"  parameterType="com.spring.model.WeldingMachine">
+		INSERT INTO tb_equipment_manufacturer(fname,ftype,ftype_value) VALUES (#{fmachingname},#{statusId},#{typeId})
+	</update>
+	
+	<delete id="deletefactory" parameterType="java.math.BigInteger">
+		DELETE FROM tb_equipment_manufacturer WHERE ftype = #{statusId}
+	</delete>
+	
+	<select id="getIdByGatherid" resultType="java.math.BigInteger">
+		SELECT fid FROM tb_welding_machine WHERE  fgather_id = #{gatherid}
+	</select>
+	
+	<insert id="addWeldingMachine" parameterType="com.spring.model.WeldingMachine" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO tb_welding_machine(fIP, ftype_id, fequipment_no, fstatus_id, fposition, finsframework_id, 
+		fmanufacturer_id,fgather_id, fisnetworking, fjoin_time, fmodel, fcreater, fcreatedate) VALUES 
+		(#{ip},#{typeId},#{equipmentNo},#{statusId},#{position},#{insframeworkId.id},#{mvalueid},#{gatherId.id},#{isnetworking},#{joinTime},#{model},#{creater},now())
+	</insert>
+	
+	<insert id="addcatmachine" parameterType="com.spring.model.WeldingMachine" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO tb_welding_machine(fIP, ftype_id, fequipment_no, fstatus_id, fposition, finsframework_id, 
+		fmanufacturer_id,fgather_id, fisnetworking, fjoin_time, fmodel, fcreater, fcreatedate, fmanunumbers, fsection, fauthentication, ftest, fprevention) VALUES 
+		(#{ip},#{typeId},#{equipmentNo},#{statusId},#{position},#{insframeworkId.id},#{mvalueid},#{gatherId.id},#{isnetworking},#{joinTime},#{model},#{creater},now(),#{fmanunumbers},#{fsection},#{fauthentication},#{ftest},#{fprevention})
+	</insert>
+	
+	<update id="editGatherid"  parameterType="java.math.BigInteger">
+		UPDATE tb_welding_machine SET fgather_id=null  where fid = #{wid}
+	</update>
+	
+	<update id="editWeldingMachine"  parameterType="com.spring.model.WeldingMachine">
+		UPDATE tb_welding_machine SET fIP=#{ip},ftype_id=#{typeId},fequipment_no=#{equipmentNo},fstatus_id=#{statusId},
+		fposition=#{position},finsframework_id=#{insframeworkId.id},fmanufacturer_id=#{mvalueid},fgather_id=#{gatherId.id},
+		fisnetworking=#{isnetworking},fjoin_time=#{joinTime},fmodel=#{model},fupdater=#{updater},fupdatedate=now() where fid = #{id}
+	</update>
+	
+	<update id="editcatmachine"  parameterType="com.spring.model.WeldingMachine">
+		UPDATE tb_welding_machine SET fIP=#{ip},ftype_id=#{typeId},fequipment_no=#{equipmentNo},fstatus_id=#{statusId},
+		fposition=#{position},finsframework_id=#{insframeworkId.id},fmanufacturer_id=#{mvalueid},fgather_id=#{gatherId.id},
+		fisnetworking=#{isnetworking},fjoin_time=#{joinTime},fmodel=#{model},fupdater=#{updater},fmanunumbers=#{fmanunumbers},fsection=#{fsection},fauthentication=#{fauthentication},ftest=#{ftest},fprevention=#{fprevention},fupdatedate=now() where fid = #{id}
+	</update>
+	
+	<update id="editstatus"  parameterType="com.spring.model.WeldingMachine">
+		UPDATE tb_welding_machine SET fstatus_id=#{status}  where fid = #{wid}
+	</update>
+	
+	<delete id="deleteWeldingMachine" parameterType="java.math.BigInteger">
+		DELETE FROM tb_welding_machine WHERE fid = #{wid}
+	</delete>
+	
+	<delete id="deletecatmachine" parameterType="java.math.BigInteger">
+		DELETE FROM tb_welding_machine WHERE fid = #{wid}
+	</delete>
+	
+	<delete id="deleteHistory" parameterType="java.math.BigInteger">
+		DELETE FROM tb_wps_welddevices WHERE  FWeldDevicesID = #{wid}
+	</delete>
+	
+	<delete id="deleteByInsf" parameterType="java.math.BigInteger">
+		DELETE FROM tb_welding_machine WHERE finsframework_id = #{insfId}
+	</delete>
+	
+	<select id="getcatMachineModel" resultMap="wmMap">
+		SELECT *,em.ftype_value ftype_id,d.fvaluename typename FROM tb_equipment_manufacturer em 
+		INNER JOIN tb_dictionary d on d.fvalue = em.ftype_value 
+		WHERE d.ftypeid = 17 
+		<if test="type!=0">
+			and em.ftype = #{type}
+		</if>
+	</select>
+	
+	<select id="getMachineModel"  resultMap="wmMap">
+		SELECT m.fid,m.fequipment_no,m.fmanufacturer_id mid,m.fmodel model,d.fvaluename mname,di.fvaluename modelname FROM tb_welding_machine m
+		LEFT JOIN tb_dictionary d ON d.fvalue=m.fmanufacturer_id
+		LEFT JOIN tb_dictionary di ON di.fvalue=m.fmodel
+		WHERE 1=1 ORDER BY m.fid ASC
+	</select>
+</mapper>

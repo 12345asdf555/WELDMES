@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.dao.WeldingMaintenanceMapper">
+
+	<resultMap id="mmMap" type="com.spring.model.WeldingMaintenance">
+		<id property="id" column="fid"></id> 
+        <result property="back" column="fback"></result>
+        <association property="maintenance" column="fmaintenance_id" javaType="com.spring.model.MaintenanceRecord">  
+            <id property="id" column="rid"></id> 
+            <result property="viceman" column="fviceman"></result>  
+            <result property="desc" column="fdesc"></result>  
+            <result property="startTime" column="fstart_time"></result>
+        	<result property="endTime" column="fend_time"></result>
+        	<result property="typeId" column="ftype_id"></result>
+        	<result property="typename" column="typename"></result>
+        </association>
+        <association property="welding" column="fwelding_id" javaType="com.spring.model.WeldingMachine">  
+            <id property="id" column="wid"></id> 
+			<result property="equipmentNo" column="fequipment_no" />
+        </association>
+	</resultMap>
+	
+	<select id="getWeldingMaintenanceAll" resultMap="mmMap">
+		SELECT m.fid fid,r.fid rid, wm.fid wid, r.ftype_id ftype_id, fequipment_no,fviceman,d.fvaluename typename,
+		fstart_time,fend_time,fdesc
+		FROM tb_welding_maintenance m 
+		inner join tb_maintenance_record r on  fmaintenance_id = r.fid
+        INNER JOIN tb_dictionary d on r.ftype_id = d.fvalue
+		inner join tb_welding_machine wm on m.fwelding_id = wm.fid
+		LEFT JOIN tb_insframework i ON wm.finsframework_id = i.fid
+		LEFT JOIN tb_insframework ins on ins.fid = i.fparent
+		LEFT JOIN tb_insframework insf on insf.fid = ins.fparent where d.ftypeid=5
+		<if test="wid!=null and wid!=''">
+			and wm.fid = #{wid}
+		</if>
+		<if test="parent!=null and parent!=''">
+			and i.fid=#{parent} or ins.fid=#{parent} or insf.fid=#{parent} or insf.fparent=#{parent}
+		</if>
+		<if test="str!=null and str!=''">
+			and ${str}
+		</if>
+		ORDER BY m.fid
+	</select>
+	
+	<select id="getWeldingMaintenanceById" resultMap="mmMap"  parameterType="java.math.BigInteger">
+		SELECT m.fid fid,r.fid rid, wm.fid wid, r.ftype_id ftype_id, fequipment_no,fviceman,
+		fstart_time,fend_time,fdesc
+		FROM tb_welding_maintenance m 
+		inner join tb_maintenance_record r on  fmaintenance_id = r.fid
+		inner join tb_welding_machine wm on m.fwelding_id = wm.fid
+		where m.fid = #{wid}
+	</select>
+	
+	<select id="getMaintainByWeldingMachinId" resultMap="mmMap">
+		SELECT fid FROM tb_welding_maintenance WHERE fwelding_id = #{wid}
+	</select>
+	
+	<select id="getEndtime" resultMap="mmMap">
+		SELECT * FROM tb_maintenance_record r inner join tb_welding_maintenance m on m.fmaintenance_id = r.fid where m.fwelding_id=#{wid}
+	</select>
+	
+	<insert id="addWeldingMaintenance" parameterType="com.spring.model.WeldingMaintenance" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO tb_welding_maintenance(fwelding_id, fmaintenance_id) VALUES (#{welding.id},#{maintenance.id})
+	</insert>
+	
+	<insert id="addMaintenanceRecord" parameterType="com.spring.model.MaintenanceRecord" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO tb_maintenance_record(ftype_id, fviceman, fdesc, fstart_time, fend_time) VALUES 
+		(#{typeId},#{viceman},#{desc},#{startTime},#{endTime})
+	</insert>
+	
+	<update id="updateEndtime" parameterType="java.math.BigInteger">
+		UPDATE tb_maintenance_record SET fend_time = now()  WHERE fid = #{wid}
+	</update>
+	
+	<update id="updateMaintenanceRecord" parameterType="com.spring.model.MaintenanceRecord">
+		UPDATE tb_maintenance_record SET ftype_id=#{typeId},fviceman=#{viceman},fdesc=#{desc},fstart_time=#{startTime},fend_time=#{endTime} WHERE fid=#{id}
+	</update>
+	
+	<delete id="deleteMaintenanceRecord" parameterType="java.math.BigInteger">
+		DELETE FROM tb_maintenance_record WHERE fid=#{mid}
+	</delete>
+	
+	<delete id="deleteWeldingMaintenance" parameterType="java.math.BigInteger">
+		DELETE FROM tb_welding_maintenance WHERE fid = #{wid}
+	</delete>
+	
+</mapper>
