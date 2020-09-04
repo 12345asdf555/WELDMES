@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.dao.WelderMapper">
+
+	<resultMap id="dMap" type="com.spring.model.Welder">
+        <id property="id" column="fid"></id> 
+        <result property="welderno" column="fwelder_no"></result>  
+        <result property="name" column="fname"></result>
+        <result property="iname" column="iname"></result>
+	</resultMap>
+	
+	<select id="getWelderAll" resultMap="dMap" parameterType="java.lang.String">
+		SELECT w.fid,w.fwelder_no,w.fname,i.fname iname FROM tb_welder w INNER JOIN tb_insframework i on i.fid = w.fItemID where 1=1
+		<if test="str!=null and str!=''">
+			and ${str}
+		</if>
+	</select>
+	
+	<select id="getWeldernoCount" resultType="java.lang.Integer">
+		SELECT count(*) FROM tb_welder WHERE fwelder_no = #{wno}
+	</select>
+	
+	<insert id="addWelder" parameterType="com.spring.model.Dictionarys" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO tb_welder(fwelder_no,fname) VALUES (#{welderno},#{name})
+	</insert>
+	
+	<update id="editWelder"  parameterType="com.spring.model.Dictionarys">
+		UPDATE tb_welder SET fwelder_no=#{welderno},fname=#{name} where fid=#{id}
+	</update>
+	
+	<delete id="removeWelder" parameterType="java.math.BigInteger">
+		DELETE FROM tb_welder WHERE fid=#{id}
+	</delete>
+</mapper>

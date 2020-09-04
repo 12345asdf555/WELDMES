@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project>
+  <container path="com.genuitec.runtime.library/com.genuitec.generic_7.0">
+    <custom-jar path="C:lib/Program Files/Java/jdk1.8.0_181/src.zip"/>
+  </container>
+</project>

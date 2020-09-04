@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.dao.EmailMapper">
+	
+	<select id="getEmailAll" resultType="Email">
+		SELECT fid,femailname,femailaddress,GROUP_CONCAT(femailtype) femailtype FROM tb_catemailinf WHERE 1=1 
+		<if test="str!=null and str!=''">
+			and ${str}
+		</if>
+		group by femailaddress
+	</select>
+	
+	<select id="getEmailAddressCount" resultType="java.lang.Integer">
+		select count(femailaddress) from tb_catemailinf where femailaddress = #{femailaddress}
+	</select>
+	
+	<insert id="addEmail" parameterType="Email" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO tb_catemailinf(femailname, femailaddress, femailtype) VALUES (#{femailname}, #{femailaddress}, #{femailtype})
+ 	</insert>
+	
+	<update id="editEmail" parameterType="Email">
+		UPDATE tb_catemailinf SET femailname=#{femailname},femailaddress=#{femailaddress} WHERE femailaddress = #{femailtype}
+	</update>
+	
+	<delete id="deleteEmail" parameterType="java.lang.String">
+		DELETE FROM tb_catemailinf WHERE femailaddress=#{femailaddress}
+	</delete>
+	
+	<select id="getEmailHistory" resultType="Email">
+		SELECT fid,femailname,femailaddress,femailtext,femailtime FROM tb_catemailcheck WHERE 1=1 
+		<if test="dto!=null and dto!=''">
+			<if test="dto.dtoTime1!=null and dto.dtoTime1!=''">
+				and femailtime &gt;= #{dto.dtoTime1}
+			</if>
+			<if test="dto.dtoTime2!=null and dto.dtoTime2!=''">
+				and femailtime &lt;= #{dto.dtoTime2}
+			</if>
+		</if>
+		ORDER BY femailtime DESC
+	</select>
+	
+</mapper>
