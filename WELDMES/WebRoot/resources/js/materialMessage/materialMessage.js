@@ -1,5 +1,5 @@
 $(function(){
-	initialize();
+	initializeMaterial();
 	materialTree();
 	materialListTree();
 	materialMessageDatagrid();
@@ -18,6 +18,7 @@ $(function(){
 			})
 		}
 	});
+	var vlogoflag = "";
 });
 
 function materialMessageDatagrid(){
@@ -54,11 +55,18 @@ function materialMessageDatagrid(){
 			halign : "center",
 			align : "left"
 		}, {
-			field : 'materialType',
+			field : 'materialTypeName',
 			title : '物料类型',
 			width : 80,
 			halign : "center",
 			align : "left"
+		}, {
+			field : 'materialType',
+			title : '物料类型',
+			//width : 80,
+			halign : "center",
+			align : "left",
+			hidden: true
 		}, {
 			field : 'location',
 			title : '存放位置',
@@ -72,11 +80,18 @@ function materialMessageDatagrid(){
 			halign : "center",
 			align : "left"
 		}, {
-			field : 'inventoryChangeType',
+			field : 'inventoryChangeTypeName',
 			title : '库存变动类型',
 			width : 80,
 			halign : "center",
 			align : "left"
+		}, {
+			field : 'inventoryChangeType',
+			title : '库存变动类型',
+			//width : 80,
+			halign : "center",
+			align : "left",
+			hidden: true
 		}, {
 			field : 'changeAddress',
 			title : '变动地址',
@@ -95,13 +110,19 @@ function materialMessageDatagrid(){
 			width : 100,
 			halign : "center",
 			align : "left"
-		}
-		, {
-			field : 'putGetStorageType',
+		}, {
+			field : 'putGetStorageTypeName',
 			title : '入出库类型',
 			width : 70,
 			halign : "center",
 			align : "left"
+		}, {
+			field : 'putGetStorageType',
+			title : '入出库类型',
+			//width : 70,
+			halign : "center",
+			align : "left",
+			hidden: true
 		}, {
 			field : 'changeTime',
 			title : '入出库时间',
@@ -164,7 +185,7 @@ function materialMessageDatagrid(){
 			formatter:function(value,row,index){
 				var str = "";
 				str += '<a id="edit" class="easyui-linkbutton" href="javascript:edit('+row.materialId+','+row.supplierId+')"/>';
-				str += '<a id="delete" class="easyui-linkbutton" href="javascript:delete('+row.materialId+','+row.supplierId+')"/>';
+				str += '<a id="delete" class="easyui-linkbutton" href="javascript:materialDelete('+row.materialId+','+row.supplierId+')"/>';
 				return str;
 			}
 		}
@@ -222,10 +243,16 @@ function materialSet(materialId){
 			alert("数据请求失败，请联系系统管理员!");
 		}
 	});
-	
 }
+var materialType = "";
+var putStorageType = "";
+var GetStorageType = "";
+var inventoryChangeType = [
+	{id: '1',text: '入库'},
+	{id: '2',text: '出库'}
+];
 
-function initialize(){
+function initializeMaterial(){
 	$("#code").textbox("setValue", "");
 	$("#name").textbox("setValue", "");
 	$("#materialType").textbox("setValue", "");
@@ -238,6 +265,71 @@ function initialize(){
 	$("#putGetStorageType").textbox("setValue", "");
 	$("#changeTime").textbox("setValue", "");
 	$("#supplierName").textbox("setValue", "");
+	$.ajax({
+		url: 'materialMessage/initialize',
+		type: 'GET',
+		data: {},
+		dataType: "json",
+		success: function(data){
+			materialType = data.materialType;
+			putStorageType = data.putStorageType;
+			GetStorageType = data.GetStorageType;
+			//物料类型
+			$("#materialType_material").combobox({	
+	            valueField : 'value',
+	            textField : 'valuename',  
+	            editable : false,  
+	            required : true,
+	            mode : 'local',  
+	            data: materialType
+	        }); 
+			//库存变动类型
+			$("#inventoryChangeType_material").combobox({
+				valueField : 'id',
+				textField : 'text',  
+				editable : false,  
+				required : true,
+				mode : 'local',  
+				data: inventoryChangeType
+			}); 
+			//入出库类型
+			$("#putGetStorageType_material").combobox({	
+	            valueField : 'value',
+	            textField : 'valuename',  
+	            editable : false,  
+	            required : true,
+	            mode : 'local',  
+	            data: data.putStorageType
+	        }); 
+		},
+		error: function(){
+			alert("数据请求失败，请联系系统管理员!");
+		}
+	});
+	//库存变动类型 改变事件
+	$('#inventoryChangeType_material').combobox({
+	    onChange:function(n,o){
+	        if(n==1){	//入库
+	        	$("#putGetStorageType_material").combobox({	
+		            valueField : 'value',
+		            textField : 'valuename',  
+		            editable : false,  
+		            required : true,
+		            mode : 'local',  
+		            data: putStorageType
+		        }); 
+	        }else{
+	        	$("#putGetStorageType_material").combobox({	
+		            valueField : 'value',
+		            textField : 'valuename',  
+		            editable : false,  
+		            required : true,
+		            mode : 'local',  
+		            data: GetStorageType
+		        }); 
+	        }
+	    }
+	});
 }
 
 //监听窗口大小变化
@@ -253,6 +345,7 @@ function domresize() {
 	});
 }
 
+//物料树形列表
 function materialTree(){
 	 $("#myTree").tree({
         url: 'materialMessage/getMaterialTree', //请求路径
@@ -262,9 +355,190 @@ function materialTree(){
                  $(data).each(function(index,d) {  
                      if (this.state=='closed') {  
                          tree.tree('expandAll');
-                     }  
-                 });  
+                     }
+                 });
              }  
         }
     });
+}
+
+function edit(materialId,supplierId){
+	vlogoflag = "edit";
+	var row = $('#materialMessageTable').datagrid('getSelected');
+	$('#fm').form('clear');
+	if (row) {
+		$('#dlg').window({
+			title : "编辑",
+			modal : true
+		});
+		$('#dlg').window('open');
+		dataSelect(row.materialType,row.inventoryChangeType,row.putGetStorageType);
+		$("#materialId").val(row.materialId);
+		$("#parentId").val(row.parentId);
+		$("#supplierId").val(row.supplierId);
+		$('#code_material').textbox("setValue", row.code);
+		$("#code_material").textbox('textbox').attr('readonly',true);
+		$('#name_material').textbox("setValue", row.name);
+		$('#location_material').textbox("setValue", row.location);
+		$('#inventory_material').textbox("setValue", row.inventory);
+		$('#changeAddress_material').textbox("setValue", row.changeAddress);
+		$('#changeNumber_material').textbox("setValue", row.changeNumber);
+		$('#changeOrder_material').textbox("setValue", row.changeOrder);
+		$('#changeTime_material').textbox("setValue", row.changeTime);
+		$('#unit').textbox("setValue", row.unit);
+		$('#univalence').textbox("setValue", row.univalence);
+		$('#totalPrices').textbox("setValue", row.totalPrices);
+		$('#fm').form('load', row);
+	}
+}
+
+function dataSelect(material_type,inventory_change_type,put_getStorage_type){
+	$("#materialType_material").combobox({	
+        valueField : 'value',
+        textField : 'valuename',  
+        editable : false,  
+        required : true,
+        mode : 'local',  
+        data: materialType,
+        onLoadSuccess:function(){
+        	var val = materialType;
+        	 for (var item in val) {
+                 if ((val[item].value) == material_type) {
+                     $("#materialType_material").combobox("select", val[item].value);
+                 }  
+             }  
+        }
+    }); 
+	$("#inventoryChangeType_material").combobox({
+		valueField : 'id',
+		textField : 'text',  
+		editable : false,  
+		required : true,
+		mode : 'local',  
+		data: inventoryChangeType,
+		onLoadSuccess:function(){
+        	var val = inventoryChangeType;
+	    	for (var item in val) {
+	            if ((val[item].id) == inventory_change_type) {
+	                $("#inventoryChangeType_material").combobox("select", val[item].id);
+	            }  
+	        }  
+	    }
+	}); 
+	$("#putGetStorageType_material").combobox({	
+        valueField : 'value',
+        textField : 'valuename',  
+        editable : false,  
+        required : true,
+        mode : 'local',  
+        data: putStorageType,
+        onLoadSuccess:function(){
+        	var val = putStorageType;
+	    	for (var item in val) {
+	            if ((val[item].value) == put_getStorage_type) {
+	                $("#putGetStorageType_material").combobox("select", val[item].value);
+	            }  
+	        }  
+	    }
+    }); 
+	
+}
+
+function materialDelete(materialId,supplierId){
+	if (confirm("确定要删除吗？")){
+		$.ajax({
+			url: 'materialMessage/deleteMaterialById',
+			type: 'GET',
+			data: {
+				'materialId': materialId
+			},
+			dataType: "json",
+			success: function(result){
+				if (result.flag){
+					alert("删除成功");
+				}else{
+					alert("删除失败");
+				}
+			},
+			error: function(){
+				alert("数据请求失败，请联系系统管理员!");
+			}
+		});
+		$('#materialMessageTable').datagrid('reload');
+	}
+}
+
+//保存物料信息
+function saveMaterial(){
+	var parentIdlist = $("#parentIdlist").combobox('getValue');
+	$("#parentId").val(parentIdlist);
+	var urls = "";
+	var message = "";
+	if (vlogoflag == "add"){
+		urls = "materialMessage/addMaterialMessage";
+		message = "新增成功";
+	}else if(vlogoflag == "edit"){
+		urls = "materialMessage/editMaterialMessage";
+		message = "修改成功";
+	}
+	$('#fm').form('submit', {
+		url : urls,
+		onSubmit : function() {
+			return $(this).form('enableValidation').form('validate');
+		},
+		success: function(result) {
+			if (result) {
+				var result = eval('(' + result + ')');
+				if (!result.success) {
+					$.messager.show({
+						title : 'Error',
+						msg : result.errorMsg
+					});
+				} else {
+					$.messager.alert("提示", message);
+					$('#dlg').dialog('close');
+					$('#materialMessageTable').datagrid('reload');
+				}
+			}
+		},
+		error : function(errorMsg) {
+			alert("数据请求失败，请联系系统管理员!");
+		}
+	});
+	vlogoflag = "";
+}
+
+//新增
+function addMaterial(){
+	vlogoflag = "add";
+	$('#fm').form('clear');
+	$('#dlg').window({
+		title : "新增",
+		modal : true
+	});
+	$("#code_material").textbox('textbox').attr('readonly',false);
+	$('#dlg').window('open');
+	$("#divparentId").show();
+	$("#parentIdlist").combobox({
+		url: 'materialMessage/getMaterialTree',
+        valueField : 'id',
+        textField : 'text',  
+        editable : false,  
+        required : true,
+        mode : 'local'
+    });
+}
+
+//新增物料类型
+function addMaterialType(){
+	vlogoflag = "add";
+	$('#fm').form('clear');
+	$('#dlg').window({
+		title : "新增物料类型",
+		modal : true
+	});
+	$("#code_material").textbox('textbox').attr('readonly',false);
+	$('#dlg').window('open');
+	$("#parentId").val(0);
+	$("#divparentId").hide();
 }

@@ -82,5 +82,27 @@
 		LEFT JOIN tb_dictionary tds ON mm.put_get_storage_type = tds.fvalue
 		WHERE mm.material_id = #{materialId}
 	</select>
+	
+	<delete id="deleteMaterialById" parameterType="java.math.BigInteger" flushCache="true">
+		DELETE FROM tb_material_message WHERE material_id = #{materialId}
+	</delete>
+
+	<update id="updateMaterialById" parameterType="com.spring.model.MaterialMessage" flushCache="true">
+		UPDATE tb_material_message SET name = #{name},material_type = #{materialType},location = #{location},inventory = #{inventory},
+		inventory_change_type = #{inventoryChangeType},change_address = #{changeAddress},change_number = #{changeNumber},
+		change_order = #{changeOrder},put_get_storage_type = #{putGetStorageType},change_time = #{changeTime},unit = #{unit},
+		univalence = #{univalence},total_prices = #{totalPrices},parent_id = #{parentId},supplier_id = #{supplierId},mender=#{mender}
+		WHERE material_id = #{materialId}
+	</update>
+	
+	<insert id="addMaterialMessage" parameterType="com.spring.model.MaterialMessage" flushCache="true">
+		INSERT INTO tb_material_message(code,name,material_type,location,inventory,inventory_change_type,change_address,change_number,
+		change_order,put_get_storage_type,change_time,unit,univalence,total_prices,parent_id,supplier_id,creator,create_time) 
+		VALUES(
+			#{code},#{name},#{materialType},#{location},#{inventory},#{inventoryChangeType},#{changeAddress},#{changeNumber},
+			#{changeOrder},#{putGetStorageType},#{changeTime},#{unit},#{univalence},#{totalPrices},#{parentId},#{supplierId},
+			#{creator},#{createTime}
+		)
+	</insert>
 
 </mapper>

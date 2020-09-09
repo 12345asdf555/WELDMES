@@ -59,6 +59,7 @@
 		<mapper resource="com/spring/dao/email.xml"/>
 		<mapper resource="com/spring/dao/equipmentAppointment.xml" />
 		<mapper resource="com/spring/dao/materialMessage.xml" />
+		<mapper resource="com/spring/dao/supplierMessage.xml" />
 	</mappers>
 
 </configuration>  

@@ -27,4 +27,26 @@ public interface MaterialMessageService {
 	 * @return
 	 */
 	MaterialMessage findMaterialById(BigInteger materialId);
+	
+	/**
+	 * 删除
+	 * @param materialId
+	 * @return
+	 */
+	int deleteMaterialById(BigInteger materialId);
+	
+	/**
+	 * 修改
+	 * @param material
+	 * @return
+	 */
+	int updateMaterialById(MaterialMessage material);
+	
+	/**
+	 * 新增
+	 * @param material
+	 * @return
+	 */
+	int addMaterialMessage(MaterialMessage material);
+	
 }

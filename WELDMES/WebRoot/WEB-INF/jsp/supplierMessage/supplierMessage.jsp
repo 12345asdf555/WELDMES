@@ -10,7 +10,7 @@
 <head>
 <base href="<%=basePath%>">
 
-<title>设备预约管理</title>
+<title>供应商管理</title>
 <meta http-equiv="pragma" content="no-cache">
 <meta http-equiv="cache-control" content="no-cache">
 <meta http-equiv="expires" content="0">
@@ -28,10 +28,8 @@
 <script type="text/javascript" src="resources/js/easyui-lang-zh_CN.js"></script>
 <script type="text/javascript" src="resources/js/easyui-extend-check.js"></script>
 <!-- 	<script type="text/javascript" src="resources/js/insframework/insframeworktree.js"></script> -->
-<script type="text/javascript" src="resources/js/equipmentAppointment/equipmentAppointment.js"></script>
+<script type="text/javascript" src="resources/js/supplierMessage/supplierMessage.js"></script>
 <script type="text/javascript" src="resources/js/search/search.js"></script>
-<script type="text/javascript" src="resources/js/weldingMachine/addeditweldingmachine.js"></script>
-<script type="text/javascript" src="resources/js/weldingMachine/removeweldingmachine.js"></script>
 </head>
 <body>
 	<%--   	<jsp:include  page="../insframeworktree.jsp"/> --%>
@@ -52,8 +50,7 @@
 				</div>
 			</form>
 		</div>
-		<table id="equipmentAppointmentTable"
-			style="table-layout: fixed; width:100%;"></table>
+		<table id="supplierMessageTable" style="table-layout: fixed; width:100%;"></table>
 
 		<!-- 自定义多条件查询 -->
 		<div id="searchdiv" class="easyui-dialog"
@@ -75,57 +72,6 @@
 				href="javascript:close();" class="easyui-linkbutton"
 				iconCls="icon-cancel">取消</a>
 		</div>
-		<!-- 设备预约 -->
-		<div id="dlg" class="easyui-dialog"
-			style="width: 500px; height: 530px; padding:10px 20px" closed="true"
-			buttons="#dlg-buttons">
-			<form id="fm" class="easyui-form" method="post"data-options="novalidate:true">
-				<div class="fitem">
-					<lable><span class="required">*</span>固定资产编号</lable>
-					<input type="hidden" id="fid" name="fid">
-					<input type="hidden" id="id" name="id">
-					<input type="hidden" id="checkStatus" name="checkStatus">
-					<input type="hidden" id="checkMessage" name="checkMessage">
-					<input class="easyui-textbox" name="equipmentNo" id="equipmentNo"
-						readonly="readonly" data-options="required:true" />
-				</div>
-				<div class="fitem">
-					<lable><span class="required">*</span>焊工编号</lable>
-					<input id="fwelderId" type="hidden" name="fwelderId">
-					<input class="easyui-textbox" name="fwelderno" id="fwelderno" data-options="required:true">
-					<a id="icon-ok" class="easyui-linkbutton" style="" iconCls="icon-ok"></a>
-					<a id="icon-cancel" class="easyui-linkbutton" style="" iconCls="icon-cancel"></a>
-					<span class="required" id="welderText"></span>
-				</div>
-				<div class="fitem">
-					<lable><span class="required">*</span>选择审核人</lable>
-					<select class="easyui-combobox" name="userId" id="userId"></select>
-				</div>
-				<div class="fitem">
-					<lable><span class="required">*</span>预约时间</lable>
-					<input type="hidden" id="old_appointmentDatetime" name="old_appointmentDatetime">
-					<input class="easyui-datetimebox" name="appointmentDatetime" id="appointmentDatetime" data-options="required:true"/>
-				</div>
-				<div class="fitem">
-					<lable><span class="required">*</span>归还时间</lable>
-					<input class="easyui-datetimebox" name="giveBackDatetime" id="giveBackDatetime" data-options="required:true"/>
-				</div>
-				<div class="fitem">
-					<lable><span class="required">*</span>预约信息</lable>
-					<textarea rows="6" cols="30" name="appointmentMessage" id="appointment_message" data-options="required:true"></textarea>
-				</div>
-				<div class="fitem">
-					<lable>备注</lable>
-					<textarea rows="6" cols="30" name="remarks" id="remarks"></textarea>
-				</div>
-			</form>
-		</div>
-		<div id="dlg-buttons">
-			<a href="javascript:saveEquipmentAppointment();" class="easyui-linkbutton"
-				iconCls="icon-ok">保存</a> <a href="javascript:closeDialog('dlg');"
-				class="easyui-linkbutton" iconCls="icon-cancel">取消</a>
-		</div>
-		
 	</div>
 </body>
 </html>

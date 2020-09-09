@@ -36,4 +36,19 @@ public class MaterialMessageServiceImpl implements MaterialMessageService{
 		return materialMessageMappper.findMaterialById(materialId);
 	}
 
+	@Override
+	public int deleteMaterialById(BigInteger materialId) {
+		return materialMessageMappper.deleteMaterialById(materialId);
+	}
+
+	@Override
+	public int updateMaterialById(MaterialMessage material) {
+		return materialMessageMappper.updateMaterialById(material);
+	}
+
+	@Override
+	public int addMaterialMessage(MaterialMessage material) {
+		return materialMessageMappper.addMaterialMessage(material);
+	}
+
 }

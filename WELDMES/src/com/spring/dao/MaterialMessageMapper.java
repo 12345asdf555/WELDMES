@@ -13,4 +13,10 @@ public interface MaterialMessageMapper extends Mapper<MaterialMessage> {
 	List<MaterialMessage> selectMaterialTree();
 	
 	MaterialMessage findMaterialById(BigInteger materialId);
+	
+	int deleteMaterialById(BigInteger materialId);
+	
+	int updateMaterialById(MaterialMessage material);
+	
+	int addMaterialMessage(MaterialMessage material);
 }
