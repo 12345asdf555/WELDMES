@@ -1,8 +1,8 @@
 $(function(){
 	insframeworkTree();
 	equipmentAuditDatagrid();
-	var vlogoflag = "";
 });
+var vlogoAudit = "";
 var data = [
 	{id: 1, text:''},
 	{id: 2, text:'审核通过'},
@@ -21,12 +21,12 @@ function equipmentAuditDatagrid(){
 		remoteSort:false,
 		showPageList : false, 
 		columns : [ [ {
-			field : 'fid',
+			field : 'id',
 			title : '序号',
 			width : 50,
 			halign : "center",
 			align : "left",
-			hidden:true
+			hidden: true
 		}, {
 			field : 'equipmentNo',
 			title : '固定资产编号',
@@ -122,69 +122,6 @@ function equipmentAuditDatagrid(){
 			halign : "center",
 			align : "left"
 		}, {
-			field : 'model',
-			title : '设备型号id',
-			//width : 100,
-			halign : "center",
-			align : "left",
-			hidden: true
-		}, {
-			field : 'userId',
-			title : '审核人id',
-			//width : 100,
-			halign : "center",
-			align : "left",
-			hidden: true
-		}, {
-			field : 'welderId',
-			title : '焊工id',
-			//width : 100,
-			halign : "center",
-			align : "left",
-			hidden: true
-		}, {
-			field : 'welderno',
-			title : '焊工编号',
-			//width : 100,
-			halign : "center",
-			align : "left",
-			hidden: true
-		}, {
-			field : 'manuno',
-			title : '厂商id',
-			//width : 100,
-			halign : "center",
-			align : "left",
-			hidden: true
-		}, {
-			field : 'typeId',
-			title : '类型id',
-			//width : 100,
-			halign : "center",
-			align : "left",
-			hidden: true
-		}, {
-			field : 'iId',
-			title : '项目id',
-			//width : 100,
-			halign : "center",
-			align : "left",
-			hidden: true
-		}, {
-			field : 'gid',
-			title : '采集id',
-			//width : 100,
-			halign : "center",
-			align : "left",
-			hidden: true
-		}, {
-			field : 'id',
-			title : 'id',
-			//width : 100,
-			halign : "center",
-			align : "left",
-			hidden: true
-		}, {
 			field : 'edit',
 			title : '操作',
 			width : 200,
@@ -193,10 +130,10 @@ function equipmentAuditDatagrid(){
 			formatter:function(value,row,index){
 				var str = "";
 				if (row.check_status == 1) {
-					str += '<a id="awaitAudit" class="easyui-linkbutton" href="javascript:appointment('+row.iId+','+row.fid+',1)"/>';
+					str += '<a id="awaitAudit" class="easyui-linkbutton" href="javascript:appointment('+row.iId+','+row.id+',1)"/>';
 				}
 				if (row.check_status != 1) {
-					str += '<a id="edit" class="easyui-linkbutton" href="javascript:appointment('+row.iId+','+row.fid+',2)"/>';
+					str += '<a id="edit" class="easyui-linkbutton" href="javascript:appointment('+row.iId+','+row.id+',2)"/>';
 				}
 				return str;
 			}
@@ -219,11 +156,11 @@ function equipmentAuditDatagrid(){
 }
 
 //审核
-function appointment(id,fid,status){
+function appointment(iId,id,status){
 	$.ajax({  
         type : "post",  
         async : false,
-        url : "insframework/getUserAuthority?id="+id,  
+        url : "insframework/getUserAuthority?id="+iId,  
         data : {},  
         dataType : "json", //返回数据形式为json  
         success: function(result) {
@@ -231,9 +168,9 @@ function appointment(id,fid,status){
         		if(result.flag){	//判断用户操作权限
     				//判断设备是否可预约
         			if (status == '1') {	//审核
-        				awaitAudit(fid);
+        				awaitAudit(id);
 					}else if(status == '2'){
-						editAudit(id,fid);
+						editAudit(id);
 					}
         		}else{
         			alert("对不起，您不能对你的上级或同级部门的数据进行编辑");
@@ -258,9 +195,9 @@ function appointment(id,fid,status){
 }
 
 //弹出设备审核页面
-function awaitAudit(fid){
-	vlogoflag = "add";
-	$('#fm').form('clear');
+function awaitAudit(id){
+	vlogoAudit = "add";
+	$('#fmAudit').form('clear');
 	var row = $('#equipmentAuditTable').datagrid('getSelected');
 	if (row) {
 		$('#dlg').window({
@@ -270,15 +207,12 @@ function awaitAudit(fid){
 		$('#dlg').window('open');
 		$('#equipmentNo').textbox("setValue", row.equipmentNo);
 		$('#welderInfo').textbox("setValue", row.welderInfo);
-		$('#validgid').val(row.gatherId);
-		$('#validinsf').val(row.iId);
-		$('#fid').val(fid);
+		$('#id').val(id);
 		$("#fwelderId").val(row.welderId);
 		$('#appointmentDatetime').datetimebox("setValue", row.appointmentDatetime);
 		$('#giveBackDatetime').datetimebox("setValue", row.giveBackDatetime);
 		$('#appointment_message').val(row.appointment_message);
 		$('#remarks').val(row.remark);
-		$('#fmachineStatus').val(row.fmachine_status);
 		$("#check_status").combobox({
             valueField : 'id',
             textField : 'text',  
@@ -287,7 +221,7 @@ function awaitAudit(fid){
             mode : 'local',  
             data: data
         }); 
-		$('#fm').form('load', row);
+		$('#fmAudit').form('load', row);
 	}
 }
 
@@ -296,14 +230,14 @@ function awaitAudit(fid){
 function saveEquipmentAudit(){
 	var urls = "";
 	var message = "";
-	if (vlogoflag = "add"){
-		message = "审核成功！";
+	if (vlogoAudit == "add"){
+		message = "审核完成！";
 		urls = "equipmentAudit/addEquipmentAudit";
-	}else if(vlogoflag = "edit"){
-		message = "修改成功！";
+	}else if(vlogoAudit == "edit"){
+		message = "修改完成！";
 		urls = "equipmentAudit/editEquipmentAudit";
 	}
-	$('#fm').form('submit', {
+	$('#fmAudit').form('submit', {
 		url : urls,
 		onSubmit : function() {
 			return $(this).form('enableValidation').form('validate');
@@ -320,7 +254,6 @@ function saveEquipmentAudit(){
 					$.messager.alert("提示", message);
 					$('#dlg').dialog('close');
 					$('#equipmentAuditTable').datagrid('reload');
-					$("#valideno").val("");
 				}
 			}
 
@@ -329,13 +262,13 @@ function saveEquipmentAudit(){
 			alert("数据请求失败，请联系系统管理员!");
 		}
 	});
-	vlogoflag = "";
+	vlogoAudit = "";
 }
 
 //编辑
-function editAudit(id,fid){
-	vlogoflag = "edit";
-	$('#fm').form('clear');
+function editAudit(id){
+	vlogoAudit = "edit";
+	$('#fmAudit').form('clear');
 	var row = $('#equipmentAuditTable').datagrid('getSelected');
 	if (row) {
 		$('#dlg').window({
@@ -344,21 +277,15 @@ function editAudit(id,fid){
 		});
 		$('#dlg').window('open');
 		$('#equipmentNo').textbox("setValue", row.equipmentNo);
-		$('#fid').val(fid);
+		$('#id').val(id);
 		/**
 		 * 给easyui textbox赋值
 		 */
 		$("#welderInfo").textbox("setValue", row.welderInfo);
-		$("#fwelderId").val(row.welderId);
 		$('#appointmentDatetime').datetimebox("setValue", row.appointmentDatetime);
 		$('#giveBackDatetime').datetimebox("setValue", row.giveBackDatetime);
 		$('#appointment_message').val(row.appointment_message);
 		$('#remarks').val(row.remark);
-		$('#fmachineStatus').val(row.fmachine_status);
-		
-		$('#appointment_message').val(row.appointment_message);
-		$('#remarks').val(row.remark);
-		$('#id').val(row.id);
 		$("#check_status").combobox({
             valueField : 'id',
             textField : 'text',  
@@ -367,9 +294,8 @@ function editAudit(id,fid){
             mode : 'local',  
             data: data
         }); 
-		//$('#check_status').combobox("select", row.check_status);
 		$('#checkMessage').val(row.check_message);
-		$('#fm').form('load', row);
+		$('#fmAudit').form('load', row);
 	}
 }
 

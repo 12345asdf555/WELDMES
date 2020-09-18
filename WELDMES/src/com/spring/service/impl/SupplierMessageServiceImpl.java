@@ -25,5 +25,25 @@ public class SupplierMessageServiceImpl implements SupplierMessageService{
 		PageHelper.startPage(page.getPageIndex(),page.getPageSize());
 		return supplierMapper.selectSupplierList(parent, str);
 	}
+
+	@Override
+	public int addSupplierMessage(SupplierMessage supplier) {
+		return supplierMapper.addSupplierMessage(supplier);
+	}
+
+	@Override
+	public int updateSupplierMessage(SupplierMessage supplier) {
+		return supplierMapper.updateSupplierMessage(supplier);
+	}
+
+	@Override
+	public int deleteSupplierMessage(Integer supplierId) {
+		return supplierMapper.deleteSupplierMessage(supplierId);
+	}
+
+	@Override
+	public List<SupplierMessage> selectSupplierAll() {
+		return supplierMapper.selectSupplierAll();
+	}
 	
 }

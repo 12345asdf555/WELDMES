@@ -32,13 +32,6 @@ public class EquipmentAppointmentServiceImpl implements EquipmentAppointmentServ
 		return eam.addEquipmentAppointment(equipmentAppointment);
 	}
 
-
-	@Override
-	public EquipmentAppointment getEquipmentForFmachineId(BigInteger fmachineId) {
-		return eam.getEquipmentForFmachineId(fmachineId);
-	}
-
-
 	@Override
 	public int editEquipmentAppointment(EquipmentAppointment equipmentAppointment) {
 		return eam.editEquipmentAppointment(equipmentAppointment);
@@ -60,6 +53,18 @@ public class EquipmentAppointmentServiceImpl implements EquipmentAppointmentServ
 	@Override
 	public void updateMachineStatusForId(BigInteger id) {
 		eam.updateMachineStatusForId(id);		
+	}
+
+
+	@Override
+	public List<EquipmentAppointment> getEquipmentListForFmachineId(BigInteger fmachineId) {
+		return eam.getEquipmentListForFmachineId(fmachineId);
+	}
+
+
+	@Override
+	public int countEquipmentByFmachineId(BigInteger fmachineId) {
+		return eam.countEquipmentByFmachineId(fmachineId);
 	}
 
 }

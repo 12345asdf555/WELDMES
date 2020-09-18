@@ -85,6 +85,11 @@ public class EquipmentAuditController {
 		request.getSession().setAttribute("searchStr", searchStr);
 		page = new Page(pageIndex,pageSize,total);
 		
+		MyUser myuser = (MyUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if (null != myuser) {
+			searchStr = "tea.user_id = "+myuser.getId();
+		}
+		
 		//查询焊机设备状态为‘启用’的设备数据
 		List<EquipmentAppointment> list = eas.getEquipmentAuditAll(page, parent, searchStr);
 		
@@ -98,7 +103,16 @@ public class EquipmentAuditController {
 		JSONObject obj = new JSONObject();
 		try{
 			for(EquipmentAppointment wm : list){
-				json.put("fid", wm.getFid());
+				json.put("id", wm.getId());
+				json.put("appointmentDatetime", wm.getAppointmentDatetime());
+				json.put("giveBackDatetime", wm.getGiveBackDatetime());
+				json.put("checkDatetime", wm.getCheckDatetime());
+				json.put("fmachine_status", wm.getFmachineStatus());
+				json.put("appointment_message", wm.getAppointmentMessage());
+				json.put("check_message", wm.getCheckMessage());
+				json.put("remark", wm.getRemark());
+				json.put("check_status", wm.getCheckStatus());
+				json.put("userId", wm.getUserId());
 				//根据焊机id查询最新的一条预约列表数据
 				Welder welder = ws.getWelderForFid(wm.getFwelderId());
 				if(null != welder){
@@ -110,16 +124,6 @@ public class EquipmentAuditController {
 					json.put("welderId","");
 					json.put("welderno", "");
 				}
-				json.put("appointmentDatetime", wm.getAppointmentDatetime());
-				json.put("giveBackDatetime", wm.getGiveBackDatetime());
-				json.put("checkDatetime", wm.getCheckDatetime());
-				json.put("fmachine_status", wm.getFmachineStatus());
-				json.put("appointment_message", wm.getAppointmentMessage());
-				json.put("check_message", wm.getCheckMessage());
-				json.put("remark", wm.getRemark());
-				json.put("check_status", wm.getCheckStatus());
-				json.put("userId", wm.getUserId());
-				json.put("id", wm.getId());
 				//根据用户id查询用户信息
 				User user = userService.getUserInsframework(BigInteger.valueOf(wm.getUserId()));
 				if (null != user){
@@ -128,7 +132,7 @@ public class EquipmentAuditController {
 					json.put("userInfo", "");
 				}
 				json.put("create_time", wm.getCreateTime());
-				
+				json.put("fid", wm.getFid());
 				json.put("ip", wm.getIp());
 				json.put("equipmentNo", wm.getEquipmentNo());
 				json.put("position", wm.getPosition());
@@ -175,7 +179,7 @@ public class EquipmentAuditController {
 	}
 	
 	/**
-	 * 新增设备审核
+	 * 设备审核
 	 * @param request
 	 * @return
 	 */
@@ -186,36 +190,25 @@ public class EquipmentAuditController {
 		EquipmentAppointment appointment = new EquipmentAppointment();
 		try{
 			MyUser user = (MyUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			String fwelderId = request.getParameter("fwelderId");			//焊工编号
-			String appointmentMessage = request.getParameter("appointmentMessage");
-			String remarks = request.getParameter("remarks");
-			//String userId = request.getParameter("userId");
-			String fid = request.getParameter("fid");
-			String giveBackDatetime = request.getParameter("giveBackDatetime");
-			String appointmentDatetime = request.getParameter("appointmentDatetime");
+			String id = request.getParameter("id");
 			String check_status = request.getParameter("check_status");		//审核状态
 			String checkMessage = request.getParameter("checkMessage");		//审核内容
-			String fmachineStatus = request.getParameter("fmachineStatus");		//焊机状态
 			
-			appointment.setCreator(Long.valueOf(user.getId()));
-			appointment.setFmachineId(Long.valueOf(fid));		//焊机id
-			appointment.setFwelderId(BigInteger.valueOf(Long.valueOf(fwelderId)));//焊工id
-			appointment.setFmachineStatus(Integer.valueOf(fmachineStatus));					
-			appointment.setAppointmentMessage(appointmentMessage);
+			appointment.setId(BigInteger.valueOf(Long.valueOf(id)));
+			appointment.setCheckStatus(Integer.valueOf(check_status));
+			appointment.setCheckDatetime(sdf.format(System.currentTimeMillis()));
 			appointment.setCheckMessage(checkMessage);
-			appointment.setRemark(remarks);
-			appointment.setCheckStatus(Integer.valueOf(check_status)); 			
-			appointment.setUserId(user.getId());		//审核人id
-			appointment.setGiveBackDatetime(giveBackDatetime);
-			appointment.setAppointmentDatetime(appointmentDatetime);
-			appointment.setCreateTime(sdf.format(new Date(System.currentTimeMillis())));
-			appointment.setCheckDatetime(sdf.format(new Date(System.currentTimeMillis())));
-			eas.addEquipmentAppointment(appointment);
-			obj.put("success", true);
+			appointment.setMender(user.getId());
+			int i = eas.editEquipmentAppointment(appointment);
+			if (i != 0) {
+				obj.put("success", true);
+			}else {
+				obj.put("success", false);
+			}
 		}catch (Exception e) {
-			e.printStackTrace();
 			obj.put("success", false);
 			obj.put("errorMsg", e.getMessage());
+			e.printStackTrace();
 		}
 		return obj.toString();
 	}
@@ -229,37 +222,24 @@ public class EquipmentAuditController {
 	@ResponseBody
 	public String editEquipmentAudit(HttpServletRequest request){
 		JSONObject obj = new JSONObject();
-		EquipmentAppointment appointment = new EquipmentAppointment();
 		try{
+			EquipmentAppointment appointment = new EquipmentAppointment();
 			MyUser user = (MyUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			String fwelderId = request.getParameter("fwelderId");		//焊工id
-			String userId = request.getParameter("userId");
-			String fid = request.getParameter("fid");
 			String id = request.getParameter("id");
-			String giveBackDatetime = request.getParameter("giveBackDatetime");
-			String appointmentDatetime = request.getParameter("appointmentDatetime");
-			String checkStatus = request.getParameter("checkStatus");
-			String appointmentMessage = request.getParameter("appointmentMessage");
-			String remarks = request.getParameter("remarks");
 			String check_status = request.getParameter("check_status");		//审核状态
 			String checkMessage = request.getParameter("checkMessage");		//审核内容
-			String fmachineStatus = request.getParameter("fmachineStatus");		//焊机状态
 			
-			appointment.setMender(Long.valueOf(user.getId()));
-			appointment.setFmachineId(Long.valueOf(fid));		//焊机id
-			appointment.setFwelderId(BigInteger.valueOf(Long.valueOf(fwelderId)));//焊工id
-			appointment.setFmachineStatus(Integer.valueOf(fmachineStatus));	
-			appointment.setAppointmentMessage(appointmentMessage);
-			appointment.setCheckMessage(checkMessage);
-			appointment.setRemark(remarks);
-			appointment.setCheckStatus(Integer.valueOf(checkStatus));//审核状态：待审核
-			appointment.setUserId(Long.valueOf(userId));		//审核人id
-			appointment.setGiveBackDatetime(giveBackDatetime);
-			appointment.setAppointmentDatetime(appointmentDatetime);
 			appointment.setId(BigInteger.valueOf(Long.valueOf(id)));
 			appointment.setCheckStatus(Integer.valueOf(check_status));
-			eas.editEquipmentAppointment(appointment);
-			obj.put("success", true);
+			appointment.setCheckMessage(checkMessage);
+			appointment.setCheckDatetime(sdf.format(System.currentTimeMillis()));
+			appointment.setMender(user.getId());
+			int i = eas.editEquipmentAppointment(appointment);
+			if (i != 0) {
+				obj.put("success", true);
+			}else {
+				obj.put("success", false);
+			}
 		}catch (Exception e) {
 			obj.put("success", false);
 			obj.put("errorMsg", e.getMessage());

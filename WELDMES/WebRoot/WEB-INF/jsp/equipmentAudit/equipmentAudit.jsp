@@ -54,8 +54,7 @@ href="resources/themes/default/easyui.css" />
 				</div>
 			</form>
 		</div>
-		<table id="equipmentAuditTable"
-			style="table-layout: fixed; width:100%;"></table>
+		<table id="equipmentAuditTable" style="table-layout: fixed; width:100%;"></table>
 
 		<!-- 自定义多条件查询 -->
 		<div id="searchdiv" class="easyui-dialog"
@@ -80,22 +79,17 @@ href="resources/themes/default/easyui.css" />
 		<div id="dlg" class="easyui-dialog"
 			style="width: 500px; height: 530px; padding:10px 20px" closed="true"
 			buttons="#dlg-buttons">
-			<form id="fm" class="easyui-form" method="post"data-options="novalidate:true">
+			<form id="fmAudit" class="easyui-form" method="post"data-options="novalidate:true">
 				<div class="fitem">
 					<lable>固定资产编号</lable>
-					<input type="hidden" id="valideno">
-					<input type="hidden" id="fid" name="fid">
 					<input type="hidden" id="id" name="id">
-					<input type="hidden" id="fmachineStatus" name="fmachineStatus">
 					<input class="easyui-textbox" name="equipmentNo" id="equipmentNo"
 						readonly="readonly" data-options="required:true" />
 				</div>
 				<div class="fitem">
 					<lable>焊工</lable>
-					<input id="fwelderId" type="hidden" name="fwelderId">
 					<input class="easyui-textbox" name="welderInfo" id="welderInfo" readonly="readonly">
 				</div>
-				
 				<div class="fitem">
 					<lable>预约时间</lable>
 					<input class="easyui-datetimebox" name="appointmentDatetime" id="appointmentDatetime" readonly="readonly"/>

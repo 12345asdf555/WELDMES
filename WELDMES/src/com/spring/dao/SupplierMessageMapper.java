@@ -10,4 +10,11 @@ public interface SupplierMessageMapper extends Mapper<SupplierMessage> {
 
 	List<SupplierMessage> selectSupplierList(@Param("parent") BigInteger parent,@Param("str") String str);
 	
+	int addSupplierMessage(SupplierMessage supplier);
+	
+	int updateSupplierMessage(SupplierMessage supplier);
+	
+	int deleteSupplierMessage(Integer supplierId);
+	
+	List<SupplierMessage> selectSupplierAll();
 }

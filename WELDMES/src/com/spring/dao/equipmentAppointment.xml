@@ -21,6 +21,7 @@
 		<result property="giveBackDatetime" column="give_back_datetime"></result>
 	</resultMap>
 
+	<!-- 设备预约 -->
 	<resultMap id="dMap" type="com.spring.model.EquipmentAppointment">
         <id column="fid" property="fid" />
 		<result property="ip" column="fIP" />
@@ -78,18 +79,89 @@
 	       	<result property="leavetime" column="fleavetime"></result>
         </association>
 	</resultMap>
+	
+	<!-- 审核 -->
+	<resultMap id="auditMap" type="com.spring.model.EquipmentAppointment">
+		<id property="id" column="id"></id>
+		<result property="fmachineId" column="fmachine_id"></result>
+		<result property="fwelderId" column="fwelder_id"></result>
+		<result property="fmachineStatus" column="fmachine_status"></result>
+		<result property="appointmentMessage" column="appointment_message"></result>
+		<result property="checkMessage" column="check_message"></result>
+		<result property="remark" column="remark"></result>
+		<result property="checkStatus" column="check_status"></result>
+		<result property="userId" column="user_id"></result>
+		<result property="createTime" column="create_time"></result>
+		<result property="updateTime" column="update_time"></result>
+		<result property="creator" column="creator"></result>
+		<result property="checkDatetime" column="check_datetime"></result>
+		<result property="appointmentDatetime" column="appointment_datetime"></result>
+		<result property="giveBackDatetime" column="give_back_datetime"></result>
+		
+        <result property="fid" column="fid"></result>
+		<result property="ip" column="fIP"></result>
+		<result property="model" column="model"></result>
+		<result property="modelname" column="modelname"></result>
+		<result property="fmanunumbers" column="fmanunumbers"></result>
+		<result property="fsection" column="fsection"></result>
+		<result property="fauthentication" column="fauthentication"></result>
+		<result property="ftest" column="ftest"></result>
+		<result property="fprevention" column="fprevention"></result>
+		<result property="equipmentNo" column="fequipment_no"></result>	
+		<result property="position" column="fposition"></result>
+		<result property="isnetworking" column="fisnetworking"></result>
+		<result property="joinTime" column="fjoin_time"></result>
+		<result property="typeId" column="ftype_id"></result>
+		<result property="statusId" column="fstatus_id"></result>
+		<result property="typename" column="typename"></result>
+		<result property="statusname" column="statusname"></result>
+		<result property="creater" column="fcreater"></result>
+		<result property="updater" column="fupdater"></result>
+        <result property="mvalueid" column="mid"></result>  
+        <result property="mvaluename" column="mname"></result>
+        <result property="modelid" column="modelid"></result>
+        <association property="insframeworkId" column="finsframework_id" javaType="com.spring.model.Insframework">  
+            <id property="id" column="iid"></id> 
+            <result property="name" column="iname"></result>  
+            <result property="logogram" column="flogogram"></result>  
+            <result property="code" column="fcode"></result>
+        	<result property="parent" column="fparent"></result>
+        	<result property="type" column="ftype"></result>
+        </association>
+        <association property="gatherId" column="fgather_id" javaType="com.spring.model.Gather">  
+            <id property="id" column="gid"></id> 
+	        <result property="gatherNo" column="fgather_no"></result>  
+	        <result property="status" column="fstatus"></result>  
+	        <result property="protocol" column="fprotocol"></result>
+	       	<result property="ipurl" column="fipurl"></result>
+	       	<result property="macurl" column="fmacurl"></result>
+	       	<result property="leavetime" column="fleavetime"></result>
+        </association>
+	</resultMap>
 
 
 	<sql id="equipment_appointment">
 		id,fmachine_id,fwelder_id,fmachine_status,appointment_message,check_message,remark,check_status,user_id,
 		create_time,update_time,creator,mender,check_datetime,appointment_datetime,give_back_datetime
 	</sql>
+	
+	<sql id="auditSql">
+		tea.id,tea.fmachine_id,tea.fwelder_id,tea.fmachine_status,tea.appointment_message,tea.check_message,tea.remark,tea.check_status,tea.user_id,
+		tea.create_time,tea.update_time,tea.creator,tea.mender,tea.check_datetime,tea.appointment_datetime,tea.give_back_datetime
+	</sql>
+	
+	<sql id="welding_machine">
+		twm.fid fid,twm.fIP fIP,twm.fmodel model,fstatus_id,twm.fmanunumbers fmanunumbers, twm.fsection fsection,twm.fauthentication fauthentication,
+		twm.ftest ftest,twm.fprevention fprevention,i.fid iid,ftype_id,g.fid gid, fequipment_no,fgather_no ,fjoin_time,i.fname iname,
+		fisnetworking,fposition,di.fvaluename typename,dict.fvaluename modelname
+	</sql>
 
 	<!--  查询焊机设备预约并分页 -->
 	<select id="getEquipmentAppointmentAll" resultMap="dMap"  parameterType="java.lang.String">
 		SELECT 
-		w.fid fid,w.fIP fIP,w.fmodel model,fstatus_id,w.fmanunumbers fmanunumbers, w.fsection fsection,w.fauthentication fauthentication,w.ftest ftest,w.fprevention fprevention,i.fid iid,ftype_id,g.fid gid,dic.fvalue mid, fequipment_no,fgather_no ,fjoin_time,i.fname iname
-		,dic.fvaluename mname,fisnetworking,fposition,d.fvaluename statusname,di.fvaluename typename,dict.fvaluename modelname
+		w.fid fid,w.fIP fIP,w.fmodel model,fstatus_id,w.fmanunumbers fmanunumbers, w.fsection fsection,w.fauthentication fauthentication,
+		w.ftest ftest,w.fprevention fprevention,i.fid iid,ftype_id,g.fid gid,dic.fvalue mid, fequipment_no,fgather_no ,fjoin_time,i.fname iname,
+		dic.fvaluename mname,fisnetworking,fposition,d.fvaluename statusname,di.fvaluename typename,dict.fvaluename modelname
 		FROM tb_welding_machine w
 		LEFT JOIN tb_insframework i ON w.finsframework_id = i.fid
 		LEFT JOIN tb_insframework ins on ins.fid = i.fparent
@@ -109,36 +181,37 @@
 		ORDER BY w.fequipment_no
 	</select>
 	
-	<!--  查询焊机设备审核列表并分页 -->
-	<select id="getEquipmentAuditAll" resultMap="dMap"  parameterType="java.lang.String">
-		SELECT 
-		w.fid fid,w.fequipment_no,w.fIP fIP,w.fmodel model,fstatus_id,w.fmanunumbers fmanunumbers, w.fsection fsection,w.fauthentication fauthentication,
-		w.ftest ftest,w.fprevention fprevention,w.fequipment_no,w.fisnetworking,w.fposition,
-		i.fid iid,ftype_id,i.fname iname,
-		g.fid gid,g.fgather_no ,fjoin_time,
-		di.fvaluename typename,dict.fvaluename modelname,
-		<include refid="equipment_appointment"></include>
-		FROM tb_welding_machine w
-		LEFT JOIN tb_insframework i ON w.finsframework_id = i.fid
+	<!--  查询设备为预约中的预约列表(根据审核状态分组，预约时间排序)  -->
+	<select id="getEquipmentAuditAll" resultMap="auditMap"  parameterType="java.lang.String">
+		SELECT
+		<include refid="auditSql"></include>,<include refid="welding_machine"></include>
+		FROM
+			tb_equipment_appointment tea
+		LEFT JOIN tb_welding_machine twm ON tea.fmachine_id = twm.fid
+		LEFT JOIN tb_insframework i ON twm.finsframework_id = i.fid
 		LEFT JOIN tb_insframework ins ON ins.fid = i.fparent
 		LEFT JOIN tb_insframework insf ON insf.fid = ins.fparent
-		LEFT JOIN tb_gather g ON g.fid = w.fgather_id
-		LEFT JOIN (
-			SELECT * FROM (SELECT * FROM tb_equipment_appointment HAVING 1 ORDER BY create_time DESC)t GROUP BY t.fmachine_id
-		)s ON w.fid = s.fmachine_id
-		INNER JOIN tb_dictionary di ON di.fvalue = w.ftype_id
-		INNER JOIN tb_dictionary dict ON dict.fvalue = w.fmodel
-		WHERE (s.check_status = 1 OR s.check_status = 2 OR s.check_status = 3)
-		AND (di.ftypeid=4 and dict.ftypeid=17)
+		LEFT JOIN tb_gather g ON g.fid = twm.fgather_id
+		LEFT JOIN tb_equipment_appointment teap ON tea.check_status = teap.check_status AND teap.appointment_datetime >= tea.appointment_datetime 
+		INNER JOIN tb_dictionary di ON di.fvalue = twm.ftype_id
+		INNER JOIN tb_dictionary dict ON dict.fvalue = twm.fmodel
+		WHERE
+			(tea.check_status = 1 OR tea.check_status = 2 OR tea.check_status = 3)
+		AND tea.fmachine_status = 0
+		AND (
+			di.ftypeid = 4 AND dict.ftypeid = 17
+		)
 		<if test="parent!=null and parent!=''">
-			and (i.fid=#{parent} or ins.fid=#{parent} or insf.fid=#{parent} or insf.fparent=#{parent})
+			AND (i.fid=#{parent} OR ins.fid=#{parent} OR
+			insf.fid=#{parent} OR insf.fparent=#{parent})
 		</if>
-		<if test="str!=null and str!=''">
-			and ${str}
+		<if test="str != null and str != ''">
+			AND ${str}
 		</if>
-		ORDER BY s.check_status
+		GROUP BY teap.check_status,teap.appointment_datetime
+		ORDER BY tea.check_status,tea.appointment_datetime
 	</select>
-
+	
 	<!-- 新增设备预约记录 -->
 	<insert id="addEquipmentAppointment" parameterType="com.spring.model.EquipmentAppointment" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
 		INSERT INTO tb_equipment_appointment(id,fmachine_id,fwelder_id,fmachine_status,appointment_message,check_message,
@@ -148,17 +221,23 @@
 			#{userId},#{createTime},#{creator},#{checkDatetime},#{appointmentDatetime},#{giveBackDatetime}
 		)
 	</insert>
-
-	<select id="getEquipmentForFmachineId" parameterType="java.lang.String" resultMap="eMap">
-		SELECT <include refid="equipment_appointment"></include> FROM tb_equipment_appointment
-		WHERE fmachine_id = #{fmachineId} ORDER BY create_time DESC LIMIT 1
-	</select>
 	
 	<update id="editEquipmentAppointment" parameterType="com.spring.model.EquipmentAppointment">
 		UPDATE tb_equipment_appointment
-		SET fmachine_id = #{fmachineId},fwelder_id = #{fwelderId},fmachine_status=#{fmachineStatus},appointment_message=#{appointmentMessage},
-		check_message=#{checkMessage},remark=#{remark},check_status=#{checkStatus},user_id=#{userId},check_datetime=#{checkDatetime},
-		appointment_datetime=#{appointmentDatetime},give_back_datetime=#{giveBackDatetime}
+		<trim prefix="SET" suffixOverrides=",">
+		  <if test="null != fmachineId and fmachineId != 0">fmachine_id = #{fmachineId},</if>
+		  <if test="null != fwelderId and fwelderId != 0">fwelder_id = #{fwelderId},</if>
+		  <if test="null != fmachineStatus">fmachine_status = #{fmachineStatus},</if>
+		  <if test="null != appointmentMessage">appointment_message = #{appointmentMessage},</if>
+		  <if test="null != checkMessage">check_message = #{checkMessage},</if>
+		  <if test="null != remark">remark = #{remark},</if>
+		  <if test="null != checkStatus and checkStatus != 0">check_status = #{checkStatus},</if>
+		  <if test="null != userId and userId != 0">user_id = #{userId},</if>
+		  <if test="null != checkDatetime">check_datetime = #{checkDatetime},</if>
+		  <if test="null != appointmentDatetime">appointment_datetime = #{appointmentDatetime},</if>
+		  <if test="null != giveBackDatetime">give_back_datetime = #{giveBackDatetime},</if>
+		  <if test="null != mender and mender != 0">mender = #{mender},</if>
+		 </trim>
 		WHERE id = #{id}
 	</update>
 	
@@ -170,4 +249,14 @@
 	<update id="updateMachineStatusForId"  parameterType="java.math.BigInteger">
 		UPDATE tb_equipment_appointment SET fmachine_status = 2 WHERE id = #{id}
 	</update>
+	
+	<!-- 根据焊机id查询焊机预约列表 -->
+	<select id="getEquipmentListForFmachineId" parameterType="java.math.BigInteger" resultMap="eMap">
+		SELECT <include refid="equipment_appointment"></include> FROM tb_equipment_appointment WHERE fmachine_id = #{fmachineId}
+		AND (fmachine_status = 0 OR fmachine_status = 1) ORDER BY appointment_datetime ASC
+	</select>
+	
+	<select id="countEquipmentByFmachineId" parameterType="java.math.BigInteger" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM tb_equipment_appointment WHERE fmachine_id = #{fmachineId}
+	</select>
 </mapper>

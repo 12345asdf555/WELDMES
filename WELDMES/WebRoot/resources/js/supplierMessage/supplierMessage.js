@@ -1,5 +1,4 @@
 $(function(){
-	insframeworkTree();
 	supplierMessageDatagrid();
 	var vlogoflag = "";
 });
@@ -26,20 +25,20 @@ function supplierMessageDatagrid(){
 		}, {
 			field : 'code',
 			title : '供应商编码',
-			width : 80,
+			width : 140,
 			halign : "center",
 			align : "left",
 			sortable: true
 		}, {
 			field : 'name',
 			title : '供应商名称',
-			width : 80,
+			width : 200,
 			halign : "center",
 			align : "left"
 		}, {
 			field : 'address',
 			title : '地址',
-			width : 140,
+			width : 200,
 			halign : "center",
 			align : "left"
 		}, {
@@ -57,7 +56,7 @@ function supplierMessageDatagrid(){
 		}, {
 			field : 'remark',
 			title : '备注',
-			width : 100,
+			width : 160,
 			halign : "center",
 			align : "left"
 		}, {
@@ -69,13 +68,13 @@ function supplierMessageDatagrid(){
 		}, {
 			field : 'edit',
 			title : '操作',
-			width : 230,
+			width : 200,
 			halign : "center",
 			align : "left",
 			formatter:function(value,row,index){
 				var str = "";
 				str += '<a id="edit" class="easyui-linkbutton" href="javascript:edit('+row.supplierId+')"/>';
-				str += '<a id="delete" class="easyui-linkbutton" href="javascript:delete('+row.supplierId+')"/>';
+				str += '<a id="delete" class="easyui-linkbutton" href="javascript:deleteSupplier('+row.supplierId+')"/>';
 				return str;
 			}
 		}
@@ -95,17 +94,112 @@ function supplierMessageDatagrid(){
 		}
 	});
 }
+//新增
+function addSupplier(){
+	vlogoflag = "add";
+	$('#fm').form('clear');
+	$('#dlg').window({
+		title : "新增供应商",
+		modal : true
+	});
+	$('#dlg').window('open');
+	$('#fm').form('load', row);
+}
 
+//保存
+function saveSupplierMessage(){
+	var urls = "";
+	var message = "";
+	if (vlogoflag == "add"){
+		message = "新增成功！";
+		urls = "supplierMessage/addSupplierMessage";
+	}else if(vlogoflag == "edit"){
+		message = "修改成功！";
+		urls = "supplierMessage/editSupplierMessage";
+	}
+	if (urls != ""){
+		$('#fm').form('submit', {
+			url : urls,
+			onSubmit : function() {
+				return $(this).form('enableValidation').form('validate');
+			},
+			success : function(result) {
+				if (result) {
+					var result = eval('(' + result + ')');
+					if (!result.success) {
+						$.messager.show({
+							title : 'Error',
+							msg : result.errorMsg
+						});
+					} else {
+						$.messager.alert("提示", message);
+						$('#dlg').dialog('close');
+						$('#supplierMessageTable').datagrid('reload');
+					}
+				}
 
+			},
+			error : function(errorMsg) {
+				alert("数据请求失败，请联系系统管理员!");
+			}
+		});
+	}
+	vlogoflag = "";
+}
 
-function insframeworkTree(){
-	$("#myTree").tree({  
-		onClick : function(node){
-			$("#equipmentAppointmentTable").datagrid('load',{
-				"parent" : node.id
-			})
-		 }
-	})
+//编辑
+function edit(supplierId){
+	vlogoflag = "edit";
+	$('#fm').form('clear');
+	var row = $('#supplierMessageTable').datagrid('getSelected');
+	if (row) {
+		$('#dlg').window({
+			title : "编辑",
+			modal : true
+		});
+		$('#dlg').window('open');
+		$('#supplierId').val(supplierId);
+		$('#code').textbox('setValue', row.code);
+		$('#name').textbox('setValue', row.name);
+		$('#address').textbox('setValue', row.address);
+		$('#phone').textbox('setValue', row.phone);
+		$('#contacts').textbox('setValue', row.contacts);
+		$('#remark').textbox('setValue', row.remark);
+		$('#fm').form('load', row);
+	}
+}
+
+//删除
+function deleteSupplier(supplierId){
+	$.messager.confirm('提示', '确认删除该供应商信息?', function(flag) {
+		if (flag) {
+			$.ajax({  
+		        type : "post",  
+		        async : false,
+		        url : 'supplierMessage/deleteSupplierMessage',  
+		        data : {
+		        	'supplierId' : supplierId
+		        },  
+		        dataType : "json", //返回数据形式为json  
+		        success : function(result) {
+		            if (result) {
+		            	if (!result.success) {
+							$.messager.show( {
+								title : 'Error',
+								msg : result.msg
+							});
+						} else {
+							$.messager.alert("提示", "删除成功！");
+							$('#supplierMessageTable').datagrid('reload');
+						}
+		            }  
+		        },  
+		        error : function(errorMsg) {  
+		            alert("数据请求失败，请联系系统管理员!");  
+		        }  
+		   }); 
+		}
+	});
 }
 
 //监听窗口大小变化
@@ -115,7 +209,7 @@ window.onresize = function() {
 
 //改变表格高宽
 function domresize() {
-	$("#equipmentAppointmentTable").datagrid('resize', {
+	$("#supplierMessageTable").datagrid('resize', {
 		height : $("#body").height(),
 		width : $("#body").width()
 	});

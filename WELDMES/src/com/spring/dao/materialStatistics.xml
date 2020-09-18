@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.dao.MaterialStatisticsMapper">
+
+	<resultMap id="materialStatisticsMap" type="com.spring.model.MaterialStatistics">
+		<id property="materialStatisticsId" column="material_statistics_id"/>
+		<result property="code" column="code"/>
+		<result property="name" column="name"/>
+		<result property="materialType" column="material_type"/>
+		<result property="location" column="location"/>
+		<result property="inventory" column="inventory"/>
+		<result property="unit" column="unit"/>
+		<result property="totalPrices" column="total_prices"/>
+		<result property="parentId" column="parent_id"/>
+		<result property="supplierId" column="supplier_id"/>
+		<result property="creator" column="creator"/>
+		<result property="createTime" column="create_time"/>
+		<result property="mender" column="mender"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="materialTypeName" column="materialTypeName"/>
+	</resultMap>
+
+	<resultMap id="materialRecordMap" type="com.spring.model.MaterialStatistics">
+		<id property="materialRecordId" column="material_record_id"/>
+		<result property="recordCode" column="code"/>
+		<result property="type" column="type"/>
+		<result property="number" column="number"/>
+		<result property="recordDatetime" column="record_datetime"/>
+		<result property="orderNumber" column="order_number"/>
+		<result property="recordSupplierId" column="supplier_id"/>
+		<result property="univalence" column="univalence"/>
+		<result property="recordTotalPrices" column="total_prices"/>
+		<result property="recordCreator" column="creator"/>
+		<result property="recordCreateTime" column="create_time"/>
+	</resultMap>
+	
+	<sql id="materialStatisticsSql">
+		material_statistics_id,code,name,material_type,location,inventory,unit,total_prices,
+		parent_id,supplier_id,creator,create_time,mender,update_time
+	</sql>
+	
+	<sql id="materialRecordSql">
+		material_record_id,code,type,number,record_datetime,order_number,supplier_id,
+		univalence,total_prices,creator,create_time
+	</sql>
+	
+	<!-- 查询物料统计列表 -->
+	<select id="selectMaterialStatisticsList" parameterType="java.lang.String" resultMap="materialStatisticsMap" useCache="true">
+		SELECT <include refid="materialStatisticsSql"></include>,td.fvaluename materialTypeName
+		FROM tb_material_statistics
+		LEFT JOIN tb_dictionary td ON tb_material_statistics.material_type = td.fvalue
+		WHERE 1 = 1
+		<if test="parent != null and parent != ''">
+			AND parent_id = #{parent}
+		</if>
+		<if test="str != null and str != ''">
+			AND ${str}
+		</if>
+	</select>
+	
+	<!-- 查询父级树形物料列表 -->
+	<select id="selectMaterialTree" resultMap="materialStatisticsMap" useCache="true">
+		SELECT <include refid="materialStatisticsSql"></include>,td.fvaluename materialTypeName
+		FROM tb_material_statistics
+		LEFT JOIN tb_dictionary td ON tb_material_statistics.material_type = td.fvalue
+		WHERE parent_id = 0
+	</select>
+	
+	<!-- 根据主键id查询一条记录 -->
+	<select id="findMaterialById" resultMap="materialStatisticsMap" useCache="true" parameterType="java.math.BigInteger">
+		SELECT <include refid="materialStatisticsSql"></include>,td.fvaluename materialTypeName
+		FROM tb_material_statistics
+		LEFT JOIN tb_dictionary td ON tb_material_statistics.material_type = td.fvalue
+		WHERE material_statistics_id = #{materialId}
+	</select>
+	
+	<delete id="deleteMaterialById" parameterType="java.math.BigInteger" flushCache="true">
+		DELETE FROM tb_material_statistics WHERE material_statistics_id = #{materialId}
+	</delete>
+	
+	<insert id="addMaterialStatistics" parameterType="com.spring.model.MaterialStatistics" flushCache="true">
+		INSERT INTO tb_material_statistics
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="code != null and code !=''">
+				code,
+			</if>
+			<if test="name != null and name !=''">
+				name,
+			</if>
+			<if test="materialType != null and materialType !=0">
+				material_type,
+			</if>
+			<if test="location != null and location !=''">
+				location,
+			</if>
+			<if test="inventory != null and inventory !=0">
+				inventory,
+			</if>
+			<if test="unit != null and unit !=''">
+				unit,
+			</if>
+			<if test="totalPrices != null and totalPrices !=0">
+				total_prices,
+			</if>
+			<if test="parentId != null and parentId !=0">
+				parent_id,
+			</if>
+			<if test="creator != null and creator !=0">
+				creator,
+			</if>
+			<if test="createTime != null and createTime !=''">
+				create_time,
+			</if>
+		  </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="code != null and code !=''">
+				#{code},
+			</if>
+			<if test="name != null and name !=''">
+				#{name},
+			</if>
+			<if test="materialType != null and materialType !=0">
+				#{materialType},
+			</if>
+			<if test="location != null and location !=''">
+				#{location},
+			</if>
+			<if test="inventory != null and inventory !=0">
+				#{inventory},
+			</if>
+			<if test="unit != null and unit !=''">
+				#{unit},
+			</if>
+			<if test="totalPrices != null and totalPrices !=0">
+				#{totalPrices},
+			</if>
+			<if test="parentId != null and parentId !=0">
+				#{parentId},
+			</if>
+			<if test="creator != null and creator !=0">
+				#{creator},
+			</if>
+			<if test="createTime != null and createTime !=''">
+				#{createTime},
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="updateMaterialById" parameterType="com.spring.model.MaterialStatistics" flushCache="true">
+		<if test="materialStatisticsId != null and materialStatisticsId != 0">
+			UPDATE tb_material_statistics
+			<set>
+				<if test="code != null and code !=''">
+					code = #{code},
+				</if>
+				<if test="name != null and name !=''">
+					name = #{name},
+				</if>
+				<if test="materialType != null and materialType !=0">
+					material_type = #{materialType},
+				</if>
+				<if test="location != null and location !=''">
+					location = #{location},
+				</if>
+				<if test="inventory != null and inventory !=0">
+					inventory = #{inventory},
+				</if>
+				<if test="unit != null and unit !=''">
+					unit = #{unit},
+				</if>
+				<if test="totalPrices != null and totalPrices !=0">
+					total_prices = #{totalPrices},
+				</if>
+				<if test="parentId != null and parentId !=0">
+					parent_id = #{parentId},
+				</if>
+				<if test="mender != null and mender !=0">
+					mender = #{mender},
+				</if>
+			</set>
+			WHERE material_statistics_id = #{materialStatisticsId}
+		</if>
+	</update>
+	
+	<!-- 生成物料出入库记录 -->
+	<insert id="saveMaterialRecord" parameterType="com.spring.model.MaterialStatistics" flushCache="true">
+		INSERT INTO tb_material_record
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="recordCode != null and recordCode !=''">
+				code,
+			</if>
+			<if test="type != null and type !=''">
+				type,
+			</if>
+			<if test="number != null and number !=''">
+				number,
+			</if>
+			<if test="recordDatetime != null and recordDatetime !=''">
+				record_datetime,
+			</if>
+			<if test="orderNumber != null and orderNumber !=''">
+				order_number,
+			</if>
+			<if test="recordSupplierId != null and recordSupplierId !=''">
+				supplier_id,
+			</if>
+			<if test="univalence != null and univalence !=''">
+				univalence,
+			</if>
+			<if test="recordTotalPrices != null and recordTotalPrices !=''">
+				total_prices,
+			</if>
+			<if test="recordCreator != null and recordCreator !=''">
+				creator,
+			</if>
+			<if test="recordCreateTime != null and recordCreateTime !=''">
+				create_time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="recordCode != null and recordCode !=''">
+				#{recordCode},
+			</if>
+			<if test="type != null and type !=''">
+				#{type},
+			</if>
+			<if test="number != null and number !=''">
+				#{number},
+			</if>
+			<if test="recordDatetime != null and recordDatetime !=''">
+				#{recordDatetime},
+			</if>
+			<if test="orderNumber != null and orderNumber !=''">
+				#{orderNumber},
+			</if>
+			<if test="recordSupplierId != null and recordSupplierId !=''">
+				#{recordSupplierId},
+			</if>
+			<if test="univalence != null and univalence !=''">
+				#{univalence},
+			</if>
+			<if test="recordTotalPrices != null and recordTotalPrices !=''">
+				#{recordTotalPrices},
+			</if>
+			<if test="recordCreator != null and recordCreator !=''">
+				#{recordCreator},
+			</if>
+			<if test="recordCreateTime != null and recordCreateTime !=''">
+				#{recordCreateTime},
+			</if>
+		</trim>
+	</insert>
+	
+	<!-- 查询物料出入库记录分页 -->
+	<select id="selectMaterialRecordList" parameterType="java.lang.String" resultMap="materialRecordMap" useCache="true">
+		SELECT <include refid="materialRecordSql"></include> FROM tb_material_record
+		WHERE 1 = 1
+		<if test="parent != null and parent != ''">
+			AND code LIKE CONCAT(#{parent},'%')
+		</if>
+		<if test="str != null and str != ''">
+			AND ${str}
+		</if>
+	</select>
+</mapper>

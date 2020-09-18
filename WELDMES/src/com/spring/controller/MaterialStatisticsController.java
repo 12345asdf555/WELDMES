@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.spring.model.Dictionarys;
 import com.spring.model.Insframework;
-import com.spring.model.MaterialMessage;
+import com.spring.model.MaterialStatistics;
 import com.spring.model.MyUser;
 import com.spring.page.Page;
 import com.spring.service.DictionaryService;
 import com.spring.service.InsframeworkService;
-import com.spring.service.MaterialMessageService;
+import com.spring.service.MaterialStatisticsService;
 import com.spring.util.IsnullUtil;
 
 import net.sf.json.JSONArray;
@@ -33,8 +33,8 @@ import net.sf.json.JSONObject;
  * @author zhushanlong
  */
 @Controller
-@RequestMapping(value = "/materialMessage", produces = { "text/json;charset=UTF-8" })
-public class MaterialMessageController {
+@RequestMapping(value = "/materialStatistics", produces = { "text/json;charset=UTF-8" })
+public class MaterialStatisticsController {
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	/**
 	 * 分页
@@ -45,7 +45,7 @@ public class MaterialMessageController {
 	private int total = 0;
 	
 	@Autowired
-	private MaterialMessageService mms;
+	private MaterialStatisticsService mss;
 	@Autowired
 	private InsframeworkService im;
 	@Autowired
@@ -57,14 +57,14 @@ public class MaterialMessageController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping("/goMaterialMessage")
-	public String goMaterialMessage(Model model) {
-		return "materialMessage/materialMessage";
+	@RequestMapping("/goMaterialStatistics")
+	public String goMaterialStatistics(Model model) {
+		return "materialStatistics/materialStatistics";
 	}
 	
-	@RequestMapping("/getMaterialMessageList")
+	@RequestMapping("/getMaterialStatisticsList")
 	@ResponseBody
-	public String getMaterialMessageList(HttpServletRequest request) {
+	public String getMaterialStatisticsList(HttpServletRequest request) {
 		pageIndex = Integer.parseInt(request.getParameter("page"));
 		pageSize = Integer.parseInt(request.getParameter("rows"));
 		String searchStr = request.getParameter("searchStr");
@@ -78,39 +78,21 @@ public class MaterialMessageController {
 		JSONArray ary = new JSONArray();
 		JSONObject obj = new JSONObject();
 		
-		List<MaterialMessage> list = mms.selectMaterialList(page,parent, searchStr);
+		List<MaterialStatistics> list = mss.selectMaterialStatisticsList(page,parent, searchStr);
 		if (null != list && list.size() > 0){
-			for (MaterialMessage material : list) {
+			for (MaterialStatistics material : list) {
 				JSONObject json = new JSONObject();
-				json.put("materialId", material.getMaterialId());
+				json.put("materialStatisticsId", material.getMaterialStatisticsId());//主键id
 				json.put("code", material.getCode());
 				json.put("name", material.getName());
-				json.put("materialTypeName", material.getMaterialTypeName());
 				json.put("materialType", material.getMaterialType());
+				json.put("materialTypeName", material.getMaterialTypeName());
 				json.put("location", material.getLocation());
 				json.put("inventory", material.getInventory());
-				if (material.getInventoryChangeType() == 1){
-					json.put("inventoryChangeTypeName", "入库");
-					json.put("inventoryChangeType", material.getInventoryChangeType());
-				}else if(material.getInventoryChangeType() == 2){
-					json.put("inventoryChangeTypeName", "出库");
-					json.put("inventoryChangeType", material.getInventoryChangeType());
-				}else{
-					json.put("inventoryChangeTypeName", "");
-					json.put("inventoryChangeType", "");
-				}
-				json.put("changeAddress", material.getChangeAddress());
-				json.put("changeNumber", material.getChangeNumber());
-				json.put("changeOrder", material.getChangeOrder());
-				json.put("putGetStorageTypeName", material.getPutGetStorageTypeName());
-				json.put("putGetStorageType", material.getPutGetStorageType());
-				json.put("changeTime", material.getChangeTime());
 				json.put("unit", material.getUnit());
-				json.put("univalence", material.getUnivalence());
 				json.put("totalPrices", material.getTotalPrices());
 				json.put("parentId", material.getParentId());
 				json.put("supplierId", material.getSupplierId());
-				json.put("creator", material.getCreator());
 				json.put("createTime", material.getCreateTime());
 				ary.add(json);
 			}
@@ -130,11 +112,11 @@ public class MaterialMessageController {
 	public void getMaterialTree(HttpServletResponse response){
         String str ="";  
         StringBuilder json = new StringBuilder();
-        List<MaterialMessage> list = mms.selectMaterialTree();
+        List<MaterialStatistics> list = mss.selectMaterialTree();
         if (null != list && list.size() > 0){
         	json.append("["); 
-        	for (MaterialMessage tree : list) {  
-    	        json.append("{\"id\":" +String.valueOf(tree.getMaterialId()));
+        	for (MaterialStatistics tree : list) {  
+    	        json.append("{\"id\":" +String.valueOf(tree.getMaterialStatisticsId()));
     	        json.append(",\"text\":\"" + tree.getName() +"11111"+ tree.getCode()+ "\"");
     	        json.append(",\"state\":\"open\"");  
     	        if (list.size()-1 == list.indexOf(tree)){
@@ -164,27 +146,15 @@ public class MaterialMessageController {
 	public String findMaterialById(HttpServletRequest request) {
 		String materialId = request.getParameter("materialId");
 		JSONObject obj = new JSONObject();
-		MaterialMessage material = mms.findMaterialById(BigInteger.valueOf(Long.valueOf(materialId)));
+		MaterialStatistics material = mss.findMaterialById(BigInteger.valueOf(Long.valueOf(materialId)));
 		if (null != material){
 			obj.put("code", material.getCode());
 			obj.put("name", material.getName());
-			obj.put("materialType", material.getMaterialTypeName());
+			obj.put("materialTypeName", material.getMaterialTypeName());
 			obj.put("location", material.getLocation());
 			obj.put("inventory", material.getInventory());
-			//obj.put("inventoryChangeType", material.getInventoryChangeType());
-			if (material.getInventoryChangeType() == 1){
-				obj.put("inventoryChangeType", "入库");
-			}else if(material.getInventoryChangeType() == 2){
-				obj.put("inventoryChangeType", "出库");
-			}else{
-				obj.put("inventoryChangeType", "");
-			}
-			obj.put("changeAddress", material.getChangeAddress());
-			obj.put("changeNumber", material.getChangeNumber());
-			obj.put("changeOrder", material.getChangeOrder());
-			obj.put("putGetStorageType", material.getPutGetStorageTypeName());
-			obj.put("changeTime", material.getChangeTime());
-			obj.put("supplierName", material.getSupplierName());
+			obj.put("unit", material.getUnit());
+			obj.put("totalPrices", material.getTotalPrices());
 		}
 		return obj.toString();
 	}
@@ -201,7 +171,7 @@ public class MaterialMessageController {
 		JSONObject obj = new JSONObject();
 		boolean flag = false;
 		if (null != materialId && !"".equals(materialId)){
-			int i = mms.deleteMaterialById(BigInteger.valueOf(Long.valueOf(materialId)));
+			int i = mss.deleteMaterialById(BigInteger.valueOf(Long.valueOf(materialId)));
 			if (i != 0){
 				flag = true;
 			}
@@ -215,20 +185,14 @@ public class MaterialMessageController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/initialize")
+	@RequestMapping("/initializeMaterial")
 	@ResponseBody
-	public String initialize(HttpServletRequest request) {
+	public String initializeMaterial(HttpServletRequest request) {
 		JSONObject obj = new JSONObject();
 		JSONArray materialType = new JSONArray();
-		JSONArray putStorageType = new JSONArray();
-		JSONArray GetStorageType = new JSONArray();
+		JSONArray parentIdlist = new JSONArray();
 		//物料类型
 		List<Dictionarys> materialTypeList = dictionaryService.getDictionaryValue(19);
-		//物料入库类型
-		List<Dictionarys> putStorageTypeList = dictionaryService.getDictionaryValue(20);
-		//物料出库类型
-		List<Dictionarys> GetStorageTypeList = dictionaryService.getDictionaryValue(21);
-		
 		if (null != materialTypeList && materialTypeList.size() > 0){
 			for (Dictionarys dictionarys : materialTypeList) {
 				JSONObject json = new JSONObject();
@@ -237,25 +201,20 @@ public class MaterialMessageController {
 				materialType.add(json);
 			}
 		}
-		if (null != putStorageTypeList && putStorageTypeList.size() > 0){
-			for (Dictionarys dictionarys : putStorageTypeList) {
-				JSONObject json = new JSONObject();
-				json.put("value", dictionarys.getValue());
-				json.put("valuename", dictionarys.getValueName());
-				putStorageType.add(json);
-			}
-		}
-		if (null != GetStorageTypeList && GetStorageTypeList.size() > 0){
-			for (Dictionarys dictionarys : GetStorageTypeList) {
-				JSONObject json = new JSONObject();
-				json.put("value", dictionarys.getValue());
-				json.put("valuename", dictionarys.getValueName());
-				GetStorageType.add(json);
+		//父级物料列表
+		List<MaterialStatistics> list = mss.selectMaterialTree();
+		if (null != list && list.size() > 0) {
+			for(MaterialStatistics statistics : list) {
+    	       JSONObject json = new JSONObject();
+    	       json.put("id", String.valueOf(statistics.getMaterialStatisticsId()));
+    	       json.put("text", statistics.getName()+"  "+statistics.getCode());
+    	       json.put("materialType", statistics.getMaterialType());
+    	       json.put("state", "open");
+    	       parentIdlist.add(json);
 			}
 		}
 		obj.put("materialType", materialType);
-		obj.put("putStorageType", putStorageType);
-		obj.put("GetStorageType", GetStorageType);
+		obj.put("parentIdlist", parentIdlist);
 		return obj.toString();
 	}
 	
@@ -264,11 +223,11 @@ public class MaterialMessageController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/editMaterialMessage")
+	@RequestMapping("/editMaterialStatistics")
 	@ResponseBody
-	public String editMaterialMessage(HttpServletRequest request) {
+	public String editMaterialStatistics(HttpServletRequest request) {
 		JSONObject obj = new JSONObject();
-		MaterialMessage material = new MaterialMessage();
+		MaterialStatistics material = new MaterialStatistics();
 		try{
 			MyUser user = (MyUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			String materialId = request.getParameter("materialId");
@@ -276,38 +235,22 @@ public class MaterialMessageController {
 			String name = request.getParameter("name");
 			String materialType = request.getParameter("materialType");
 			String location = request.getParameter("location");
-			String inventory = request.getParameter("inventory");
-			String inventoryChangeType = request.getParameter("inventoryChangeType");
-			String changeAddress = request.getParameter("changeAddress");
-			String changeNumber = request.getParameter("changeNumber");
-			String changeOrder = request.getParameter("changeOrder");
-			String putGetStorageType = request.getParameter("putGetStorageType");
-			String changeTime = request.getParameter("changeTime");
+			//String inventory = request.getParameter("inventory");
 			String unit = request.getParameter("unit");
-			String univalence = request.getParameter("univalence");
-			String totalPrices = request.getParameter("totalPrices");
+			//String totalPrices = request.getParameter("totalPrices");
 			String parentId = request.getParameter("parentId");
-			String supplierId = request.getParameter("supplierId");
 			
-			material.setMaterialId(BigInteger.valueOf(Long.valueOf(materialId)));
+			material.setMaterialStatisticsId(BigInteger.valueOf(Long.valueOf(materialId)));
 			material.setCode(code);
 			material.setName(name);
 			material.setMaterialType(Integer.valueOf(materialType));
 			material.setLocation(location);
-			material.setInventory(inventory);
-			material.setInventoryChangeType(Integer.valueOf(inventoryChangeType));
-			material.setChangeAddress(changeAddress);
-			material.setChangeNumber(Integer.valueOf(changeNumber));
-			material.setChangeOrder(changeOrder);
-			material.setPutGetStorageType(Integer.valueOf(putGetStorageType));
-			material.setChangeTime(changeTime);
+			//material.setInventory(BigDecimal.valueOf(Long.valueOf(inventory))); //库存暂不做编辑
 			material.setUnit(unit);
-			material.setUnivalence(BigDecimal.valueOf(Long.valueOf(univalence)));
-			material.setTotalPrices(BigDecimal.valueOf(Long.valueOf(totalPrices)));
+			//material.setTotalPrices(BigDecimal.valueOf(Long.valueOf(totalPrices)));//总价暂不做编辑
 			material.setParentId(BigInteger.valueOf(Long.valueOf(parentId)));
-			material.setSupplierId(Integer.valueOf(supplierId));
 			material.setMender(BigInteger.valueOf(user.getId()));
-			int i = mms.updateMaterialById(material);
+			int i = mss.updateMaterialById(material);
 			if (i != 0){
 				obj.put("success", true);
 			}else{
@@ -326,57 +269,33 @@ public class MaterialMessageController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/addMaterialMessage")
+	@RequestMapping("/addMaterialStatistics")
 	@ResponseBody
-	public String addMaterialMessage(HttpServletRequest request) {
+	public String addMaterialStatistics(HttpServletRequest request) {
 		JSONObject obj = new JSONObject();
-		MaterialMessage material = new MaterialMessage();
+		MaterialStatistics material = new MaterialStatistics();
 		try{
 			MyUser user = (MyUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			String code = request.getParameter("code");
 			String name = request.getParameter("name");
 			String materialType = request.getParameter("materialType");
 			String location = request.getParameter("location");
-			String inventory = request.getParameter("inventory");
-			String inventoryChangeType = request.getParameter("inventoryChangeType");
-			String changeAddress = request.getParameter("changeAddress");
-			String changeNumber = request.getParameter("changeNumber");
-			String changeOrder = request.getParameter("changeOrder");
-			String putGetStorageType = request.getParameter("putGetStorageType");
-			String changeTime = request.getParameter("changeTime");
 			String unit = request.getParameter("unit");
-			String univalence = request.getParameter("univalence");
-			String totalPrices = request.getParameter("totalPrices");
 			String parentId = request.getParameter("parentId");
-			String supplierId = request.getParameter("supplierId");
 			
 			material.setCode(code);
 			material.setName(name);
 			material.setMaterialType(Integer.valueOf(materialType));
 			material.setLocation(location);
-			material.setInventory(inventory);
-			material.setInventoryChangeType(Integer.valueOf(inventoryChangeType));
-			material.setChangeAddress(changeAddress);
-			material.setChangeNumber(Integer.valueOf(changeNumber));
-			material.setChangeOrder(changeOrder);
-			material.setPutGetStorageType(Integer.valueOf(putGetStorageType));
-			material.setChangeTime(changeTime);
 			material.setUnit(unit);
-			material.setUnivalence(BigDecimal.valueOf(Long.valueOf(univalence)));
-			material.setTotalPrices(BigDecimal.valueOf(Long.valueOf(totalPrices)));
 			if (null != parentId && !"".equals(parentId)){
 				material.setParentId(BigInteger.valueOf(Long.valueOf(parentId)));
 			}else{
 				material.setParentId(BigInteger.valueOf(0));
 			}
-			if (null != supplierId && !"".equals(supplierId)){
-				material.setSupplierId(Integer.valueOf(supplierId));
-			}else{
-				material.setSupplierId(0);
-			}
 			material.setCreator(BigInteger.valueOf(user.getId()));
 			material.setCreateTime(sdf.format(System.currentTimeMillis()));
-			int i = mms.addMaterialMessage(material);
+			int i = mss.addMaterialStatistics(material);
 			if (i != 0){
 				obj.put("success", true);
 			}else{
@@ -387,6 +306,85 @@ public class MaterialMessageController {
 			obj.put("success", false);
 			obj.put("errorMsg", e.getMessage());
 		}
+		return obj.toString();
+	}
+	
+	/**
+	 * 出入库记录保存
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/saveMaterialRecord")
+	@ResponseBody
+	public String saveMaterialRecord(HttpServletRequest request) {
+		JSONObject obj = new JSONObject();
+		MaterialStatistics material = new MaterialStatistics();
+		try {
+			MyUser user = (MyUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			String codeadd = request.getParameter("codeadd");
+			String type = request.getParameter("type");
+			String numberadd = request.getParameter("numberadd");
+			String orderNumber = request.getParameter("orderNumber");
+			String supplierId = request.getParameter("supplierId");
+			String record_datetime = request.getParameter("record_datetime");
+			String univalence = request.getParameter("univalence");
+			String total_prices = request.getParameter("total_prices");
+			
+			material.setRecordCode(codeadd);
+			material.setType(Integer.valueOf(type));
+			material.setNumber(BigDecimal.valueOf(Long.valueOf(numberadd)));
+			material.setRecordDatetime(record_datetime);
+			material.setOrderNumber(orderNumber);
+			material.setRecordSupplierId(Integer.valueOf(supplierId));
+			material.setUnivalence(BigDecimal.valueOf(Long.valueOf(univalence)));
+			material.setRecordTotalPrices(BigDecimal.valueOf(Long.valueOf(total_prices)));
+			material.setRecordCreator(BigInteger.valueOf(user.getId()));
+			material.setRecordCreateTime(sdf.format(System.currentTimeMillis()));
+			int i = mss.saveMaterialRecord(material);
+			if (i != 0){
+				obj.put("success", true);
+			}else{
+				obj.put("success", false);
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			obj.put("success", false);
+			obj.put("errorMsg", e.getMessage());
+		}
+		return obj.toString();
+	}
+	
+	@RequestMapping("/getMaterialRecordList")
+	@ResponseBody
+	public String getMaterialRecordList(HttpServletRequest request) {
+		pageIndex = Integer.parseInt(request.getParameter("page"));
+		pageSize = Integer.parseInt(request.getParameter("rows"));
+		String searchStr = request.getParameter("searchStr");
+		String code = request.getParameter("code");
+		request.getSession().setAttribute("searchStr", searchStr);
+		page = new Page(pageIndex, pageSize, total);
+		JSONArray ary = new JSONArray();
+		JSONObject obj = new JSONObject();
+		
+		List<MaterialStatistics> list = mss.selectMaterialRecordList(page,code, searchStr);
+		if (null != list && list.size() > 0){
+			for (MaterialStatistics material : list) {
+				JSONObject json = new JSONObject();
+				json.put("materialRecordId", material.getMaterialRecordId());//主键id
+				json.put("recordCode", material.getRecordCode());
+				json.put("type", material.getType());
+				json.put("number", material.getNumber());
+				json.put("recordDatetime", material.getRecordDatetime());
+				json.put("orderNumber", material.getOrderNumber());
+				json.put("recordSupplierId", material.getRecordSupplierId());
+				json.put("univalence", material.getUnivalence());
+				json.put("recordTotalPrices", material.getRecordTotalPrices());
+				json.put("recordCreateTime", material.getRecordCreateTime());
+				ary.add(json);
+			}
+		}
+		obj.put("total", total);
+		obj.put("rows", ary);
 		return obj.toString();
 	}
 }

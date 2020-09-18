@@ -9,7 +9,6 @@
 <html>
 <head>
 <base href="<%=basePath%>">
-
 <title>物料管理</title>
 <meta http-equiv="pragma" content="no-cache">
 <meta http-equiv="cache-control" content="no-cache">
@@ -28,7 +27,7 @@
 <!-- <script type="text/javascript" src="resources/js/datagrid-detailview.js"></script> -->
 <script type="text/javascript" src="resources/js/easyui-lang-zh_CN.js"></script>
 <script type="text/javascript" src="resources/js/easyui-extend-check.js"></script>
-<script type="text/javascript" src="resources/js/materialMessage/materialMessage.js"></script>
+<script type="text/javascript" src="resources/js/materialStatistics/materialStatistics.js"></script>
 <script type="text/javascript" src="resources/js/search/search.js"></script>
 </head>
 
@@ -38,7 +37,7 @@
 		<div id="body">
 			<div class="functiondiv">
 				<div>
-					<a href="javascript:addMaterial();" class="easyui-linkbutton" iconCls="icon-newadd">新增</a>&nbsp;&nbsp;&nbsp;&nbsp;
+					<a href="javascript:addMaterial();" class="easyui-linkbutton" iconCls="icon-newadd">新增物料</a>&nbsp;&nbsp;&nbsp;&nbsp;
 					 <a href="javascript:insertSearchEquipmentAppointment();" class="easyui-linkbutton" iconCls="icon-select">查找</a>
 				</div>
 			</div>	
@@ -55,28 +54,18 @@
 			<div class="fitem">
 				<lable>库存：</lable>
 				<input class="easyui-textbox" id="inventory" readonly="readonly"/>
-				<lable>库存变动类型：</lable>
-				<input class="easyui-textbox" id="inventoryChangeType" readonly="readonly"/>
-				<lable>变动地址：</lable>
-				<input class="easyui-textbox" id="changeAddress" readonly="readonly"/>
-				<lable>数量：</lable>
-				<input class="easyui-textbox" id="changeNumber" readonly="readonly"/>
-			</div>
-			<div class="fitem">
-				<lable>入出库类型：</lable>
-				<input class="easyui-textbox" id="putGetStorageType" readonly="readonly"/>
-				<lable>变动时间：</lable>
-				<input class="easyui-textbox" id="changeTime" readonly="readonly"/>
-				<lable>订单号：</lable>
-				<input class="easyui-textbox" id="changeOrder" readonly="readonly"/>
-				<lable>供应商：</lable>
-				<input class="easyui-textbox" id="supplierName" readonly="readonly"/>
+				<lable>单位：</lable>
+				<input class="easyui-textbox" id="unit" readonly="readonly"/>
+				<lable>总价：</lable>
+				<input class="easyui-textbox" id="totalPrices" readonly="readonly"/>
 			</div>
 			
-			<!-- <input type="hidden" id="parentId" name="parentId"> -->
-			<table id="materialMessageTable" style="table-layout: fixed; width:100%;">
+			<table id="materialStatisticsTable" style="table-layout: fixed; width:100%;"></table>
 			
-			</table>
+			<div id="material_record" class="easyui-dialog" style="width: 1100px; height: 650px; padding:10px 20px" closed="true" buttons="#dlg-buttons">
+				<table id="materialRecordTable" style="table-layout: fixed; width:100%;"></table>
+			</div>
+			
 			<!-- 自定义多条件查询 -->
 			<div id="searchdiv" class="easyui-dialog"
 				style="width:800px; height:400px;" closed="true"
@@ -98,20 +87,20 @@
 					iconCls="icon-cancel">取消</a>
 			</div>
 			
-			<div id="dlg" class="easyui-dialog" style="width: 500px; height: 650px; padding:10px 20px" closed="true" buttons="#dlg-buttons">
+			<!-- 新增或编辑 -->
+			<div id="dlg" class="easyui-dialog" style="width: 500px; height: 450px; padding:10px 20px" closed="true" buttons="#dlg-buttons">
 				<form id="fm" class="easyui-form" method="post"data-options="novalidate:true">
 					<div class="fitem">
 						<lable><span class="required">*</span>物料编码</lable>
 						<input type="hidden" id="materialId" name="materialId">
 						<input type="hidden" id="parentId" name="parentId">
-						<input type="hidden" id="supplierId" name="supplierId">
 						<input class="easyui-textbox" name="code" id="code_material" data-options="required:true" />
 					</div>
 					<div class="fitem">
 						<lable><span class="required">*</span>物料名称</lable>
 						<input class="easyui-textbox" name="name" id="name_material" data-options="required:true" />
 					</div>
-					<div class="fitem">
+					<div class="fitem" id="materialTypediv">
 						<lable><span class="required">*</span>物料类型</lable>
 						<select class="easyui-combobox" name="materialType" id="materialType_material"></select>
 					</div>
@@ -124,51 +113,58 @@
 						<input class="easyui-textbox" name="location" id="location_material" data-options="required:true"/>
 					</div>
 					<div class="fitem">
-						<lable><span class="required">*</span>库存</lable>
-						<input class="easyui-textbox" name="inventory" id="inventory_material" data-options="required:true"/>
-					</div>
-					<div class="fitem">
-						<lable><span class="required">*</span>库存变动类型</lable>
-						<select class="easyui-combobox" name="inventoryChangeType" id="inventoryChangeType_material"></select>
-					</div>
-					<div class="fitem">
-						<lable><span class="required">*</span>变动地址</lable>
-						<input class="easyui-textbox" name="changeAddress" id="changeAddress_material" data-options="required:true"/>
-					</div>
-					<div class="fitem">
-						<lable><span class="required">*</span>变动数量</lable>
-						<input class="easyui-textbox" name="changeNumber" id="changeNumber_material" data-options="required:true"/>
-					</div>
-					<div class="fitem">
-						<lable>订单号</lable>
-						<input class="easyui-textbox" name="changeOrder" id="changeOrder_material"/>
-					</div>
-					<div class="fitem">
-						<lable>入出库类型</lable>
-						<select class="easyui-combobox" name="putGetStorageType" id="putGetStorageType_material"></select>
-					</div>
-					<div class="fitem">
-						<lable><span class="required">*</span>入出库时间</lable>
-						<input class="easyui-datetimebox" name="changeTime" id="changeTime_material" data-options="required:true"/>
-					</div>
-					<div class="fitem">
 						<lable>单位</lable>
 						<input class="easyui-textbox" name="unit" id="unit" data-options="required:true"/>
 					</div>
+				</form>
+				<div id="dlg-buttons">
+					<a href="javascript:saveMaterialRecord();" class="easyui-linkbutton"
+					iconCls="icon-ok">保存</a> <a href="javascript:closeDialog('materialadd');"
+					class="easyui-linkbutton" iconCls="icon-cancel">取消</a>
+				</div>
+			</div>
+			<!-- 入库 -->
+			<div id="materialadd" class="easyui-dialog" style="width: 500px; height: 450px; padding:10px 20px" closed="true" buttons="#dlg-buttons">
+				<form id="fm_materialadd" class="easyui-form" method="post"data-options="novalidate:true">
 					<div class="fitem">
-						<lable>单价</lable>
-						<input class="easyui-textbox" name="univalence" id="univalence" data-options="required:true"/>
+						<lable>物料编码</lable>
+						<input type="hidden" id="type" name="type">
+						<input class="easyui-textbox" name="codeadd" id="codeadd" readonly="readonly"/>
 					</div>
 					<div class="fitem">
-						<lable>总价</lable>
-						<input class="easyui-textbox" name="totalPrices" id="totalPrices" data-options="required:true"/>
+						<lable>物料名称</lable>
+						<input class="easyui-textbox" name="name_materialadd" id="name_materialadd" readonly="readonly"/>
+					</div>
+					<div class="fitem" id="numberdiv">
+						<lable><span class="required">*</span>入库数量</lable>
+						<input class="easyui-textbox" name="numberadd" id="numberadd" data-options="required:true" />
+					</div>
+					<div class="fitem">
+						<lable>订单号</lable>
+						<input class="easyui-textbox" name="orderNumber" id="order_number" />
+					</div>
+					<div class="fitem" id="div_supplier">
+						<lable>供应商</lable>
+						<select class="easyui-combobox" name="supplierId" id="supplier_message"></select>
+					</div>
+					<div class="fitem" id="record_datetime_div">
+						<lable><span class="required">*</span>入库时间</lable>
+						<input class="easyui-datetimebox" name="record_datetime" id="record_datetime" data-options="required:true"/>
+					</div>
+					<div class="fitem">
+						<lable><span class="required">*</span>单价</lable>
+						<input class="easyui-textbox" name="univalence" id="univalence" data-options="required:true" />
+					</div>
+					<div class="fitem">
+						<lable><span class="required">*</span>总价</lable>
+						<input class="easyui-textbox" name="total_prices" id="total_prices" data-options="required:true"/>
 					</div>
 				</form>
-			</div>
-			<div id="dlg-buttons">
-				<a href="javascript:saveMaterial();" class="easyui-linkbutton"
+				<div id="dlg-buttons">
+					<a href="javascript:saveMaterial();" class="easyui-linkbutton"
 					iconCls="icon-ok">保存</a> <a href="javascript:closeDialog('dlg');"
 					class="easyui-linkbutton" iconCls="icon-cancel">取消</a>
+				</div>
 			</div>
 		</div>
 	</div>

@@ -11,7 +11,7 @@ import com.spring.page.Page;
 public interface EquipmentAppointmentService {
 
 	/**
-	 * 查询焊机设备分页
+	 * 查询焊机设备预约分页
 	 */
 	List<EquipmentAppointment> getEquipmentAppointmentAll(Page page,BigInteger parent,String str);
 	
@@ -20,20 +20,38 @@ public interface EquipmentAppointmentService {
 	 */
 	List<EquipmentAppointment> getEquipmentAuditAll(Page page,BigInteger parent,String str);
 	
-	int addEquipmentAppointment(EquipmentAppointment equipmentAppointment);
-	
-	int editEquipmentAppointment(EquipmentAppointment equipmentAppointment);
-	
 	/**
-	 * 根据焊机id查询预约列表最新的一条数据
-	 * @param fmachineId
+	 * 新增
+	 * @param equipmentAppointment
 	 * @return
 	 */
-	EquipmentAppointment getEquipmentForFmachineId(BigInteger fmachineId);
+	int addEquipmentAppointment(EquipmentAppointment equipmentAppointment);
+	
+	/**
+	 * 修改
+	 * @param equipmentAppointment
+	 * @return
+	 */
+	int editEquipmentAppointment(EquipmentAppointment equipmentAppointment);
+	
 	
 	//根据主键id查询一条记录
 	EquipmentAppointment getEquipmentForId(BigInteger id);
 	
 	//根据id修改焊机状态
 	void updateMachineStatusForId(BigInteger id);
+	
+	/**
+	 * 根据焊机id查询焊机预约列表
+	 * @param fmachineId
+	 * @return
+	 */
+	List<EquipmentAppointment> getEquipmentListForFmachineId(BigInteger fmachineId);
+	
+	/**
+	 * 统计焊机的预约数量
+	 * @param fmachineId
+	 * @return
+	 */
+	int countEquipmentByFmachineId(BigInteger fmachineId);
 }

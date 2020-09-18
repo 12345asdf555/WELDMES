@@ -15,5 +15,31 @@ public interface SupplierMessageService {
 	 * @return
 	 */
 	List<SupplierMessage> selectSupplierList(Page page,BigInteger parent,String str);
+	
+	/**
+	 * 新增
+	 * @param supplier
+	 * @return
+	 */
+	int addSupplierMessage(SupplierMessage supplier);
+	
+	/**
+	 * 修改
+	 * @param supplier
+	 * @return
+	 */
+	int updateSupplierMessage(SupplierMessage supplier);
+	
+	/**
+	 * 删除
+	 * @param supplier
+	 * @return
+	 */
+	int deleteSupplierMessage(Integer supplierId);
 
+	/**
+	 * 供应商列表
+	 * @return
+	 */
+	List<SupplierMessage> selectSupplierAll();
 }

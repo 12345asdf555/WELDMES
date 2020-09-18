@@ -36,6 +36,7 @@
 	<div id="body">
 		<div class="functiondiv">
 			<div>
+				 <a href="javascript:addSupplier();" class="easyui-linkbutton" iconCls="icon-newadd">新增</a>
 				 <a href="javascript:insertSearchEquipmentAppointment();" class="easyui-linkbutton" iconCls="icon-select">查找</a>
 			</div>
 		</div>
@@ -71,6 +72,40 @@
 				class="easyui-linkbutton" iconCls="icon-ok">查询</a> <a
 				href="javascript:close();" class="easyui-linkbutton"
 				iconCls="icon-cancel">取消</a>
+		</div>
+		<!-- 添加修改 -->
+		<div id="dlg" class="easyui-dialog" style="width: 400px; height: 530px; padding:10px 20px" closed="true" buttons="#dlg-buttons">
+			<form id="fm" class="easyui-form" method="post" data-options="novalidate:true">
+				<div class="fitem">
+					<lable><span class="required">*</span>供应商编码</lable>
+					<input type="hidden" id="supplierId" name="supplierId">
+					<input class="easyui-textbox" name="code" readonly="readonly" id="code"/>
+				</div>
+				<div class="fitem">
+					<lable><span class="required">*</span>供应商名称</lable>
+					<input class="easyui-textbox" name="name" id="name" />
+				</div>
+				<div class="fitem">
+					<lable><span class="required">*</span>供应商地址</lable>
+					<input class="easyui-textbox" name="address" id="address" />
+				</div>
+				<div class="fitem">
+					<lable>联系方式</lable>
+					<input class="easyui-textbox" name="phone" id="phone" />
+				</div>
+				<div class="fitem">
+					<lable><span class="required">*</span>联系人</lable>
+					<input class="easyui-textbox" name="contacts" id="contacts" />
+				</div>
+				<div class="fitem">
+					<lable>备注</lable>
+					<input class="easyui-textbox" name="remark" id="remark" />
+				</div>
+			</form>
+		</div>
+		<div id="dlg-buttons">
+			<a href="javascript:saveSupplierMessage();" class="easyui-linkbutton" iconCls="icon-ok">保存</a>
+			<a href="javascript:closeDialog('dlg');" class="easyui-linkbutton" iconCls="icon-cancel" >取消</a>
 		</div>
 	</div>
 </body>

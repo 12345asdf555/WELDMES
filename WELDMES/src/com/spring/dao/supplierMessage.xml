@@ -23,4 +23,24 @@
 		SELECT <include refid="supplier"></include> FROM tb_supplier_message
 	</select>
 	
+	<insert id="addSupplierMessage" parameterType="com.spring.model.SupplierMessage" flushCache="true">
+		INSERT INTO tb_supplier_message(code,name,address,phone,contacts,remark,creator,create_time)
+		VALUES(
+			#{code},#{name},#{address},#{phone},#{contacts},#{remark},#{creator},#{createTime}
+		)
+	</insert>
+	
+	<update id="updateSupplierMessage" parameterType="com.spring.model.SupplierMessage" flushCache="true">
+		UPDATE tb_supplier_message SET code = #{code},name = #{name},address = #{address},phone = #{phone},
+		contacts = #{contacts},remark = #{remark}
+		WHERE supplier_id = #{supplierId}
+	</update>
+	
+	<delete id="deleteSupplierMessage" parameterType="java.lang.Integer" flushCache="true">
+		DELETE FROM tb_supplier_message WHERE supplier_id = #{supplierId}
+	</delete>
+	
+	<select id="selectSupplierAll" resultMap="supplierMap">
+		SELECT <include refid="supplier"></include> FROM tb_supplier_message
+	</select>
 </mapper>
