@@ -63,7 +63,8 @@
 			  					<select class="easyui-combobox" name="fgas" id="fgas" data-options="editable:false">
 				                	<option value="121">CO2</option>
 								    <option value="122">MAG</option>
-								    <option value="123">MIG</option>
+								    <option value="123">MIG_2O2</option>
+								    <option value="124">MIG</option>
 				                </select>
 				            </td>
 			  				<td id="dmaterial" class="leftTd"><lable><span class="required">*</span>焊丝材质：</lable></td>

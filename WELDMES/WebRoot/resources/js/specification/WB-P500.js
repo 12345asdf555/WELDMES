@@ -820,7 +820,10 @@ function WBLINIT(value) {
 	{
 		"text" : "直流双脉冲",
 		"value" : "3"
-	} ]);
+	}, {
+		"text" : "OP1[PROCESS_OPT1]",
+		"value" : "6"
+	}]);
 	$("#cwwvo").hide();
 	$("#cwtwvo").hide();
 	$("#cwwvto").hide();
@@ -865,6 +868,20 @@ function WBLINIT(value) {
 
 //用户输入参数检测
 function WBLCHECK() {
+	if ($("#fweldprocess").combobox('getValue') == 6){	//焊接模式选择 OP1 时
+		if ($('#fini_ele').numberbox('getValue') < 50 || $('#fini_ele').numberbox('getValue') > 200) {
+			alert("初期电流范围：50~200");
+			return false;
+		}
+		if ($('#fweld_ele').numberbox('getValue') < 50 || $('#fweld_ele').numberbox('getValue') > 200) {
+			alert("焊接电流范围：50~200");
+			return false;
+		}
+		if ($('#farc_ele').numberbox('getValue') < 50 || $('#farc_ele').numberbox('getValue') > 200) {
+			alert("收弧电流范围：50~200");
+			return false;
+		}
+	}
 	if ($('#ftime').numberbox('getValue') < 0.1 || $('#ftime').numberbox('getValue') > 10) {
 		alert("点焊时间：0.1~10");
 		return false;
@@ -958,6 +975,7 @@ function WBLCHECK() {
 function wblValidationFrom(){
 	return $("#fm").form('enableValidation').form('validate');
 }
+//下发规范
 function wblSendCheck() {
 	if (!wblValidationFrom()) {
 		return;
@@ -1120,13 +1138,16 @@ function WBLRULE(){
 				}, {
 					"text" : "直流填弧坑",
 					"value" : "112"
+				},{
+					"text" : "脉冲填弧坑",
+					"value" : "113"
 				}, {
 					"text" : "电弧点焊",
 					"value" : "114"
 				} ]);
 				$('#farc').combobox('select', 111);
 				$("#frequency").numberbox({disabled: true});
-			}else if(fweldprocess == 2){
+			}else if(fweldprocess == 2){	//直流低飞溅
 				fgas_2();
 //				$("#farc").combobox({disabled: true});
 				$('#farc').combobox('clear');
@@ -1136,13 +1157,16 @@ function WBLRULE(){
 				}, {
 					"text" : "直流填弧坑",
 					"value" : "112"
+				},{
+					"text" : "脉冲填弧坑",
+					"value" : "113"
 				}, {
 					"text" : "电弧点焊",
 					"value" : "114"
 				} ]);
 				$('#farc').combobox('select', 111);
 				$("#frequency").numberbox({disabled: true});
-			}else if(fweldprocess == 0){
+			}else if(fweldprocess == 0){	//直流脉冲
 				fgas_4();
 //				$("#farc").combobox({disabled: false});
 				$('#farc').combobox('clear');
@@ -1161,7 +1185,7 @@ function WBLRULE(){
 				} ]);
 				$('#farc').combobox('select', 111);
 				$("#frequency").numberbox({disabled: true});
-			}else if(fweldprocess == 3){
+			}else if(fweldprocess == 3){	//直流双脉冲
 				fgas_4();
 //				$("#farc").combobox({disabled: false});
 				$('#farc').combobox('clear');
@@ -1180,6 +1204,10 @@ function WBLRULE(){
 				} ]);
 				$('#farc').combobox('select', 111);
 				$("#frequency").numberbox({disabled: false});
+			}else if(fweldprocess == 6){		//OP1[PROCESS_OPT1]
+				$("#fini_ele").numberbox('setValue', 50);	//初期电流:50
+				$("#fweld_ele").numberbox('setValue', 50); 	//焊接电流:50
+				$("#farc_ele").numberbox('setValue', 50); 	//收弧电流:50
 			}
 			var data = $('#fgas').combobox('getData');
 			$('#fgas').combobox('select',data[0].value);
@@ -1222,7 +1250,7 @@ function WBLRULE(){
 	$("#fmaterial").combobox({//焊丝种类
 		onChange : function() {
 			var fweldprocess = $("#fweldprocess").combobox('getValue');
-			var fgas = $("#fgas").combobox('getValue');
+			var fgas = $("#fgas").combobox('getValue');	//气体
 			var fmaterial = $("#fmaterial").combobox('getValue');
 			$("#fcontroller").prop("checked",false);
 			$("#fcontroller").prop("disabled",true);
@@ -1238,16 +1266,16 @@ function WBLRULE(){
 						fdiameter_8();
 						$("#fcontroller").prop("disabled",false);
 					}
-				}else if(fgas == 122){
+				}else if(fgas == 122){	//MAG
 					fdiameter_7();
 					$("#fcontroller").prop("disabled",false);
-				}else if(fgas == 123){
+				}else if(fgas == 123){	//MIG_2O2
 					if(fmaterial == 96){
 						fdiameter_4();
 					}else if(fmaterial == 97){
 						fdiameter_6();
 					}
-				}else if(fgas == 124){
+				}else if(fgas == 124){	//MIG
 					if(fmaterial == 92){
 						fdiameter_9();
 					}else if(fmaterial == 95){

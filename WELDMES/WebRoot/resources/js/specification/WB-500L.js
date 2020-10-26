@@ -1118,12 +1118,15 @@ function WBLRULE(){
 					"text" : "直流填弧坑",
 					"value" : "112"
 				}, {
+					"text" : "脉冲填弧坑",
+					"value" : "113"
+				}, {
 					"text" : "电弧点焊",
 					"value" : "114"
 				} ]);
 				$('#farc').combobox('select', 111);
 				$("#frequency").numberbox({disabled: true});
-			}else if(fweldprocess == 2){
+			}else if(fweldprocess == 2){	//直流底飞溅
 				fgas_2();
 //				$("#farc").combobox({disabled: true});
 				$('#farc').combobox('clear');
@@ -1134,12 +1137,15 @@ function WBLRULE(){
 					"text" : "直流填弧坑",
 					"value" : "112"
 				}, {
+					"text" : "脉冲填弧坑",
+					"value" : "113"
+				}, {
 					"text" : "电弧点焊",
 					"value" : "114"
 				} ]);
 				$('#farc').combobox('select', 111);
 				$("#frequency").numberbox({disabled: true});
-			}else if(fweldprocess == 0){
+			}else if(fweldprocess == 0){	//直流脉冲
 				fgas_4();
 //				$("#farc").combobox({disabled: false});
 				$('#farc').combobox('clear');
@@ -1158,7 +1164,7 @@ function WBLRULE(){
 				} ]);
 				$('#farc').combobox('select', 111);
 				$("#frequency").numberbox({disabled: true});
-			}else if(fweldprocess == 3){
+			}else if(fweldprocess == 3){	//直流双脉冲
 				fgas_4();
 //				$("#farc").combobox({disabled: false});
 				$('#farc').combobox('clear');

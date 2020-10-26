@@ -47,6 +47,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				<table id="dg" checkbox="true" style="table-layout:fixed;width:50%"></table>
 			</div>
     </div>
-    </div>
+    </div>
 </body>
 </html>
